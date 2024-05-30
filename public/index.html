@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriAID</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">NutriAID</div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Credits</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="login-container">
+        <h1>Welcome to <span class="highlight">NutriAID</span></h1>
+        <form>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Log In</button>
+        </form>
+        <p>Not a member? <a href="#" id="sign-up-link">Sign up <span class="highlight">here</span></a></p>
+    </div>
+
+    <div class="signup-container" id="signup-container">
+        <div class="close-btn" id="close-btn">&times;</div>
+        <div class="signup-options">
+            <a href = user_signup.html class="option" >User</div>
+            <div class="option">Volunteer</div>
+        </div>
+    </div>
+
+    <script src="javascript/scripts.js"></script>
+</body>
+</html>
