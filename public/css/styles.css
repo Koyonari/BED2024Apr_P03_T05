@@ -141,12 +141,14 @@ p a:hover {
 }
 
 .signup-container.active,
-.restrictions-container.active,.intolerances-container.active {
+.restrictions-container.active,
+.intolerances-container.active {
   display: flex;
 }
 
 .signup-options,
-.restrictions-container form ,.intolerances-container form{
+.restrictions-container form,
+.intolerances-container form {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -164,7 +166,7 @@ p a:hover {
 
 .signup-options .option:hover,
 .restrictions-container form select:hover,
-.restrictions-container form input:hover ,
+.restrictions-container form input:hover,
 .intolerances-container form select:hover,
 .intolerances-container form input:hover {
   background-color: #ff7f00;
@@ -192,7 +194,8 @@ p a:hover {
 }
 
 /* User Signup Styles */
-#restrictions-btn , #intolerances-btn {
+#restrictions-btn,
+#intolerances-btn {
   width: 100%;
   margin-bottom: 20px;
   background-color: #ff7f00;
@@ -205,7 +208,8 @@ p a:hover {
   height: 50px;
 }
 
-.restrictions-container,.intolerances-container {
+.restrictions-container,
+.intolerances-container {
   display: none;
   /* Remains hidden initially */
   position: fixed;
@@ -220,25 +224,29 @@ p a:hover {
   /* Centers items vertically */
 }
 
-.restrictions-container .restrictions-topbar , .intolerances-container .intolerances-topbar{
+.restrictions-container .restrictions-topbar,
+.intolerances-container .intolerances-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.restrictions-container .restrictions-topbar label ,.intolerances-container .intolerances-topbar label{
+.restrictions-container .restrictions-topbar label,
+.intolerances-container .intolerances-topbar label {
   margin: 0;
-  font-size: 25px
+  font-size: 25px;
 }
 
-.restrictions-container h2 ,.intolerances-container h2{
+.restrictions-container h2,
+.intolerances-container h2 {
   font-size: 2vw;
   position: absolute;
   margin-bottom: 200px;
   text-align: left;
 }
 
-.restrictions-container form ,.intolerances-container form{
+.restrictions-container form,
+.intolerances-container form {
   width: 50%;
   /* Maintains width for the form */
   display: block;
@@ -248,7 +256,8 @@ p a:hover {
   margin-top: 20px;
 }
 
-.restrictions-container form label ,.intolerances-container form label{
+.restrictions-container form label,
+.intolerances-container form label {
   color: black;
   display: block;
   /* Display labels on their own line */
@@ -256,7 +265,8 @@ p a:hover {
   /* Add space around labels */
 }
 
-.restrictions-container form input[type="checkbox"] ,.intolerances-container form input[type="checkbox"]{
+.restrictions-container form input[type="checkbox"],
+.intolerances-container form input[type="checkbox"] {
   display: inline-block;
   /* Display checkboxes inline */
   margin-right: 10px;
@@ -264,12 +274,14 @@ p a:hover {
 }
 
 /* Style for the checkboxes and labels */
-#dietary-restrictions input[type="checkbox"] ,#intolerances input[type="checkbox"]{
+#dietary-restrictions input[type="checkbox"],
+#intolerances input[type="checkbox"] {
   display: none;
   /* Hide the actual checkboxes */
 }
 
-#dietary-restrictions label ,#intolerances label{
+#dietary-restrictions label,
+#intolerances label {
   display: inline-block;
   margin-bottom: 5px;
   cursor: pointer;
@@ -279,7 +291,8 @@ p a:hover {
   /* Ensures the label takes the full width of its container */
 }
 
-#dietary-restrictions label:before ,#intolerances label:before{
+#dietary-restrictions label:before,
+#intolerances label:before {
   content: "";
   display: inline-block;
   width: 18px;
@@ -293,7 +306,8 @@ p a:hover {
   border-radius: 3px;
 }
 
-#dietary-restrictions input[type="checkbox"]:checked+label:before ,#intolerances input[type="checkbox"]:checked+label:before{
+#dietary-restrictions input[type="checkbox"]:checked + label:before,
+#intolerances input[type="checkbox"]:checked + label:before {
   content: "\2713";
   /* Checkmark symbol */
   font-size: 14px;
@@ -303,20 +317,24 @@ p a:hover {
   background-color: #ff7f00;
 }
 
-#dietary-restrictions input[type="checkbox"]:focus+label:before ,#intolerances input[type="checkbox"]:focus+label:before{
+#dietary-restrictions input[type="checkbox"]:focus + label:before,
+#intolerances input[type="checkbox"]:focus + label:before {
   border-color: #ff7f00;
 }
 
-#dietary-restrictions label:hover:before ,#intolerances label:hover:before{
+#dietary-restrictions label:hover:before,
+#intolerances label:hover:before {
   border-color: #ff7f00;
 }
 
-#dietary-restrictions label:hover ,#intolerances label:hover{
+#dietary-restrictions label:hover,
+#intolerances label:hover {
   text-decoration: underline;
   color: #ff7f00;
 }
 
-.restriction-btns ,.intolerance-btns{
+.restriction-btns,
+.intolerance-btns {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -324,7 +342,8 @@ p a:hover {
 }
 
 .signup-container.active,
-.restrictions-container .form-group ,.intolerances-container .form-group{
+.restrictions-container .form-group,
+.intolerances-container .form-group {
   width: 40%;
   background-color: #474342;
   padding: 20px;
@@ -332,24 +351,28 @@ p a:hover {
 }
 
 .signup-container.active,
-.restrictions-container .form-group .form-box ,.intolerances-container .form-group .form-box{
+.restrictions-container .form-group .form-box,
+.intolerances-container .form-group .form-box {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#dietary-restrictions ,#intolerances{
+#dietary-restrictions,
+#intolerances {
   display: flex;
   flex-wrap: wrap;
 }
 
-#dietary-restrictions .form-box ,#intolerances .form-box{
+#dietary-restrictions .form-box,
+#intolerances .form-box {
   flex: 0 0 50%;
   box-sizing: border-box;
   padding: 5px;
 }
 
-#confirm-diet-btn ,#confirm-int-btn{
+#confirm-diet-btn,
+#confirm-int-btn {
   width: 100%;
   margin-bottom: 20px;
   background-color: #ff7f00;
@@ -362,3 +385,27 @@ p a:hover {
   height: 50px;
 }
 
+/* About Page Style */
+.about-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 50vh; /* Ensures the container takes up the full viewport height */
+  text-align: center; /* Centers text within the flex container */
+}
+
+.about-container h1 {
+  font-size: 80px;
+  color: #ff7f00;
+}
+
+.about-container p {
+  font-size: 20px;
+  color: white;
+}
+
+/* Additional styles for text alignment */
+.center-text {
+  text-align: center;
+}
