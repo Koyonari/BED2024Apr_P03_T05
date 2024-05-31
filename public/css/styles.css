@@ -37,10 +37,11 @@ body {
   box-shadow: 0px 4px 6px rgba(250, 250, 250, 0.627);
   margin-bottom: 1.25vh;
 }
+
 .navbarname {
   font-size: 2.5rem;
   font-weight: 600;
-  color: #FF964B;
+  color: #ff964b;
   margin-left: 2vw;
   margin-top: 0;
   margin-bottom: 0;
@@ -60,20 +61,23 @@ body {
   font-weight: 600;
 }
 
-.login-container, .user-signup-container, .restrictions-container {
+.login-container,
+.user-signup-container {
   text-align: center;
   margin-top: 100px;
 }
 
-.login-container h1, .user-signup-container h1, .restrictions-container h2 {
+.login-container h1,
+.user-signup-container h1 {
   font-size: 5vw;
 }
 
 .highlight {
-  color: #FF964B;
+  color: #ff964b;
 }
 
 form {
+  width: 50%;
   display: inline-block;
   text-align: left;
   margin-top: 20px;
@@ -84,7 +88,11 @@ label {
   margin: 10px 0 5px;
 }
 
-input[type="email"], input[type="password"], input[type="text"], input[type="date"], select {
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="date"],
+select {
   width: 100%;
   padding: 10px;
   margin-bottom: 20px;
@@ -120,7 +128,7 @@ p a:hover {
   text-decoration: underline;
 }
 
-.signup-container, .restrictions-container {
+.signup-container {
   display: none;
   position: fixed;
   top: 0;
@@ -132,11 +140,13 @@ p a:hover {
   align-items: center;
 }
 
-.signup-container.active, .restrictions-container.active {
+.signup-container.active,
+.restrictions-container.active,.intolerances-container.active {
   display: flex;
 }
 
-.signup-options, .restrictions-container form {
+.signup-options,
+.restrictions-container form ,.intolerances-container form{
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -152,12 +162,16 @@ p a:hover {
   cursor: pointer;
 }
 
-.signup-options .option:hover, .restrictions-container form select:hover, .restrictions-container form input:hover {
+.signup-options .option:hover,
+.restrictions-container form select:hover,
+.restrictions-container form input:hover ,
+.intolerances-container form select:hover,
+.intolerances-container form input:hover {
   background-color: #ff7f00;
 }
 
 .close-btn {
-  position: absolute;
+  /* position: absolute; */
   top: 20px;
   right: 30px;
   font-size: 40px;
@@ -167,12 +181,184 @@ p a:hover {
 
 .title {
   font-size: 7.5rem;
-  text-align:center;
+  text-align: center;
 }
 
-.credits{
-  display:flex;
+.credits {
+  display: flex;
   padding-left: 10vw;
   padding-right: 10vw;
   padding-bottom: 10vh;
 }
+
+/* User Signup Styles */
+#restrictions-btn , #intolerances-btn {
+  width: 100%;
+  margin-bottom: 20px;
+  background-color: #ff7f00;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 15px;
+  height: 50px;
+}
+
+.restrictions-container,.intolerances-container {
+  display: none;
+  /* Remains hidden initially */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  /* Centers items horizontally */
+  align-items: center;
+  /* Centers items vertically */
+}
+
+.restrictions-container .restrictions-topbar , .intolerances-container .intolerances-topbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.restrictions-container .restrictions-topbar label ,.intolerances-container .intolerances-topbar label{
+  margin: 0;
+  font-size: 25px
+}
+
+.restrictions-container h2 ,.intolerances-container h2{
+  font-size: 2vw;
+  position: absolute;
+  margin-bottom: 200px;
+  text-align: left;
+}
+
+.restrictions-container form ,.intolerances-container form{
+  width: 50%;
+  /* Maintains width for the form */
+  display: block;
+  /* Change back to block to remove inline behavior */
+  text-align: left;
+  /* Left-align form elements if needed */
+  margin-top: 20px;
+}
+
+.restrictions-container form label ,.intolerances-container form label{
+  color: black;
+  display: block;
+  /* Display labels on their own line */
+  margin: 10px 0 5px;
+  /* Add space around labels */
+}
+
+.restrictions-container form input[type="checkbox"] ,.intolerances-container form input[type="checkbox"]{
+  display: inline-block;
+  /* Display checkboxes inline */
+  margin-right: 10px;
+  /* Add space between checkbox and label */
+}
+
+/* Style for the checkboxes and labels */
+#dietary-restrictions input[type="checkbox"] ,#intolerances input[type="checkbox"]{
+  display: none;
+  /* Hide the actual checkboxes */
+}
+
+#dietary-restrictions label ,#intolerances label{
+  display: inline-block;
+  margin-bottom: 5px;
+  cursor: pointer;
+  padding-left: 25px;
+  position: relative;
+  width: 100%;
+  /* Ensures the label takes the full width of its container */
+}
+
+#dietary-restrictions label:before ,#intolerances label:before{
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  position: absolute;
+  left: 0;
+  bottom: 1px;
+  background-color: #fff;
+  border: 2px solid #ff7f00;
+  border-radius: 3px;
+}
+
+#dietary-restrictions input[type="checkbox"]:checked+label:before ,#intolerances input[type="checkbox"]:checked+label:before{
+  content: "\2713";
+  /* Checkmark symbol */
+  font-size: 14px;
+  text-align: center;
+  line-height: 16px;
+  color: #fff;
+  background-color: #ff7f00;
+}
+
+#dietary-restrictions input[type="checkbox"]:focus+label:before ,#intolerances input[type="checkbox"]:focus+label:before{
+  border-color: #ff7f00;
+}
+
+#dietary-restrictions label:hover:before ,#intolerances label:hover:before{
+  border-color: #ff7f00;
+}
+
+#dietary-restrictions label:hover ,#intolerances label:hover{
+  text-decoration: underline;
+  color: #ff7f00;
+}
+
+.restriction-btns ,.intolerance-btns{
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.signup-container.active,
+.restrictions-container .form-group ,.intolerances-container .form-group{
+  width: 40%;
+  background-color: #474342;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.signup-container.active,
+.restrictions-container .form-group .form-box ,.intolerances-container .form-group .form-box{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#dietary-restrictions ,#intolerances{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#dietary-restrictions .form-box ,#intolerances .form-box{
+  flex: 0 0 50%;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+#confirm-diet-btn ,#confirm-int-btn{
+  width: 100%;
+  margin-bottom: 20px;
+  background-color: #ff7f00;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 15px;
+  height: 50px;
+}
+
