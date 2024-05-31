@@ -6,3 +6,4 @@ document.getElementById('sign-up-link').addEventListener('click', function(event
 document.getElementById('close-btn').addEventListener('click', function() {
     document.getElementById('signup-container').classList.remove('active');
 });
+
