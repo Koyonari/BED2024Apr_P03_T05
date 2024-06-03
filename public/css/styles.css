@@ -140,13 +140,13 @@ p a:hover {
   align-items: center;
 }
 
-.signup-container.active,
-.restrictions-container.active,
-.intolerances-container.active {
-  display: flex;
+.signup-options{
+  background-color: white;
+  padding: 50px;
+  border-radius: 10px;
+  text-align: center;
 }
 
-.signup-options,
 .restrictions-container form,
 .intolerances-container form {
   background-color: white;
@@ -172,8 +172,8 @@ p a:hover {
   background-color: #ff7f00;
 }
 
-.close-btn {
-  /* position: absolute; */
+.signup-container .close-btn {
+  margin-bottom:110px;
   top: 20px;
   right: 30px;
   font-size: 40px;
@@ -222,6 +222,15 @@ p a:hover {
   /* Centers items horizontally */
   align-items: center;
   /* Centers items vertically */
+}
+
+#restrictions-close-btn,
+#intolerances-close-btn{
+  top: 20px;
+  right: 30px;
+  font-size: 40px;
+  color: white;
+  cursor: pointer;
 }
 
 .restrictions-container .restrictions-topbar,
@@ -341,7 +350,6 @@ p a:hover {
   gap: 15px;
 }
 
-.signup-container.active,
 .restrictions-container .form-group,
 .intolerances-container .form-group {
   width: 40%;
@@ -350,7 +358,15 @@ p a:hover {
   border-radius: 10px;
 }
 
-.signup-container.active,
+.signup-container.active {
+  display: flex;
+}
+
+.restrictions-container.active,
+.intolerances-container.active {
+  display: flex;
+}
+
 .restrictions-container .form-group .form-box,
 .intolerances-container .form-group .form-box {
   display: flex;
@@ -412,9 +428,8 @@ p a:hover {
   text-align: center;
 }
 
-
 /* Contact Us Page Style */
-.contact-page h1{
+.contact-page h1 {
   font-size: 80px;
   color: #ff7f00;
   text-align: center;
@@ -458,6 +473,85 @@ p a:hover {
 }
 
 .additional-info p {
-  color:black;
+  color: black;
   margin: 10px 0;
+}
+
+/* User Home Page */
+
+.user-home-container {
+  margin-top: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 50vh; /* Ensures the container takes up the full viewport height */
+  text-align: center; /* Centers text within the flex container */
+}
+
+.user-home-container h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+.user-home-btn {
+  text-align: center;
+  background-color: #ff7f00;
+  width: 150px;
+  height: 100px;
+  border: none;
+  border-radius: 5px;
+  font-size: 25px;
+  transition: 0.2s;
+}
+
+.user-home-btn:hover {
+  border: 1px solid white;
+  width: 155px;
+  height: 105px;
+}
+
+.user-home-btn i {
+  font-size: 1.5rem;
+}
+
+
+/* Volunteer Home Page */
+
+.volunteer-home-container {
+  margin-top: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 50vh; /* Ensures the container takes up the full viewport height */
+  text-align: center; /* Centers text within the flex container */
+}
+
+.volunteer-home-container h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+.volunteer-home-btn {
+  text-align: center;
+  background-color: #ff7f00;
+  width: 150px;
+  height: 100px;
+  border: none;
+  border-radius: 5px;
+  font-size: 25px;
+  transition: 0.2s;
+}
+
+.volunteer-home-btn:hover {
+  border: 1px solid white;
+  width: 155px;
+  height: 105px;
+}
+
+.volunteer-home-btn i {
+  font-size: 1.5rem;
 }
