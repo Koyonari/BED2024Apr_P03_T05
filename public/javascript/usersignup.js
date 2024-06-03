@@ -1,5 +1,6 @@
 var dietaryRestrictions = null;
 var intolerances = null;
+var excludedIngredients = null;
 
 ///////////////////////////////////////////////// Diet Restrictions Popup
 document
@@ -104,27 +105,24 @@ document
       .getElementById("intolerances-container")
       .classList.remove("active");
   });
-
 /////////////////////////////////////////////////
-
-
 
 ///////////////////////////////////////////////// Create User
 document.querySelector("form").addEventListener("submit", function (event) {
   event.preventDefault(); // Prevent form submission
 
   // Get user input values
-  var Username = document.getElementById("username").value.trim();
-  var Fullname = document.getElementById("Fullname").value.trim();
-  var dob = document.getElementById("dob").value.trim();
+  var username = document.getElementById("username").value.trim();
+  var password = document.getElementById("password-signup").value.trim();
   var address = document.getElementById("address").value.trim();
   var email = document.getElementById("email-signup").value.trim();
   var contact = document.getElementById("contact").value.trim();
-  var password = document.getElementById("password-signup").value.trim();
   var role = document.getElementById("role").value.trim();
+  var excludedIngredients = document.getElementById("excluded-ingredients").value.trim();
+  var dateCreated = new Date().toISOString();
 
   // Basic form validation
-  if (!Username || !Fullname || !dob || !address || !email || !contact || !password || !role) {
+  if (!username || !password || !address || !email || !contact || !role) {
     alert("Please fill out all required fields.");
     return;
   }
@@ -139,18 +137,29 @@ document.querySelector("form").addEventListener("submit", function (event) {
     intolerances = null;
   }
 
+  // Split excludedIngredients by comma and trim whitespace
+  if (excludedIngredients && excludedIngredients.length > 0) {
+    excludedIngredients = excludedIngredients.split(',').map(function (ingredient) {
+      return ingredient.trim();
+    });
+  } else {
+    excludedIngredients = null;
+  }
+
   // Create user object
   var user = {
-    Username: Username,
-    Fullname: Fullname,
-    dob: dob,
+    username: username,
+    roles: {
+      "User": 2001
+    },
+    password: password,
     address: address,
+    dietaryRestrictions: dietaryRestrictions,
+    intolerances: intolerances,
+    excludedIngredients: excludedIngredients,
+    dateCreated: dateCreated,
     email: email,
     contact: contact,
-    password: password,
-    role: role,
-    dietaryRestrictions: dietaryRestrictions,
-    intolerances: intolerances
   };
 
   // Optionally, you can send this data to the server for processing

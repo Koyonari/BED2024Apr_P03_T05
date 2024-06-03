@@ -44,13 +44,13 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="public/html/about.html">About</a>
+              <a class="nav-link" href="about.html">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="public/html/contact.html">Contact</a>
+              <a class="nav-link" href="contact.html">Contact</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="public/html/credits.html">Credits</a>
+              <a class="nav-link" href="credits.html">Credits</a>
             </li>
           </ul>
         </div>
@@ -82,15 +82,21 @@
         />
         <label for="role">Role:</label>
         <input type="text" id="role" name="role" value="User" readonly />
+
         <div class="restriction-btns">
           <button type="button" id="restrictions-btn">Restrictions</button>
           <button type="button" id="intolerances-btn">Intolerances</button>
         </div>
 
+        <!-- Ingredients to Exclude -->
+        <label for="password-signup">Exclude Ingredients:</label>
+        <input type="text" id="excluded-ingredients" name="excluded-ingredients" required />
+
         <button type="submit">Sign Up</button>
       </form>
       <p>
-        Already a member? Log in <a href="../../index.html" class="highlight">here</a>
+        Already a member? Log in
+        <a href="../../index.html" class="highlight">here</a>
       </p>
     </div>
 
@@ -224,12 +230,7 @@
             <label for="Diary">Diary</label><br />
           </div>
           <div class="form-box">
-            <input
-              type="checkbox"
-              id="Egg"
-              name="intolerances"
-              value="Egg"
-            />
+            <input type="checkbox" id="Egg" name="intolerances" value="Egg" />
             <label for="Egg">Egg</label><br />
           </div>
           <div class="form-box">
@@ -287,12 +288,7 @@
             <label for="Shellfish">Shellfish</label><br />
           </div>
           <div class="form-box">
-            <input
-              type="checkbox"
-              id="Soy"
-              name="intolerances"
-              value="Soy"
-            />
+            <input type="checkbox" id="Soy" name="intolerances" value="Soy" />
             <label for="Soy">Soy</label><br />
           </div>
           <div class="form-box">
@@ -323,9 +319,7 @@
             <label for="Wheat">Wheat</label><br />
           </div>
         </div>
-        <button type="button" id="confirm-int-btn">
-          Confirm Intolerancess
-        </button>
+        <button type="button" id="confirm-int-btn">Confirm Intolerances</button>
       </div>
     </div>
 
