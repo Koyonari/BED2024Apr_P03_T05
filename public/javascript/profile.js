@@ -1,6 +1,66 @@
-  var dietaryRestrictions = null;
-  var intolerances = null;
-  var excludedIngredients = null;
+var dietaryRestrictions = null;
+var intolerances = null;
+var excludedIngredients = null;
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const role = "Volunteer"; // This should be fetched from the database
+
+  const profileData = {
+    username: "john_doe",
+    fullName: "John Doe",
+    dob: "1990-01-01",
+    address: "123 Main St, Anytown, USA",
+    email: "john.doe@example.com",
+    contact: "123-456-7890",
+    password: "password123",
+    role: role,
+    dietaryRestrictions: ["Gluten Free", "Vegetarian"],
+    intolerances: ["Seafood", "Dairy"],
+    excludedIngredients: "Sugar, Salt",
+  };
+
+  populateProfileFields(profileData);
+});
+
+function populateProfileFields(profileData) {
+  document.getElementById("username").value = profileData.username;
+  document.getElementById("fullName").value = profileData.fullName;
+  document.getElementById("dob").value = profileData.dob;
+  document.getElementById("address").value = profileData.address;
+  document.getElementById("email-signup").value = profileData.email;
+  document.getElementById("contact").value = profileData.contact;
+  document.getElementById("password-signup").value = profileData.password;
+  document.getElementById("role").value = profileData.role;
+  document.getElementById("excluded-ingredients").value = profileData.excludedIngredients;
+
+profileData.dietaryRestrictions.forEach((restriction) => {
+    const checkbox = document.querySelector(
+        `#dietary-restrictions input[value="${restriction}"]`
+    );
+    if (checkbox) checkbox.checked = true;
+});
+
+profileData.intolerances.forEach((intolerance) => {
+    const checkbox = document.querySelector(
+        `#intolerances input[value="${intolerance}"]`
+    );
+    if (checkbox) checkbox.checked = true;
+});
+
+  if (profileData.role === "User") {
+    document.getElementById("restrictions-btn").style.display = "block";
+    document.getElementById("intolerances-btn").style.display = "block";
+    document.getElementById("excluded-ingredients").style.display = "block";
+    document.getElementById("excluded-ingredients-label").style.display = "block";
+  } else {
+    document.getElementById("restrictions-btn").style.display = "none";
+    document.getElementById("intolerances-btn").style.display = "none";
+    document.getElementById("excluded-ingredients").style.display = "none";
+    document.getElementById("excluded-ingredients-label").style.display = "none";
+  }
+}
+
 
 ///////////////////////////////////////////////// Diet Restrictions Popup
 document
@@ -105,85 +165,4 @@ document
       .getElementById("intolerances-container")
       .classList.remove("active");
   });
-/////////////////////////////////////////////////
-
-///////////////////////////////////////////////// Create User
-document.querySelector("form").addEventListener("submit", function (event) {
-  event.preventDefault(); // Prevent form submission
-
-  // Get user input values
-  var username = document.getElementById("username").value.trim();
-  var password = document.getElementById("password-signup").value.trim();
-  var address = document.getElementById("address").value.trim();
-  var email = document.getElementById("email-signup").value.trim();
-  var contact = document.getElementById("contact").value.trim();
-  var role = document.getElementById("role").value.trim();
-  var excludedIngredients = document.getElementById("excluded-ingredients").value.trim();
-  var dateCreated = new Date().toISOString();
-
-  // Basic form validation
-  if (!username || !password || !address || !email || !contact || !role) {
-    alert("Please fill out all required fields.");
-    return;
-  }
-
-  // Set dietaryRestrictions to null if empty
-  if (dietaryRestrictions && dietaryRestrictions.length === 0) {
-    dietaryRestrictions = null;
-  }
-
-  // Set intolerances to null if empty
-  if (intolerances && intolerances.length === 0) {
-    intolerances = null;
-  }
-
-  // Split excludedIngredients by comma and trim whitespace
-  if (excludedIngredients && excludedIngredients.length > 0) {
-    excludedIngredients = excludedIngredients.split(',').map(function (ingredient) {
-      return ingredient.trim();
-    });
-  } else {
-    excludedIngredients = null;
-  }
-
-  // Create user object
-  var user = {
-    username: username,
-    roles: {
-      "User": 2001
-    },
-    password: password,
-    address: address,
-    dietaryRestrictions: dietaryRestrictions,
-    intolerances: intolerances,
-    excludedIngredients: excludedIngredients,
-    dateCreated: dateCreated,
-    email: email,
-    contact: contact,
-  };
-
-  // Optionally, you can send this data to the server for processing
-  // For example, using fetch to send the data to a server endpoint
-  /* fetch('https://your-api-endpoint', {
-        method: 'POST',
-        body: JSON.stringify(user),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    }); */
-
-  // Reset form fields
-  document.querySelector("form").reset();
-
-  // Display success message or redirect to another page
-  console.log(user);
-  alert("User created successfully!");
-});
 /////////////////////////////////////////////////
