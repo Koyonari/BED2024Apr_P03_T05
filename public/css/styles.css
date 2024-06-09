@@ -730,3 +730,15 @@ p a:hover {
 .btn-delete:hover, .btn-complete:hover {
   opacity: 0.9;
 }
+
+.credits_title {
+  text-align: center;
+  margin-top: 7.5vh;
+  margin-bottom: 1.5vh;
+  font-size: 5rem;
+}
+.credits {
+  text-align: center;
+  margin-right: 3vw;
+  margin-left: 3vw;
+}
