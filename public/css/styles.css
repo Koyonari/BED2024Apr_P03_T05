@@ -132,17 +132,19 @@ p a:hover {
 .signup-container {
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  height: 80%;
+  border-color: white;
+  transform: translate(-50%, -50%);
   justify-content: center;
   align-items: center;
 }
 
 .signup-options {
-  background-color: white;
+  display: flex;
+  background-color: black;
   padding: 50px;
   border-radius: 10px;
   text-align: center;
@@ -157,11 +159,18 @@ p a:hover {
 }
 
 .signup-options .option {
-  background-color: #2f2f2f;
-  color: white;
+  font-size: 4.5em;
+  display: inline-block;
+  text-align: center;
+  line-height: 42vh;
+  background-color: white;
+  color: black;
+  text-decoration: none;
   padding: 20px;
-  margin: 10px 0;
+  margin: 10px;
   border-radius: 5px;
+  width: 42vw;
+  height: 50vh;
   cursor: pointer;
 }
 
@@ -730,6 +739,30 @@ p a:hover {
 .btn-delete:hover, .btn-complete:hover {
   opacity: 0.9;
 }
+
+/* Admin Home page */
+.home {
+  padding-top: 3vh;
+  text-align: center;
+}
+
+.home-container{
+  margin-top: 3vh;
+  display: flex;
+  width: 95vw;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.home-btn {
+  height: 33vh;
+  width: 42vw;
+  font-size: 3.5rem;
+  border-radius: 20px;
+  margin: 10px;
+}
+
+/* Credits page */
 
 .credits_title {
   text-align: center;
