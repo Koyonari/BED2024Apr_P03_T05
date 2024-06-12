@@ -98,3 +98,7 @@ function applyStyles() {
     modalContent.style.left = "50%";
     modalContent.style.transform = "translate(-50%, -50%)";
 }
+
+function togglepopup(popupid) {
+    document.getElementById(popupid).classList.toggle("active");
+}

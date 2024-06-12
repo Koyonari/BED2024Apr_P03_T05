@@ -40,9 +40,33 @@
     </nav>
     <!-- Navbar End -->
 
+    <!-- Popup for new requests -->
+    <div class = "popup" id = "new-req">
+        <div class = "overlay"></div>
+        <div class = "content">
+            <div class = "close-btn" onclick = "togglePopup('new-req')">&times;</div>
+            <h1>New Request</h1>
+            <div class = "category">
+                <label for="cat">Category</label>
+                <select name="cat" id="cat">
+                    <option value="low">Low Priority</option>
+                    <option value="high">High Priority</option>
+                    <option value = "urgent">Urgent</option>
+                </select>
+                <br>
+            </div>
+            <p>Title</p>
+            <textarea class = "ctitle" type="text" placeholder="Enter your title"></textarea>
+            <p>Message</p>
+            <textarea class = "cmessage" type="text" placeholder="Enter your message"></textarea>
+            <button><b>Confirm</b></button>
+        </div>
+    </div>
+
+    <!-- Title -->
     <div class="back-btn">
         <a href="user_homepage.html"><i class="bx bx-chevron-left"></i></a>
-        <h1><b>Requests</b><a href="../html/user_requestdetails.html" class="plus">&#43;</a></h1>
+        <h1><b>Requests</b><button onclick = "togglepopup('new-req')" class="plus">&#43;</button></h1>
     </div>
 
     <!-- Requests START -->
@@ -70,7 +94,7 @@
                         <p id="modalDescription"></p>
                     </div>
                 </div>
-                <button onclick>Delete</button>
+                <button>Delete</button>
             </div>
             <div class = "req-details2">
                 <div class = "req-det2">

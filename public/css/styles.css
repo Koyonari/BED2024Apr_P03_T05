@@ -600,6 +600,9 @@ p a:hover {
   margin-left: 17.5px;
   text-decoration: none;
   font-size: 3rem;
+  background: none;
+  border: none;
+  color: white;
 }
 
 .back-btn a:hover {
@@ -704,6 +707,118 @@ p a:hover {
 
 .active .request-container {
   transform: translateX(-200px);
+}
+
+/* Popup */
+.popup .overlay {
+  position:fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  display: none;
+}
+
+.popup .content h1 {
+  font-weight: 600;
+  font-size: 2.75rem;
+  text-align: center;
+}
+
+.popup .content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) scale(0);
+  width: 75vw;
+  height: 75vh;
+  z-index: 2;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  color: white;
+  box-shadow: 0 0 10px rgba(199, 199, 199, 0.404);
+  border: 2px solid #8f8f8f;
+  text-align: left;
+  background-color: rgb(24, 24, 24);
+  overflow-y: auto;
+  font-size: 1.85rem;
+}
+
+.popup .content img {
+  padding-bottom: 20px;
+  width: 65rem;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+@media screen and (max-width: 768px) {
+  .popup .content img {
+    width: 100%;
+  }
+}
+
+.popup .close-btn {
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 30px;
+  height: 30px;
+  color: white;
+  font-size: 25px;
+  align-items: center;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.popup.active .overlay {
+  display: block;
+}
+
+.popup.active .content {
+  transition: all 300ms ease-in-out;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.category {
+  margin-top: 40px;
+}
+
+.category label,
+.category select,
+.content p,
+.content textarea {
+    font-size: 1.25rem;
+    margin: 10px;
+}
+
+.content .ctitle {
+  width: 100%;
+  resize: vertical;
+}
+
+.content .cmessage {
+  height: 30vh;
+  width: 100%;
+  resize: vertical;
+}
+
+.content button {
+  text-align: center;
+  font-size: 1.75rem;
+  background-color: #ff964b;
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+#cat {
+  width: 25%;
 }
 
 /* Request Details Page Styles */
