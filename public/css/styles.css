@@ -104,7 +104,7 @@ select {
 button[type="submit"] {
   width: 100%;
   padding: 10px;
-  background-color: #ff7f00;
+  background-color: #ff964b;
   color: white;
   border: none;
   border-radius: 10px;
@@ -113,7 +113,7 @@ button[type="submit"] {
 }
 
 button:hover {
-  background-color: #e07000;
+  background-color: #ff8127;
 }
 
 p {
@@ -121,7 +121,7 @@ p {
 }
 
 p a {
-  color: #ff7f00;
+  color: #ff964b;
   text-decoration: none;
 }
 
@@ -170,7 +170,7 @@ p a:hover {
 .restrictions-container form input:hover,
 .intolerances-container form select:hover,
 .intolerances-container form input:hover {
-  background-color: #ff7f00;
+  background-color: #ff964b;
 }
 
 .signup-container .close-btn {
@@ -199,7 +199,7 @@ p a:hover {
 #intolerances-btn {
   width: 100%;
   margin-bottom: 20px;
-  background-color: #ff7f00;
+  background-color: #ff964b;
   color: white;
   border: none;
   border-radius: 5px;
@@ -312,7 +312,7 @@ p a:hover {
   left: 0;
   bottom: 1px;
   background-color: #fff;
-  border: 2px solid #ff7f00;
+  border: 2px solid #ff964b;
   border-radius: 3px;
 }
 
@@ -324,23 +324,23 @@ p a:hover {
   text-align: center;
   line-height: 16px;
   color: #fff;
-  background-color: #ff7f00;
+  background-color: #ff964b;
 }
 
 #dietary-restrictions input[type="checkbox"]:focus + label:before,
 #intolerances input[type="checkbox"]:focus + label:before {
-  border-color: #ff7f00;
+  border-color: #ff964b;
 }
 
 #dietary-restrictions label:hover:before,
 #intolerances label:hover:before {
-  border-color: #ff7f00;
+  border-color: #ff964b;
 }
 
 #dietary-restrictions label:hover,
 #intolerances label:hover {
   text-decoration: underline;
-  color: #ff7f00;
+  color: #ff964b;
 }
 
 .restriction-btns,
@@ -392,7 +392,7 @@ p a:hover {
 #confirm-int-btn {
   width: 100%;
   margin-bottom: 20px;
-  background-color: #ff7f00;
+  background-color: #ff964b;
   color: white;
   border: none;
   border-radius: 5px;
@@ -414,7 +414,7 @@ p a:hover {
 
 .about-container h1 {
   font-size: 80px;
-  color: #ff7f00;
+  color: #ff964b;
 }
 
 .about-container p {
@@ -432,7 +432,7 @@ p a:hover {
 /* Contact Us Page Style */
 .contact-page h1 {
   font-size: 80px;
-  color: #ff7f00;
+  color: #ff964b;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -469,7 +469,7 @@ p a:hover {
   padding: 20px;
   border-radius: 10px;
   margin: 20px auto 0;
-  width: 80%;
+  width: 95%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -498,7 +498,7 @@ p a:hover {
 
 .user-home-btn {
   text-align: center;
-  background-color: #ff7f00;
+  background-color: #ff964b;
   width: 150px;
   height: 100px;
   border: none;
@@ -537,7 +537,7 @@ p a:hover {
 
 .volunteer-home-btn {
   text-align: center;
-  background-color: #ff7f00;
+  background-color: #ff964b;
   width: 150px;
   height: 100px;
   border: none;
@@ -608,7 +608,7 @@ p a:hover {
   border: 1px solid black;
   border-radius: 5px;
   text-align: center;
-  background-color: #da8c43;
+  background-color: #ff964b;
   padding: 20px;
   box-shadow: 0 10px 10px #757676;
   letter-spacing: 1px;
