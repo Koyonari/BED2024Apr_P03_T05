@@ -1,5 +1,6 @@
 // Select the list element where requests will be displayed
 let list = document.querySelector(".list");
+let listvol = document.querySelector(".list-vol");
 
 // Requests data
 let requests = [
@@ -49,6 +50,21 @@ function initApp() {
     applyStyles();
 }
 
+function initAppVol() {
+    requests.forEach((value, key) => {
+        let newDiv = document.createElement("div");
+        newDiv.classList.add("item");
+        newDiv.innerHTML = `
+            <div class="request-Title">${value.request_Title}</div>
+            <div class="request-Category">${value.request_Category}</div>
+            <div class="request-Status">${value.request_Status}</div>
+            <div class="request-Description">${value.request_Description}</div>
+            <button onclick="confirm()">Confirm</button>`;
+        listvol.appendChild(newDiv);
+    });
+    applyStyles();
+}
+
 // Function to handle the "View Details" button click and show modal
 function viewDetails(key) {
     let request = requests[key];
@@ -63,6 +79,31 @@ function viewDetails(key) {
     toggleModal();
 }
 
+// Confirm dialog function
+function confirm() {
+    let confirmOverlay = document.createElement("div");
+    confirmOverlay.className = "confirm-overlay";
+
+    let confirmDialog = document.createElement("div");
+    confirmDialog.className = "confirm-dialog";
+    confirmDialog.innerHTML = `
+        <button class="confirm-btn">Confirm</button>
+        <button class="cancel-btn">Cancel</button>
+    `;
+
+    confirmOverlay.appendChild(confirmDialog);
+    document.body.appendChild(confirmOverlay);
+
+    confirmDialog.querySelector(".confirm-btn").addEventListener("click", () => {
+        alert("Confirmed!");
+        document.body.removeChild(confirmOverlay);
+    });
+
+    confirmDialog.querySelector(".cancel-btn").addEventListener("click", () => {
+        document.body.removeChild(confirmOverlay);
+    });
+}
+
 function toggleModal() {
     let modal = document.getElementById('modal');
     modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
@@ -70,6 +111,7 @@ function toggleModal() {
 
 // Initialize the app
 initApp();
+initAppVol();
 
 // Close the modal when clicking outside of it
 window.onclick = function(event) {
@@ -101,4 +143,40 @@ function applyStyles() {
 
 function togglepopup(popupid) {
     document.getElementById(popupid).classList.toggle("active");
+}
+
+async function confirmInput() {
+    var title = document.getElementById("ctitle").value;
+    var message = document.getElementById("cmessage").value;
+    var category = document.getElementById("cat").value;
+
+    // Create a data object to send to the server
+    const requestData = {
+        title: title,
+        category: category,
+        description: message, // Assuming 'message' corresponds to 'description' in the database
+        user_id: 1, // Replace with actual user_id if available
+        volunteer_id: null // Assuming no volunteer_id initially
+    };
+
+    // try {
+    //     const response = await fetch('/api/requests', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(requestData)
+    //     });
+
+    //     if (!response.ok) {
+    //         throw new Error('Error creating request');
+    //     }
+
+    //     const createdRequest = await response.json();
+    //     console.log('Created request:', createdRequest);
+    //     // Optionally, handle success feedback or redirect after creating request
+    // } catch (error) {
+    //     console.error('Error creating request:', error.message);
+    //     // Handle error feedback
+    // }
 }
