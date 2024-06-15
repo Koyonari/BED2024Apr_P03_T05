@@ -27,7 +27,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
-app.use('/req', validateRequest, reqController.createRequest);
+app.post('/req', validateRequest, reqController.createRequest);
+app.get("/req/:id", reqController.getRequestById);
 
 // Start server and connect to database
 app.listen(port, async () => {
