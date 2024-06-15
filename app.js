@@ -28,7 +28,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 app.post('/req', validateRequest, reqController.createRequest);
+app.put("/req/:id", validateRequest, reqController.updateRequest);
 app.get("/req/:id", reqController.getRequestById);
+app.delete("/req/:id", reqController.deleteRequest); // DELETE for deleting books
 
 // Start server and connect to database
 app.listen(port, async () => {

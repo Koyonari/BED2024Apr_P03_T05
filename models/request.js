@@ -48,6 +48,47 @@ class Request {
         )
         : null;
     }
+
+    static async updateRequest(id, newRequestData) {
+        const connection = await sql.connect(dbConfig);
+    
+        const sqlQuery = 
+        `UPDATE requests SET 
+        title = @title, 
+        category = @category, 
+        description = @description, 
+        user_id = @user_id, 
+        volunteer_id = @volunteer_id 
+        WHERE request_id = @id`;
+    
+        const request = connection.request();
+        request.input("id", id);
+        request.input("title", newRequestData.title);
+        request.input("category", newRequestData.category);
+        request.input("description", newRequestData.description);
+        request.input("user_id", newRequestData.user_id);
+        request.input("volunteer_id", newRequestData.volunteer_id || null);
+    
+        await request.query(sqlQuery);
+    
+        connection.close();
+    
+        return this.getRequestById(id); // returning the updated book data
+    }
+    
+    static async deleteRequest(id) {
+            const connection = await sql.connect(dbConfig);
+    
+            const sqlQuery = `DELETE FROM requests WHERE request_id = @id`;
+    
+            const request = connection.request();
+            request.input("id", id);
+            const result = await request.query(sqlQuery);
+    
+            connection.close();
+    
+            return result.rowsAffected > 0;
+        }
 }
 
 module.exports = Request;

@@ -25,7 +25,40 @@ async function getRequestById(req, res) {
     }
 };
 
+async function updateRequest(req, res) {
+  const requestId = parseInt(req.params.id);
+  const newRequestData = req.body;
+
+  try {
+    const updatedRequest = await Request.updateRequest(requestId, newRequestData);
+    if (!updatedRequest) {
+      return res.status(404).send("Request not found");
+    }
+    res.json(updatedRequest);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating request");
+  }
+};
+
+const deleteRequest = async (req, res) => {
+  const requestId = parseInt(req.params.id);
+
+  try {
+    const success = await Request.deleteRequest(requestId);
+    if (!success) {
+      return res.status(404).send("Request not found");
+    }
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting request");
+  }
+};
+
 module.exports = {
   createRequest,
-  getRequestById
+  getRequestById,
+  updateRequest,
+  deleteRequest
 }
