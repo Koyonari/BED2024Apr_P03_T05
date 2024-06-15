@@ -46,7 +46,9 @@ const deleteRequest = async (req, res) => {
 
   try {
     const success = await Request.deleteRequest(requestId);
-    if (!success) {
+    if (success) {
+      return res.send("Request deleted successfully");
+    } else {
       return res.status(404).send("Request not found");
     }
     res.status(204).send();
