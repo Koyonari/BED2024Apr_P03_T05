@@ -11,7 +11,7 @@ class User {
   static async createUser(newUserData) {
     let connection;
     try {
-      connection = await sql.connect(config.db);
+      connection = await sql.connect(config);
 
       const sqlQuery = `
           INSERT INTO Users (user_id, username) 
@@ -43,7 +43,7 @@ class User {
   /////////////////////// Get User by UID
 
   static async getUserByUID(user_id) {
-    const connection = await sql.connect(config.db);
+    const connection = await sql.connect(config);
 
     const sqlQuery = `SELECT * FROM Users WHERE user_id = @user_id`;
 
@@ -65,7 +65,7 @@ class User {
 
   /////////////////////// Get All Users
   static async getAllUsers() {
-    const connection = await sql.connect(config.db);
+    const connection = await sql.connect(config);
 
     const sqlQuery = `SELECT * FROM Users`;
 
