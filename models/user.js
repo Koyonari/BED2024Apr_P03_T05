@@ -20,8 +20,8 @@ class User {
         `;
 
       const request = connection.request();
-      request.input("user_id", sql.NVarChar, newUserData.user_id);
-      request.input("username", sql.NVarChar, newUserData.username);
+      request.input("user_id",newUserData.user_id);
+      request.input("username",newUserData.username);
 
       const result = await request.query(sqlQuery);
 

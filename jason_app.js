@@ -1,7 +1,7 @@
 const express = require("express");
 const sql = require("mssql");
 const bodyParser = require("body-parser");
-const { db } = require("./config");
+const db = require("./config");
 const app = express();
 const port = process.env.PORT || 3000;
 
