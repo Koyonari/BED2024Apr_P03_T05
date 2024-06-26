@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Import Controllers
-const userController = require("./controllers/userController");
+const userController = require("./controllers/user_sqlController");
 const pantryController = require("./controllers/pantryController");
 
 // Body Parser
