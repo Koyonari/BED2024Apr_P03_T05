@@ -1,5 +1,6 @@
 const User = require('../../../youtube video practices/Test for Assignment/model/User');
 const bcrypt = require('bcrypt');
+const validateUser = require('../middleware/validateUser');
 
 const getAllUsers = async (req, res) => {
     try {
@@ -47,8 +48,17 @@ const createNewUser = async (req, res) => {
             newUser.excludedIngredients = excludedIngredients || [];
         }
 
-        const result = await User.create(newUser);
-        res.status(201).json(result);
+        // Validate user input using middleware
+        validateUser(req, res, async () => {
+            try {
+                const result = await User.create(newUser);
+                res.status(201).json(result);
+            } catch (err) {
+                console.error(err);
+                res.status(500).json({ 'message': err.message });
+            }
+        });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ 'message': err.message });
