@@ -27,10 +27,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
+app.get("/req/user/:id", reqController.getRequestByUserId);
 app.post('/req', validateRequest, reqController.createRequest);
-app.put("/req/:id", validateRequest, reqController.updateRequest);
+app.get("/available", reqController.getAvailableRequest);
+app.put("/req/accepted/update/:id", validateRequest, reqController.updateAcceptedRequest);
+app.get("/req/accepted/:id", reqController.getAcceptedRequestById);
+app.put("/req/completed/:id", validateRequest, reqController.updateCompletedRequest);
 app.get("/req/:id", reqController.getRequestById);
-app.delete("/req/:id", reqController.deleteRequest); // DELETE for deleting books
+app.get("/user/:id", reqController.getUserDetailsById);
+app.put("/req/approve/:id", validateRequest, reqController.updateApproveRequest);
+app.get("/accepted", reqController.getAcceptedRequest); // Does not work
+app.delete("/req/:id", reqController.deleteRequest);
 
 // Start server and connect to database
 app.listen(port, async () => {
@@ -47,8 +54,8 @@ app.listen(port, async () => {
 
 // Gracefully handle shutdown
 process.on("SIGINT", async () => {
-    console.log("Server is gracefully shutting down");
+    console.log("Server is shutting down.");
     await sql.close();
-    console.log("Database connection closed");
+    console.log("Database connection closed.");
     process.exit(0); // Exit with success code 0
 });

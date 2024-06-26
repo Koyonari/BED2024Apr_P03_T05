@@ -7,7 +7,8 @@ const validateRequest = (req, res, next) => {
     description: Joi.string().min(0).max(150).required(),
     user_id: Joi.number().integer().min(1).required(),
     volunteer_id: Joi.number().integer().allow(null),
-    isCompleted: Joi.boolean().required()
+    isCompleted: Joi.boolean().required(),
+    admin_id: Joi.number().integer().allow(null)
   });
 
   const validation = schema.validate(req.body, { abortEarly: false }); // Validate request body
