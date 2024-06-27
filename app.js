@@ -3,7 +3,7 @@ const reqController = require("./controllers/requestController");
 const sql = require("mssql");
 const dbConfig = require("./dbConfig");
 const bodyParser = require("body-parser");
-const validateRequest = require("./middlewares/validateRequest");
+const { validateRequest, validatePatchAcceptedRequest, validatePatchApproveRequest } = require("./middlewares/validateRequest");
 
 const app = express();
 const port = 3000;
@@ -30,13 +30,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/req/user/:id", reqController.getRequestByUserId);
 app.post('/req', validateRequest, reqController.createRequest);
 app.get("/available", reqController.getAvailableRequest);
-app.put("/req/accepted/update/:id", validateRequest, reqController.updateAcceptedRequest);
+app.patch("/req/accepted/update/:id", validatePatchAcceptedRequest, reqController.updateAcceptedRequest);
 app.get("/req/accepted/:id", reqController.getAcceptedRequestById);
-app.put("/req/completed/:id", validateRequest, reqController.updateCompletedRequest);
+app.patch("/req/completed/:id", reqController.updateCompletedRequest);
 app.get("/req/:id", reqController.getRequestById);
 app.get("/user/:id", reqController.getUserDetailsById);
-app.put("/req/approve/:id", validateRequest, reqController.updateApproveRequest);
-app.get("/accepted", reqController.getAcceptedRequest); // Does not work
+app.patch("/req/approve/:id", validatePatchApproveRequest ,reqController.updateApproveRequest);
+app.get("/accepted", reqController.getAcceptedRequest); 
 app.delete("/req/:id", reqController.deleteRequest);
 
 // Start server and connect to database
