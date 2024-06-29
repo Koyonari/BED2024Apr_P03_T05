@@ -4,25 +4,28 @@ document.querySelector("form").addEventListener("submit", function (event) {
 
   // Get user input values
   var username = document.getElementById("username").value.trim();
-  var fullname = document.getElementById("Fullname").value.trim();
+  var firstname = document.getElementById("firstname").value.trim();
+  var lastname = document.getElementById("lastname").value.trim();
+  var fullname = firstname + " " + lastname;
   var dob = document.getElementById("dob").value.trim();
+  var password = document.getElementById("password-signup").value.trim();
   var address = document.getElementById("address").value.trim();
   var email = document.getElementById("email-signup").value.trim();
   var contact = document.getElementById("contact").value.trim();
-  var password = document.getElementById("password-signup").value.trim();
   var role = document.getElementById("role").value.trim();
+  var dateCreated = new Date().toISOString();
 
   // Basic form validation
-  if (!username || !fullname || !dob || !address || !email || !contact || !password || !role) {
+  if (!username || !firstname || !lastname || !dob || !password || !address || !email || !contact || !role) {
     alert("Please fill out all required fields.");
     return;
   }
-
   // Create user object
   var volunteer = {
     username: username,
+    fullname: fullname,
     roles: {
-      "User": 2001
+      "User": 2002,
     },
     password: password,
     address: address,
@@ -32,6 +35,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
     dateCreated: dateCreated,
     email: email,
     contact: contact,
+    dateofBirth: dob,
   };
   // Optionally, you can send this data to the server for processing
   // For example, using fetch to send the data to a server endpoint

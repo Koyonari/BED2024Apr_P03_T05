@@ -1,6 +1,6 @@
-  var dietaryRestrictions = null;
-  var intolerances = null;
-  var excludedIngredients = null;
+var dietaryRestrictions = null;
+var intolerances = null;
+var excludedIngredients = null;
 
 ///////////////////////////////////////////////// Diet Restrictions Popup
 document
@@ -113,6 +113,10 @@ document.querySelector("form").addEventListener("submit", function (event) {
 
   // Get user input values
   var username = document.getElementById("username").value.trim();
+  var firstname = document.getElementById("firstname").value.trim();
+  var lastname = document.getElementById("lastname").value.trim();
+  var fullname = firstname + " " + lastname;
+  var dob = document.getElementById("dob").value.trim();
   var password = document.getElementById("password-signup").value.trim();
   var address = document.getElementById("address").value.trim();
   var email = document.getElementById("email-signup").value.trim();
@@ -122,7 +126,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
   var dateCreated = new Date().toISOString();
 
   // Basic form validation
-  if (!username || !password || !address || !email || !contact || !role) {
+  if (!username || !firstname || !lastname || !dob || !password || !address || !email || !contact || !role) {
     alert("Please fill out all required fields.");
     return;
   }
@@ -149,6 +153,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
   // Create user object
   var user = {
     username: username,
+    fullname: fullname,
     roles: {
       "User": 2001
     },
@@ -160,6 +165,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
     dateCreated: dateCreated,
     email: email,
     contact: contact,
+    dateofBirth: dob,
   };
 
   // Optionally, you can send this data to the server for processing
