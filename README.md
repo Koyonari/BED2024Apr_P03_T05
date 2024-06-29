@@ -1,14 +1,15 @@
 # BED2024Apr_P03_T05
 BED 2024 Assignment
-## Students:
+
+## Team Members:
 - S10258457 - **Yeo Jin Rong**
 - S10258126 - **An Yong Shyan**  
 - S10262552 - **Ng Kai Huat Jason** 
   
-
 ##  Intro to NutriAid
 ### Introduction
-We are Team 5 from P03 taking the BED Module for Software Engineering Specialisation under Information Technology (N54).   
+We are Team 5 from P03 taking the BED Module from Software Engineering Specialisation under Information Technology (N54).   
+
 This repository is for our assignment.  
   
 Our application is a volunteering platform called NutriAid.    
@@ -18,7 +19,6 @@ Our application is a volunteering platform called NutriAid.
 ### Objective
 The platform facilitates efficient and organised distribution of food resources by allowing users to post their requests for help in a forum-like manner, which volunteers are able to accept and fulfil those requests.
 
-
 This will be achieved through 3 main goals:
 1) Provide a way to allow underprivileged individuals to post requests asking for food
 
@@ -26,29 +26,61 @@ This will be achieved through 3 main goals:
 ### Below we have listed the CRUD Operations done by each member
 
 ### Yeo Jin Rong 
+```
+1) GET https://localhost:5000/users/{id}
+-----------------------------------
+This is GET (Retrieve) request to obtain information pertaining to a user, identified by id, etc.
 
-    1) GET https://localhost:5000/users/{id}
-    -----------------------------------
-     - This is GET (Retrieve) request to obtain information pertaining to a user, identified by id, etc.
-     Example of response from this query is
-     XXXX 
+  Example of response from this query is
+  XXXX
+```
 
-    2) POST https://localhost:5000/users/{id}
-    -----------------------------------
-      - This is POST (Create) request to create a user identified by id, etc.
-      Example of response from this query is
-      XXXX 
-     
+```
+2) POST https://localhost:5000/users/{id}
+-----------------------------------
+This is POST (Create) request to create User.
+
+  Example of response from this query is
+  XXXX
+```
 ------------------------------------------------
 ### Ng Kai Huat Jason 
-#### Package 3 - User Get Recipes []
-#### Package 7 - Volunteer Adds Ingredient to Pantry []
+```
+1) GET https://localhost:5000/users/{id}
+-----------------------------------
+This is GET (Retrieve) request to obtain information pertaining to a user, identified by id, etc.
+
+  Example of response from this query is
+  XXXX
+```
+
+```
+2) POST https://localhost:5000/users/{id}
+-----------------------------------
+This is POST (Create) request to create User.
+
+  Example of response from this query is
+  XXXX
+```
 ------------------------------------------------
 ### An Yong Shyan 
-#### Package 1 - User Post a Request []
-#### Package 2 - Volunteer Accepts Request []
-#### Package 6 - Volunteer views Accpeted Request Details []
-#### Package 9 - Admin Handles Requests []
+```
+1) GET https://localhost:5000/users/{id}
+-----------------------------------
+This is GET (Retrieve) request to obtain information pertaining to a user, identified by id, etc.
+
+  Example of response from this query is
+  XXXX
+```
+
+```
+2) POST https://localhost:5000/users/{id}
+-----------------------------------
+This is POST (Create) request to create User.
+
+  Example of response from this query is
+  XXXX
+```
 ------------------------------------------------
 ### Node Packages Utilised:
 - Express
