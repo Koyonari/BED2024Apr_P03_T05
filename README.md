@@ -46,18 +46,21 @@ This is POST (Create) request to create User.
 ------------------------------------------------
 ### Ng Kai Huat Jason 
 ```
-1) GET https://localhost:5000/users/{id}
+1) GET http://localhost:3000/pantry/{user_id}
 -----------------------------------
-This is GET (Retrieve) request to obtain information pertaining to a user, identified by id, etc.
+This is GET (Retrieve) request to obtain the Pantry ID of the User
 
   Example of response from this query is
-  XXXX
+
+  {
+    "pantry_id": "0PVnY"
+  }
 ```
 
 ```
-2) POST https://localhost:5000/users/{id}
+2) POST http://localhost:3000/pantry/{user_id}
 -----------------------------------
-This is POST (Create) request to create User.
+This is POST (Create) request to create Pantry for the user, it will check if the 
 
   Example of response from this query is
   XXXX
