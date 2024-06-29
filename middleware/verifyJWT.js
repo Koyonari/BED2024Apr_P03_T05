@@ -8,12 +8,12 @@ const verifyJWT = (req, res, next) => {
         token,
         process.env.ACCESS_TOKEN_SECRET,
         (err, decoded) => {
-            if (err) return res.sendStatus(403); // invalid token
+            if (err) return res.sendStatus(403); // Invalid token
             req.userId = decoded.UserInfo.userId;
-            req.roles = decoded.UserInfo.roles;
+            req.roles = decoded.UserInfo.roles; // Ensure roles are correctly parsed
             next();
         }
     );
-}
+};
 
 module.exports = verifyJWT;

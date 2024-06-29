@@ -1,6 +1,6 @@
-const User = require('../../../youtube video practices/Test for Assignment/model/User');
+const User = require('../models/User');
 const bcrypt = require('bcrypt');
-const ROLES_LIST = require('../../../youtube video practices/Test for Assignment/config/roles_list');
+const ROLES_LIST = require('../config/roles_list');
 const validateUser = require('../middleware/validateUser');
 
 const handleNewUser = async (req, res) => {
