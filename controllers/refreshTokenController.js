@@ -1,4 +1,4 @@
-const User = require('../../../youtube video practices/Test for Assignment/model/User');
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 const handleRefreshToken = async (req, res) => {

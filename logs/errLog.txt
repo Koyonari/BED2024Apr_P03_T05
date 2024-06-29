@@ -3,3 +3,7 @@
 20240506	14:39:21	c42dc6b6-2397-4afc-854f-37b19e6ddc05	SyntaxError: Expected ',' or '}' after property value in JSON at position 31
 20240626	21:02:27	1af65863-a125-44d9-b2d9-d146a6ca0f4f	SyntaxError: Expected double-quoted property name in JSON at position 67
 20240626	21:19:26	7c8f584a-46ab-44ac-ae4e-eb0e55f0df94	SyntaxError: Expected ',' or '}' after property value in JSON at position 39
+20240629	13:17:02	85e50ae8-bb4e-4df2-b8ea-875363b99d8d	TypeError: req.roles.some is not a function
+20240629	13:17:44	bad991ac-e994-4bc4-b995-a8db6f3490d0	TypeError: req.roles.some is not a function
+20240629	13:17:45	b493c1ed-2416-4bc1-9880-99283ae4e6e8	TypeError: req.roles.some is not a function
+20240629	13:17:49	4be63bff-e7c6-4d61-a763-62072bdc6a85	TypeError: req.roles.some is not a function
