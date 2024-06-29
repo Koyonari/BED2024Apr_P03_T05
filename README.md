@@ -23,7 +23,7 @@ The platform facilitates efficient and organised distribution of food resources 
 Below we have listed the CRUD Operations performed by each member:
 
 ### Yeo Jin Rong
-#### 1. Account Registration
+### 1. Account Registration
 
 - **Method:** POST
 - **Request URL:** `http://localhost:3500/register`
@@ -98,7 +98,7 @@ Below we have listed the CRUD Operations performed by each member:
 ```
 - Status 409 Conflict
   
-#### 2. Authenthication (Login)
+### 2. Authenthication (Login)
 
 - **Method:** POST
 - **Request URL:** `http://localhost:3500/auth`
@@ -139,7 +139,7 @@ Below we have listed the CRUD Operations performed by each member:
 ```
 - Status 401 Unauthorised
 
-#### 3. Refresh JWT Token
+### 3. Refresh JWT Token
 
 - **Method:** GET
 - **Request URL:** `http://localhost:3500/refresh`
@@ -168,7 +168,7 @@ N/A request is the JWT cookie itself
 ```
 - Status 401 Unauthorized
 
-#### 4. Logout
+### 4. Logout
 
 - **Method:** GET
 - **Request URL:** `http://localhost:3500/logout`
@@ -179,7 +179,7 @@ No request body
 No response body
 ```
 
-#### 5. Get All Users
+### 5. Get All Users
 
 - **Method:** GET
 - **Request URL:** `http://localhost:3500/users`
@@ -234,7 +234,7 @@ N/A request is the JWT cookie itself
 ```
 - Status 401 Unauthorized
 
-#### 6. Add Users as Admin (createUsers)
+### 6. Add Users as Admin (createUsers)
 
 - **Method:** POST
 - **Request URL:** `http://localhost:3500/users`
@@ -284,7 +284,7 @@ N/A request is the JWT cookie itself
 ```
 - Status 400 Bad Request
 
-#### 7. Get User by ID
+### 7. Get User by ID
 
 - **Method:** GET
 - **Request URL:** `http://localhost:3500/users/{id}`
@@ -347,7 +347,7 @@ JWT Cookie is also required
 ```
 - Status 500 Internal Server Error
 
-#### 8. Update user by ID 
+### 8. Update user by ID 
 
 - **Method:** PATCH
 - **Request URL:** `http://localhost:3500/users/{id}`
@@ -381,7 +381,7 @@ JWT Cookie is also required
     "message": "Unauthorized to update this user"
 }
 ```
-#### 8. Delete User by ID
+### 9. Delete User by ID
 
 - **Method:** DELETE
 - **Request URL:** `http://localhost:3500/users/{id}`
@@ -421,7 +421,7 @@ user_id is in paramaeters as req.param.id
 
 ------------------------------------------------
 ### Ng Kai Huat Jason
-#### 1. Retrieve User Pantry
+### 1. Retrieve User Pantry
 - **Method:** GET
 - **Request:** `http://localhost:3000/pantry/{user_id}`
 - **Description:** Retrieve Pantry of a User and returns the Pantry ID
@@ -437,7 +437,7 @@ user_id is in paramaeters as req.param.id
     "message": "No pantry found for the user"
   }
   ```
-#### 2. Create User Pantry
+### 2. Create User Pantry
 - **Method:** POST
 - **Request:** `http://localhost:3000/pantry/{user_id}`
 - **Description:** Create Pantry for the User, it will check if the User has an existing Pantry if it does it will return that PantryID else it will create a new Pantry.
@@ -455,7 +455,7 @@ user_id is in paramaeters as req.param.id
     "pantry_id": "aXb55"
   }
   ```
-#### 3. Add Ingredient to Pantry
+### 3. Add Ingredient to Pantry
 - **Method:** POST
 - **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
 - **Request Body**
@@ -483,7 +483,7 @@ user_id is in paramaeters as req.param.id
     "error": "Ingredient not found"
   }
   ```
-#### 4. Retrieve Pantry Ingredients
+### 4. Retrieve Pantry Ingredients
 - **Method:** GET
 - **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
 - **Description:** Retrieve Ingredients of the respective Pantry as an array of ingredients
@@ -503,7 +503,7 @@ user_id is in paramaeters as req.param.id
     "message": "No ingredients found in pantry"
   }
   ```
-#### 5. Modify Pantry Ingredients
+### 5. Modify Pantry Ingredients
 - **Method:** PUT
 - **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
 - **Request Body**
@@ -531,7 +531,7 @@ user_id is in paramaeters as req.param.id
     "error": "Ingredient not found in pantry"
   }
   ```
-#### 6. Delete Pantry Ingredients
+### 6. Delete Pantry Ingredients
 - **Method:** DELETE
 - **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
 - **Request Body**
@@ -559,7 +559,7 @@ user_id is in paramaeters as req.param.id
   ```
 ------------------------------------------------
 ### An Yong Shyan 
-#### 1. Template
+### 1. Template
 - **Method:** GET
 - **Request:** `https://localhost:5000/users/{id}`
 - **Description:** Retrieve information pertaining to a user, identified by ID.
@@ -574,10 +574,21 @@ user_id is in paramaeters as req.param.id
   ```
 ------------------------------------------------
 ### Node Packages Utilised:
-- Express
-- Axios
-- MSsql
-- Body-Parser
+- express: A web framework for building web applications and APIs.
+- axios: A promise-based HTTP client for making HTTP requests.
+- mssql: A Microsoft SQL Server client for Node.js.
+- body-parser: Middleware for parsing incoming request bodies.
+- dotenv: Loads environment variables from a .env file.
+- express: A web framework for building web applications and APIs.
+- path: A core Node.js module for handling file and directory paths.
+- cors: Middleware for enabling Cross-Origin Resource Sharing (CORS).
+- cookie-parser: Middleware for parsing cookies.
+- mongoose: An ODM (Object Data Modeling) library for MongoDB and Node.js.
+- jsonwebtoken: For creating and verifying JSON Web Tokens (JWT).
+- Joi: For data validation.
+- date-fns: For manipulating and formatting dates.
+- uuid: For generating unique identifiers.
+- bcrypt: For hashing passwords.
 ------------------------------------------------
 ### External Sources Utilised:
 - [Spooncular API](https://spoonacular.com/food-api)
