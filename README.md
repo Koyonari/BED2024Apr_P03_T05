@@ -43,23 +43,30 @@ Below we have listed the CRUD Operations performed by each member:
 - **Method:** GET
 - **Request:** `http://localhost:3000/pantry/{user_id}`
 - **Description:** Retrieve Pantry of a User and returns the Pantry ID
-- **Example Response:**
+- **Example Successful Response:**
   ```json
   {
     "pantry_id": "0PVnY"
+  }
+  ```
+- **Example No Pantry Response:**
+  ```json
+  {
+    "message": "No pantry found for the user"
   }
   ```
 #### 2. Create User Pantry
 - **Method:** POST
 - **Request:** `http://localhost:3000/pantry/{user_id}`
 - **Description:** Create Pantry for the User, it will check if the User has an existing Pantry if it does it will return that PantryID else it will create a new Pantry.
-- **Example Response:**
+- **Example Successful Creation Response:**
   ```json
   {
     "message": "Pantry has been created for user",
     "pantry_id": "aXb55"
   }
   ```
+- **Example Existing Pantry Response:**
   ```json
     {
     "message": "User already has a pantry",
