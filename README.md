@@ -23,6 +23,54 @@ The platform facilitates efficient and organised distribution of food resources 
 Below we have listed the CRUD Operations performed by each member:
 
 ### Yeo Jin Rong
+#### 1. Account Registration
+- **Method:** POST
+- **Request:** `http://localhost:3500/register`
+- **Description:** Registration of an account, either as a Volunteer or User
+- **Example Response for Volunteer:**
+```json
+{
+    "username": "TestVolunteer",
+    "password": "TestVolunteer123!",
+    "firstname": "Volunteer",
+    "lastname": "TestAccount",
+    "roles": {
+        "Volunteer" : 2002
+    },
+    "address": "Ngee Ann Polytechnic",
+    "email": "Volunteer@gmail.com",
+    "contact": "97346328",
+    "dateOfBirth": "2024-06-06"
+} ```
+
+- **Example Response for Volunteer:**
+  ``` json
+{
+    "username": "TestVolunteer",
+    "password": "TestVolunteer123!",
+    "firstname": "Volunteer",
+    "lastname": "TestAccount",
+    "roles": {
+        "Volunteer" : 2002
+    },
+    "address": "Ngee Ann Polytechnic",
+    "email": "Volunteer@gmail.com",
+    "contact": "97346328",
+    "dateOfBirth": "2024-06-06"
+} ```
+#### 1. Retrieve User Information
+- **Method:** GET
+- **Request:** `https://localhost:5000/users/{id}`
+- **Description:** Retrieve information pertaining to a user, identified by ID.
+- **Example Response:**
+  ```json
+  {
+    "id": "12345",
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "role": "user"
+  }
+  ```
 #### 1. Retrieve User Information
 - **Method:** GET
 - **Request:** `https://localhost:5000/users/{id}`
