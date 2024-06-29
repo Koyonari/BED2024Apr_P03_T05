@@ -50,8 +50,9 @@ This is POST (Create) request to create User.
 -----------------------------------
 This is GET (Retrieve) request to obtain the Pantry ID of the User
 
-  Example of response from this query is
+  Example Input - GET http://localhost:3000/pantry/UID1
 
+  Example of response from this query is
   {
     "pantry_id": "0PVnY"
   }
