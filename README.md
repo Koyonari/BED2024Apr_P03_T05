@@ -29,7 +29,7 @@ Below we have listed the CRUD Operations performed by each member:
 - **Request URL:** `http://localhost:3500/register`
 - **Description:** Registration of an account, either as a Volunteer or User
 
-### Example Request Body for Volunteer:
+#### Example Request Body for Volunteer:
 
 ```json
 {
@@ -46,7 +46,7 @@ Below we have listed the CRUD Operations performed by each member:
     "dateOfBirth": "2024-06-06"
 }
 ```
-### Example Request Body for User:
+#### Example Request Body for User:
 ```json
 {
   "username": "TestUser",
@@ -65,7 +65,7 @@ Below we have listed the CRUD Operations performed by each member:
   "excludedIngredients": ["fish", "chicken", "beef"]
 }
 ```
-###Example Successful Response Body:
+#### Example Successful Response Body:
 ```json
 {
     "success": "New user TestUser1 created!"
@@ -73,7 +73,7 @@ Below we have listed the CRUD Operations performed by each member:
 ```
 - Status 200
 - 
-### Example Errorneous Response:
+#### Example Errorneous Response:
 - User has input a non-unique email
 ``` json
 {
@@ -82,7 +82,7 @@ Below we have listed the CRUD Operations performed by each member:
 ```
 - Status 500
 - 
-## User has not fufilled all required inputs
+##### User has not fufilled all required inputs
 ``` json
 {
     "message": "Username, password, email, and contact are required."
@@ -90,7 +90,7 @@ Below we have listed the CRUD Operations performed by each member:
 ```
 - Status 400
 - 
-## User has input a username that is already pre-existing
+##### User has input a username that is already pre-existing
 ``` json
 {
     "message": "Username already exists."
@@ -104,7 +104,7 @@ Below we have listed the CRUD Operations performed by each member:
 - **Request URL:** `http://localhost:3500/auth`
 - **Description:** Authenthication of account by username and password (login functionaility), provides a JWT (jsonwebtoken) as well as adding refreshToken into MongoDB
 
-### Example Request Body for Login:
+#### Example Request Body for Login:
 ```json
 {
 	"username": "TestUser",
@@ -112,7 +112,7 @@ Below we have listed the CRUD Operations performed by each member:
 }
 ```
 
-### Example Succesful Request Response for Login:
+#### Example Succesful Request Response for Login:
 ```json
 {
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VyaWQiOiI2NjdmZWM1OTRmYWM2MjA5NzI1ODA2MzYiLCJ1c2VybmFtZSI6IlRlc3RVc2VyIiwicm9sZXMiOlsyMDAxXX0sImlhdCI6MTcxOTY3MDAwOCwiZXhwIjoxNzE5NjczNjA4fQ.aFcJX7ZhnJ_YytFMSdW12HqK8W5U-_K5kVQNwSJAslA"
@@ -120,16 +120,16 @@ Below we have listed the CRUD Operations performed by each member:
 ```
 - JsonWebToken will also be added as a cookie
 - Status 200
-### Example Errorneous Response:
+#### Example Errorneous Response:
 
-## User has not input password
+##### User has not input password
 ```json
 {
     "message": "Username and password are required."
 }
 ```
 - Status 400
-## User input wrong password or wrong username
+##### User input wrong password or wrong username
 ```json
 {
     "message": "Invalid username or password."
@@ -143,12 +143,12 @@ Below we have listed the CRUD Operations performed by each member:
 - **Request URL:** `http://localhost:3500/refresh`
 - **Description:** Refreshes JSON Web Token for User, updates database with new refreshToken
 
-### Example Request Body for Refresh Token:
+#### Example Request Body for Refresh Token:
 ```json
 N/A request is the JWT cookie itself
 ```
 
-### Example Successful Response Body for Refresh Token:
+#### Example Successful Response Body for Refresh Token:
 ```json
 {
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJ1c2VyaWQiOiI2NjdmZWM1OTRmYWM2MjA5NzI1ODA2MzYiLCJyb2xlcyI6WzIwMDFdfSwiaWF0IjoxNzE5NjcwODgwLCJleHAiOjE3MTk2NzQ0ODB9.hgWn5G23hMolK1GHDIQ31921NNvwbLQtjn2wCEWJVfM"
@@ -156,9 +156,9 @@ N/A request is the JWT cookie itself
 ```
 - Status 200
 
-### Example Errorneous Response Body for Refresh Token:
+#### Example Errorneous Response Body for Refresh Token:
 
-## User has no jwt cookie
+##### User has no jwt cookie
 ```json
 {
     "message": "Unauthorized: No refreshToken cookie found"
