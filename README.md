@@ -213,7 +213,7 @@ N/A request is the JWT cookie itself
         "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTk2NTk2ODUsImV4cCI6MTcxOTc0NjA4NX0.zSig95MuxJmzfS-deqjQP-t0aKTovt5eZNJNNFBkOqg"
     }
 ```
-- This is one object, however after the "," there can be more objects.
+- This is one object, however after there can be more User objects nested within this array
 
 #### Example Errorneous Response Body for getAllUsers:
 
