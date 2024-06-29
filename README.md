@@ -23,12 +23,18 @@ This will be achieved through 3 main goals:
 1) Provide a way to allow underprivileged individuals to post requests asking for food
 
 ## Features
-#### User Login - Jin Rong - [x]
+#### Package 4 - Jin Rong []
+##### User Login [x]
+###### - User Signup / Registeration Functionality
+###### - User Modification Functionality
+#### Package 5 - Jin Rong []
+#### Package 8 - Jin Rong []
+
 #### Pantry Functionality - Jason [x]
 #### Request Functionality - Yong Shyan [x]
 
 ------------------------------------------------
-### Packages Utilised:
+### Node Packages Utilised:
 - Express
 - Axios
 - MSsql
