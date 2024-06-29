@@ -73,6 +73,34 @@ Below we have listed the CRUD Operations performed by each member:
     "pantry_id": "aXb55"
   }
   ```
+#### 3. Add Ingredient to Pantry
+- **Method:** POST
+- **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
+- **Request Body**
+  ```json
+  {
+    "ingredient_name":"Chicken",
+    "quantity":"2"
+  }
+  ```
+- **Description:** Adds a Ingredient to the Pantry via the Pantry ID, this will use the Spooncular API [searchIngredient](https://api.spoonacular.com/food/ingredients/search) to retrieve the Ingredient ID and Ingredient Name thats similar to the inputted ingredient name.
+- **Example Successful Ingredient Added Response:**
+  ```json
+  {
+    "message": "Ingredient added to pantry",
+    "result": {
+        "ingredient_id": 7961,
+        "ingredient_name": "sliced chicken breast",
+        "quantity": "2"
+    }
+  }
+  ```
+- **Example Unsuccessful Response:** this will occur if the ingredient name isn't valid
+  ```json
+  {
+    "error": "Ingredient not found"
+  }
+  ```
 ------------------------------------------------
 ### An Yong Shyan 
 #### 1. Template
@@ -94,3 +122,9 @@ Below we have listed the CRUD Operations performed by each member:
 - Axios
 - MSsql
 - Body-Parser
+------------------------------------------------
+### External Sources Utilised:
+- [Spooncular API](https://spoonacular.com/food-api)
+- [MongoDB](https://www.mongodb.com/)
+
+
