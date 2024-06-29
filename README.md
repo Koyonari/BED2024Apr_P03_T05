@@ -20,9 +20,7 @@ The platform facilitates efficient and organised distribution of food resources 
 
 
 This will be achieved through 3 main goals:
-1) Providing recipes with information on ingredients required to prepare them, leading to users being eased into cooking their meals rather than opting for takeout.
-2) Providing avenues for users to plan their meals, enabling them to structure their meals according to their needs and dietary requirements (such as specific dietary restrictions or intolerances).
-3) Providing systems for users to manage and track their ingredients to be able to conveniently plan out meals, further leading to a paradigm shift in their lifestyle to incorporate meal planning into their daily routine.
+1) Provide a way to allow underprivileged individuals to post requests asking for food
 
 ## Features
 #### User Login - Jin Rong - [x]
