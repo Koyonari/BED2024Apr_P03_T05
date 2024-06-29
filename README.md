@@ -22,19 +22,29 @@ The platform facilitates efficient and organised distribution of food resources 
 This will be achieved through 3 main goals:
 1) Provide a way to allow underprivileged individuals to post requests asking for food
 
-## Functions
-### We have broken down our functions into "Packages" and assigned them to each person as listed below.
+## CRUD Operations
+### Below we have listed the CRUD Operations done by each member
 
-### Yeo Jin Rong Packages
-#### Package 4 - User Modify Profile []
-#### Package 5 - Volunteer Modify Profile []
-#### Package 8 - Admin Accepts User / Volunteer Signups []
+### Yeo Jin Rong 
+
+    1) GET https://localhost:5000/users/{id}
+    -----------------------------------
+     - This is GET (Retrieve) request to obtain information pertaining to a user, identified by id, etc.
+     Example of response from this query is
+     XXXX 
+
+    2) POST https://localhost:5000/users/{id}
+    -----------------------------------
+      - This is POST (Create) request to create a user identified by id, etc.
+      Example of response from this query is
+      XXXX 
+     
 ------------------------------------------------
-### Ng Kai Huat Jason Packages
+### Ng Kai Huat Jason 
 #### Package 3 - User Get Recipes []
 #### Package 7 - Volunteer Adds Ingredient to Pantry []
 ------------------------------------------------
-### An Yong Shyan Packages 
+### An Yong Shyan 
 #### Package 1 - User Post a Request []
 #### Package 2 - Volunteer Accepts Request []
 #### Package 6 - Volunteer views Accpeted Request Details []
