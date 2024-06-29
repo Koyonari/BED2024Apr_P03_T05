@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const validateUser = require('../middleware/validateUser');
+const { date } = require('joi');
+const checkAuthorisation = require('../middleware/checkAuthorisation');
 
 const getAllUsers = async (req, res) => {
     try {
@@ -17,7 +19,7 @@ const getAllUsers = async (req, res) => {
 const createNewUser = async (req, res) => {
     console.log('Request Body:', req.body);
 
-    const { username, password, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles, firstname, lastname } = req.body;
+    const { username, password, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles, firstname, lastname, dateOfBirth } = req.body;
 
     if (!username || !password || !email || !contact) {
         return res.status(400).json({ 'message': 'Username, password, email, and contact are required.' });
@@ -39,7 +41,8 @@ const createNewUser = async (req, res) => {
             address,
             email,
             contact,
-            dateCreated: new Date()
+            dateCreated: new Date(),
+            dateOfBirth: new Date(dateOfBirth)
         };
 
         if (newUser.roles.User === 2001) {
@@ -66,7 +69,8 @@ const createNewUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-    const { id, ...updates } = req.body;
+    const { id } = req.params; // Retrieve user ID from URL parameters
+    const updates = req.body; // Updates to be applied
 
     if (!id) {
         return res.status(400).json({ 'message': 'User ID is required' });
@@ -78,23 +82,23 @@ const updateUser = async (req, res) => {
             return res.status(404).json({ 'message': `User with ID ${id} not found` });
         }
 
-        // Update fields based on the provided updates object
+        // Validate and apply updates
         Object.keys(updates).forEach(key => {
-            if (key === 'email' && !updates[key]) {
-                // Skip update if email is not provided
-                return;
+            // Skip updates for certain fields if not provided
+            if (key === 'email' && !updates[key]) return;
+            if (key === 'contact' && !updates[key]) return;
+
+            // Handle special cases or validations (e.g., dateOfBirth)
+            if (key === 'dateOfBirth') {
+                user[key] = new Date(updates[key]); // Example: Ensure date is correctly parsed
+            } else {
+                user[key] = updates[key];
             }
-            if (key === 'contact' && !updates[key]) {
-                // Skip update if contact is not provided
-                return;
-            }
-            user[key] = updates[key];
         });
 
-        // Validate and save the updated user
-        const validationResult = user.validateSync(); // Validate synchronously
+        // Validate the user object
+        const validationResult = user.validateSync();
         if (validationResult) {
-            // If validation fails, return the validation errors
             const errors = Object.keys(validationResult.errors).map(key => ({
                 field: key,
                 message: validationResult.errors[key].message
@@ -102,11 +106,11 @@ const updateUser = async (req, res) => {
             return res.status(400).json({ errors });
         }
 
-        // Save the user object
+        // Save the updated user object
         const result = await user.save();
         res.json(result);
     } catch (err) {
-        console.error(err);
+        console.error('Error updating user:', err);
         res.status(500).json({ 'message': err.message });
     }
 };
@@ -138,6 +142,7 @@ const getUser = async (req, res) => {
         if (!user) {
             return res.status(400).json({ 'message': `User ID ${req.params.id} not found` });
         }
+        console.log('Retrieved User:', user); // Log the retrieved user object
         res.json(user);
     } catch (err) {
         console.error(err);
@@ -150,5 +155,6 @@ module.exports = {
     createNewUser,
     updateUser,
     deleteUser,
-    getUser
+    getUser,
+    checkAuthorisation
 };
