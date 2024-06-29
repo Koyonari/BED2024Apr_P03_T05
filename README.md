@@ -9,7 +9,7 @@ BED 2024 Assignment
 - **Ng Kai Huat Jason** - S10262552
 
 ## Introduction
-We are Team 5 from P03, taking the BED Module from Software Engineering Specialisation under Information Technology (N54). This repository is for our assignment project, NutriAid.
+We are Team 5 from P03. This repository is for our BED assignment project, NutriAid.
 
 NutriAid is a web application designed to bridge the gap between underprivileged individuals and volunteers willing to provide food aid.
 
