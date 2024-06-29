@@ -13,7 +13,7 @@ class Request {
         this.admin_id = admin_id;
     }
 
-    // GET: Package 1.1 & 2.2 - Allows users to view their requests
+    // GET: Package 1.1 & 2.2.1 - Allows users to view their requests
     static async getRequestByUserId(userId) {
         const connection = await sql.connect(dbConfig);
         const sqlQuery = `SELECT * FROM requests WHERE user_id = @userId`;
@@ -60,7 +60,7 @@ class Request {
         return this.getRequestById(result.recordset[0].id);
     }
 
-    // GET: Package 2.1.2 - Allow Volunteers to view available requests
+    // GET: Package 2.1.2 & 9.2.1 - Allow Volunteers and Admins to view available requests
     static async getAvailableRequests() {
         const connection = await sql.connect(dbConfig);
         const sqlQuery = `SELECT * FROM requests WHERE volunteer_id IS NULL AND admin_id IS NULL AND isCompleted = 0`;
@@ -212,7 +212,7 @@ class Request {
         return this.getRequestById(requestId); // returning the updated request data
     }
 
-    // GET: Package 9.2.1 - Admin view accepted request
+    // GET: Package 9.3.1 - Admin view accepted request
     static async getAcceptedRequest() {
         const connection = await sql.connect(dbConfig);
         const sqlQuery = `SELECT * FROM requests WHERE volunteer_id IS NOT NULL`;
@@ -236,7 +236,7 @@ class Request {
         }
     }
     
-    // DELETE: Package 9.2.2 & 9.3.1 - Allow Admins to delete available request
+    // DELETE: Package 9.2.2 & 9.3.2 - Allow Admins to delete available request
     static async deleteRequest(id) {
         const connection = await sql.connect(dbConfig);
     
