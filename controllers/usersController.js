@@ -1,4 +1,4 @@
-const User = require('../../../youtube video practices/Test for Assignment/model/User');
+const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const validateUser = require('../middleware/validateUser');
 
@@ -112,21 +112,19 @@ const updateUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-    if (!req?.body?.id) {
-        return res.status(400).json({ 'message': 'User ID is required' });
-    }
+    const userId = req.params.id; // Retrieve user ID from URL parameters
 
     try {
-        const user = await User.findOne({ _id: req.body.id }).exec();
+        const user = await User.findById(userId);
         if (!user) {
-            return res.status(204).json({ 'message': `No user matches ID ${req.body.id}.` });
+            return res.status(404).json({ message: `User with ID ${userId} not found` });
         }
 
         const result = await user.deleteOne();
-        res.json(result);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ 'message': err.message });
+        res.json({ message: `User with ID ${userId} deleted successfully` });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ message: "Failed to delete user", error: error.message });
     }
 };
 
