@@ -72,7 +72,7 @@ Below we have listed the CRUD Operations performed by each member:
 }
 ```
 - Status 201 Created
-- 
+  
 #### Example Errorneous Response:
 - User has input a non-unique email
 ``` json
@@ -89,7 +89,7 @@ Below we have listed the CRUD Operations performed by each member:
 }
 ```
 - Status 400 Bad Request
-- 
+  
 ##### User has input a username that is already pre-existing
 ``` json
 {
