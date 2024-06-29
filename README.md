@@ -101,6 +101,80 @@ Below we have listed the CRUD Operations performed by each member:
     "error": "Ingredient not found"
   }
   ```
+#### 4. Retrieve Pantry Ingredients
+- **Method:** GET
+- **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
+- **Description:** Retrieve Ingredients of the respective Pantry as an array of ingredients
+- **Example Successful Response:**
+  ```json
+  [
+    {
+        "ingredient_id": "7961",
+        "ingredient_name": "sliced chicken breast",
+        "quantity": 2
+    }
+  ]
+  ```
+- **Example No Pantry Ingredients Response:**
+  ```json
+  {
+    "message": "No ingredients found in pantry"
+  }
+  ```
+#### 5. Modify Pantry Ingredients
+- **Method:** PUT
+- **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
+- **Request Body**
+  ```json
+  {
+      "ingredient_id":"7961",
+      "quantity":"7"
+  }
+  ```
+- **Description:** Modify the Quantity of the Ingredient that's in the Pantry, it will take in the ingredient_id and quantity
+- **Example Successful Response:**
+  ```json
+  {
+    "message": "Ingredient updated in pantry",
+    "result": {
+        "pantry_id": "aXb55",
+        "ingredient_id": "7961",
+        "quantity": "7"
+    }
+  }
+  ```
+- **Example No Pantry Ingredients with same ID Response:**
+  ```json
+  {
+    "error": "Ingredient not found in pantry"
+  }
+  ```
+#### 6. Delete Pantry Ingredients
+- **Method:** DELETE
+- **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
+- **Request Body**
+  ```json
+  {
+      "ingredient_id":"7961",
+  }
+  ```
+- **Description:** Delete the Ingredient that's in the pantry via the Ingredient ID
+- **Example Successful Response:**
+  ```json
+  {
+    "message": "Ingredient removed from pantry",
+    "result": {
+        "pantry_id": "aXb55",
+        "ingredient_id": "7961"
+    }
+  }
+  ```
+- **Example No Pantry Ingredients with same ID Response:**
+  ```json
+  {
+    "error": "Ingredient not found in pantry"
+  }
+  ```
 ------------------------------------------------
 ### An Yong Shyan 
 #### 1. Template
