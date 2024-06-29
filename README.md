@@ -23,18 +23,28 @@ This will be achieved through 3 main goals:
 1) Provide a way to allow underprivileged individuals to post requests asking for food
 
 ## Functions
-### We splited our functions into "Packages" and assigned them to each person as listed below.
+### We have broken down our functions into "Packages" and assigned them to each person as listed below.
+
+### Yeo Jin Rong Packages
+#### Package 4 & 5 User/Volunteer Login 
+###### - User Signup Function [x]
+###### - User Modification Function [x]
+
+#### Package 8 Admin Function 
+##### - Admin accepts User Signups []
 ------------------------------------------------
+### Ng Kai Huat Jason Packages
+#### Package 7 Virtual Pantry
+###### - Pantry Creation [x]
+###### - Add Ingredient to Pantry [x]
+###### - Retrieve Ingredients from Pantry [x]
+###### - Modify Ingredients in Pantry [x]
 
-#### Package 4 & 5 User/Volunteer Login - Jin Rong [x]
-###### - User Signup / Registeration Function [x]
-###### - User Modification Functionality [x]
+#### Package 3 Recipes
+###### - Get Recipes using Ingredients in Pantry []
+###### - Display Recipes[]
 
-#### Package 8 Admin Function - Jin Rong []
-##### - Admin accpets User Signups []
 ------------------------------------------------
-
-#### Pantry Functionality - Jason [x]
 #### Request Functionality - Yong Shyan [x]
 
 ------------------------------------------------
