@@ -4,22 +4,28 @@ const jwt = require('jsonwebtoken');
 
 const handleLogin = async (req, res) => {
     const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ 'message': 'Username and password are required.' });
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required.' });
+    }
 
     try {
         const foundUser = await User.findOne({ username }).exec();
-        if (!foundUser) return res.sendStatus(401); // Unauthorized
+        if (!foundUser) {
+            return res.status(401).json({ message: 'Invalid username or password.' });
+        }
 
         const match = await bcrypt.compare(password, foundUser.password);
-        if (!match) return res.sendStatus(401); // Unauthorized
+        if (!match) {
+            return res.status(401).json({ message: 'Invalid username or password.' });
+        }
 
         const roles = Array.from(foundUser.roles.values());
 
         const accessTokenPayload = {
-            "UserInfo": {
-                "userid": foundUser._id,
-                "username": foundUser.username,
-                "roles": roles
+            UserInfo: {
+                userid: foundUser._id,
+                username: foundUser.username,
+                roles: roles
             }
         };
 
@@ -29,7 +35,7 @@ const handleLogin = async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        const refreshTokenPayload = { "userid": foundUser.userid};
+        const refreshTokenPayload = { userid: foundUser._id };
 
         const refreshToken = jwt.sign(
             refreshTokenPayload,
