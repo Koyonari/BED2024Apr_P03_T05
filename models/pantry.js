@@ -11,6 +11,12 @@ class Pantry {
   static async createPantry(user_id) {
     let connection;
     try {
+      // First, check if the user already has a pantry
+      const existingPantryID = await this.getPantryIDByUserID(user_id);
+      if (existingPantryID) {
+        return existingPantryID;
+      }
+
       connection = await sql.connect(config);
       const pantry_id = generate5CharacterGene();
 
@@ -25,7 +31,7 @@ class Pantry {
 
       await request.query(sqlQuery);
 
-      return await this.getPantryIDByUserID(user_id);
+      return pantry_id;
     } catch (error) {
       console.error("Error creating pantry:", error);
       throw error;
