@@ -4,7 +4,7 @@ const ROLES_LIST = require('../config/roles_list');
 const validateUser = require('../middleware/validateUser');
 
 const handleNewUser = async (req, res) => {
-    const { username, password, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles } = req.body;
+    const { username, password, firstname, lastname, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles, dateofBirth } = req.body;
 
     // Validate the required fields for user creation
     if (!username || !password || !email || !contact) {
@@ -33,10 +33,13 @@ const handleNewUser = async (req, res) => {
         const newUser = {
             username,
             password: hashedPwd,
+            firstname,
+            lastname,
             roles: userRole,
             address,
             email,
-            contact
+            contact,
+            dateofBirth,
         };
 
         // Add dietaryRestrictions, intolerances, and excludedIngredients if the role is 'User' (2001)

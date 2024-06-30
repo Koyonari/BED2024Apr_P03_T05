@@ -20,7 +20,6 @@ const validateUser = (req, res, next) => {
     roles: Joi.object({
       User: Joi.number().valid(2001),
       Volunteer: Joi.number().valid(2002),
-      Admin: Joi.number().valid(2003),
     }).unknown(false).required(), // Unknown(false) because only have these 3 roles, no additional keys allowed
     refreshToken: Joi.string().allow("", null),
     address: Joi.string().allow("", null),
@@ -29,6 +28,7 @@ const validateUser = (req, res, next) => {
     excludedIngredients: Joi.array().items(Joi.string()),
     email: Joi.string().email().required(),
     contact: Joi.string().required(),
+    dateOfBirth: Joi.date().allow("", null),
   });
 
   const validation = schema.validate(req.body, { abortEarly: false });

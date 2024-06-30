@@ -54,6 +54,10 @@ const userSchema = new Schema({
     contact: {
         type: String,
         required: true
+    },
+    dateOfBirth: {
+        type: Date,
+        required: false
     }
 });
 
