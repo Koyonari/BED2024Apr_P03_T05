@@ -593,12 +593,12 @@ user_id is in paramaeters as req.param.id
 **Example Error Response Body for getRequestByUserId(4) when user_id = 4:**
 - 404 not found
 #### User inputs invalid user_id ####
-```json
+```
 No requests found for this user
 ```
 ---
 - 500 HTTP Internal Server Error
-```json
+```
 Error retrieving requests
 ```
 ---
@@ -640,7 +640,7 @@ Error retrieving requests
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error creating request
 ```
 ---
@@ -670,13 +670,13 @@ Error creating request
 **Example Error Response Body for getAvailableRequests():**
 - 404 Not Found
 #### No Available Requests ####
-```json
+```
 No available requests found
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error retrieving available requests
 ```
 ---
@@ -688,13 +688,15 @@ Error retrieving available requests
 **Example Successful Response Body for updateAcceptedRequest():**
 - 200 OK
 #### Volunteer inputs valid volunteer_id into request_id = 2  ####
-```json
+
 Input:
+```json
 {
     "volunteer_id": 1
 }
-
+```
 Output:
+```json
 {
     "request_id": 2,
     "title": "Liquids Please",
@@ -710,13 +712,13 @@ Output:
 **Example Error Response Body for updateAcceptedRequest():**
 - 404 Not Found
 #### No Requests Found ####
-```json
+```
 Request not found
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error updating accepted request
 ```
 ### 5. Volunteer view accepted requests
@@ -755,13 +757,13 @@ Error updating accepted request
 **Example Error Response Body for getAcceptedRequestById():**
 - 404 Not Found
 #### No Requests Found ####
-```json
+```
 No accepted requests found for this volunteer
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error retrieving accepted requests
 ```
 ### 6. User updates request to be completed
@@ -788,13 +790,13 @@ Error retrieving accepted requests
 **Example Error Response Body for updateCompletedRequest():**
 - 404 Not Found
 #### No Requests Found ####
-```json
+```
 Request not found
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error updating request to completed
 ```
 ### 7. Allows details of specific requests to be viewed
@@ -821,13 +823,13 @@ Error updating request to completed
 **Example Error Response Body for getRequestById():**
 - 404 Not Found
 #### No Requests Found ####
-```json
+```
 Request not found
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error retrieving request
 ```
 ### 8. Volunteers view User Profile
@@ -857,13 +859,13 @@ Error retrieving request
 **Example Error Response Body for getRequestById():**
 - 404 Not Found
 #### No User Found ####
-```json
+```
 User not found
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error retrieving user details
 ```
 ### 9. Volunteers view User Profile
@@ -874,13 +876,14 @@ Error retrieving user details
 **Example Successful Response Body for updateApproveRequest(1) when admin_id = 1:**
 - 200 OK
 #### Allows admin to approve request by updating the admin_id ####
-```json
 Input:
+```json
 {
     "admin_id": 1
 }
-
+```
 Output:
+```json
 {
     "request_id": 1,
     "title": "Urgent food request",
@@ -896,13 +899,13 @@ Output:
 **Example Error Response Body for updateApproveRequest():**
 - 404 Not Found
 #### No User Found ####
-```json
+```
 Request not found
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error approving request
 ```
 ### 10. View Accepted Requests
@@ -951,13 +954,13 @@ Error approving request
 **Example Error Response Body for getAcceptedRequest():**
 - 404 Not Found
 #### No Request Found ####
-```json
+```
 No accepted requests found
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error retrieving accepted requests
 ```
 ### 11. View Accepted Requests
@@ -968,20 +971,20 @@ Error retrieving accepted requests
 **Example Successful Response Body for deleteRequest(1):**
 - 200 OK
 #### Allows admin to delete request according to the request id ####
-```json
+```
 Request deleted successfully
 ```
 ---
 **Example Error Response Body for deleteRequest():**
 - 404 Not Found
 #### No Request Found ####
-```json
+```
 Request not found
 ```
 ---
 - 500 Internal Server Error
 #### Server Error ####
-```json
+```
 Error deleting request
 ```
 ------------------------------------------------
