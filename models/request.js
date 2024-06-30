@@ -84,7 +84,7 @@ class Request {
         }
     }    
 
-    // Put: Package 2.1.3 - Allow Volunteers to accept available request by updating volunteer_id
+    // PATCH: Package 2.1.3 - Allow Volunteers to accept available request by updating volunteer_id
     static async updateAcceptedRequest(id, newVolunteerId) {
         const connection = await sql.connect(dbConfig);
     
@@ -129,7 +129,7 @@ class Request {
         }
     }
 
-    // PUT: Package 2.2.2 - Allow Users to update the status to true for isCompleted
+    // PATCH: Package 2.2.2 - Allow Users to update the status to true for isCompleted
     static async updateCompletedRequest(id) {
         const connection = await sql.connect(dbConfig);
         
@@ -190,7 +190,7 @@ class Request {
         }
     }
 
-    // PUT: Package 9.1.2 - Admin approve requests
+    // PATCH: Package 9.1.2 - Admin approve requests
     static async updateApproveRequest(requestId, adminId) {
         const connection = await sql.connect(dbConfig);
         
