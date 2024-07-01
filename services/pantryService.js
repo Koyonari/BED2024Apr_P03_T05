@@ -25,5 +25,5 @@ const getIngredients = async (userId) => {
 };
 
 module.exports = {
-  getIngredients,
+  getIngredients
 };
