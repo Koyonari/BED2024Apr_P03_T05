@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const config = require("../config");
+const { dbConfig } = require("../config/dbConfig");
 
 class User {
   constructor(user_id, username) {
@@ -11,7 +11,7 @@ class User {
   static async createUser(newUserData) {
     let connection;
     try {
-      connection = await sql.connect(config);
+      connection = await sql.connect(dbConfig);
 
       const sqlQuery = `
           INSERT INTO Users (user_id, username) 
@@ -43,7 +43,7 @@ class User {
   /////////////////////// Get User by UID
 
   static async getUserByUID(user_id) {
-    const connection = await sql.connect(config);
+    const connection = await sql.connect(dbConfig);
 
     const sqlQuery = `SELECT * FROM Users WHERE user_id = @user_id`;
 
@@ -65,7 +65,7 @@ class User {
 
   /////////////////////// Get All Users
   static async getAllUsers() {
-    const connection = await sql.connect(config);
+    const connection = await sql.connect(dbConfig);
 
     const sqlQuery = `SELECT * FROM Users`;
 

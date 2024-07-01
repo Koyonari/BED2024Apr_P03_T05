@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../models/user');
 
 const handleLogout = async (req, res) => {
     // On client, also delete the accessToken
