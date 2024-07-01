@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const config = require("../config");
+const {dbConfig} = require("../config/dbConfig");
 const axios = require("axios");
 
 class Pantry {
@@ -17,7 +17,7 @@ class Pantry {
         return existingPantryID;
       }
 
-      connection = await sql.connect(config);
+      connection = await sql.connect(dbConfig);
       const pantry_id = generate5CharacterGene();
 
       const sqlQuery = `
@@ -45,7 +45,7 @@ class Pantry {
   static async getPantryIDByUserID(user_id) {
     let connection;
     try {
-      connection = await sql.connect(config);
+      connection = await sql.connect(dbConfig);
 
       const sqlQuery = `
         SELECT pantry_id FROM Pantry WHERE user_id = @user_id;
@@ -74,7 +74,7 @@ class Pantry {
   static async addIngredientToPantry(pantry_id, ingredient_name, quantity) {
     let connection;
     try {
-      connection = await sql.connect(config);
+      connection = await sql.connect(dbConfig);
 
       // Use the Spoonacular API to get the ingredient ID
       const spoonacularResponse = await axios.get(
@@ -97,7 +97,7 @@ class Pantry {
       // Check if the ingredient already exists in the Ingredients table
       await this.checkIngredientQuery(ingredient_id, ingredient_name_db);
 
-      connection = await sql.connect(config); // Reopens connection
+      connection = await sql.connect(dbConfig); // Reopens connection
       const request = connection.request();
 
       // Insert the ingredient into the PantryIngredient table
@@ -126,7 +126,7 @@ class Pantry {
   static async checkIngredientQuery(ingredient_id, ingredient_name) {
     let connection;
     try {
-      connection = await sql.connect(config);
+      connection = await sql.connect(dbConfig);
 
       const checkIngredientQuery = `
         IF NOT EXISTS (SELECT 1 FROM Ingredients WHERE ingredient_id = @ingredient_id)
@@ -154,7 +154,7 @@ class Pantry {
   static async getIngredientsByPantryID(pantry_id) {
     let connection;
     try {
-      connection = await sql.connect(config);
+      connection = await sql.connect(dbConfig);
 
       const sqlQuery = `
         SELECT i.ingredient_id, i.ingredient_name, pi.quantity
@@ -183,7 +183,7 @@ class Pantry {
   static async updateIngredientInPantry(pantry_id, ingredient_id, quantity) {
     let connection;
     try {
-      connection = await sql.connect(config);
+      connection = await sql.connect(dbConfig);
 
       const sqlQuery = `
         UPDATE PantryIngredient 
@@ -217,7 +217,7 @@ class Pantry {
   static async removeIngredientFromPantry(pantry_id, ingredient_id) {
     let connection;
     try {
-      connection = await sql.connect(config);
+      connection = await sql.connect(dbConfig);
 
       const sqlQuery = `
         DELETE FROM PantryIngredient 
