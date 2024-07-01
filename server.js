@@ -9,7 +9,7 @@ const errorHandler = require('./middleware/errorHandler');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
-const connectDB = require('./config/dbConn');
+const { connectDB } = require('./config/dbConfig');
 const mongoose = require('mongoose');
 const PORT = process.env.PORT || 3500;
 
@@ -45,20 +45,12 @@ app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 
+// Routes that require JWT verification
 app.use(verifyJWT);
 app.use('/users', require('./routes/api/users'));
-
-app.all('*', (req, res) => {
-    res.status(404);
-    if (req.accepts('html')) {
-        res.sendFile(path.join(__dirname, 'views', '404.html'));
-    } else if (req.accepts('json')) {
-        res.json({ "error": "404 Not Found" });
-    } else {
-        res.type('txt').send("404 Not Found");
-    }
-});
-
+app.use('/pantry', require('./routes/api/pantryRoutes'));
+app.use('/recipes', require('./routes/api/recipeRoutes'));
+// Error handling middleware
 app.use(errorHandler);
 
 mongoose.connection.once('open', () => {

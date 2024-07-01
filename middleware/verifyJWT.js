@@ -16,8 +16,17 @@ const verifyJWT = (req, res, next) => {
                 return res.status(403).json({ message: 'Forbidden: Invalid token' });
             }
 
-            req.userId = decoded.UserInfo.userId;
-            req.roles = decoded.UserInfo.roles; // Ensure roles are correctly parsed
+            // Attach decoded user information to req object
+            req.userid = decoded.UserInfo.userid;
+            req.roles = decoded.UserInfo.roles;
+
+            // Log req object for debugging
+            console.log('Verified JWT. User Info:', {
+                userid: req.userid,
+                roles: req.roles,
+                decoded // Optionally log entire decoded token for more details
+            });
+
             next();
         }
     );

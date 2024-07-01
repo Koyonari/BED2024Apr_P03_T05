@@ -1,7 +1,7 @@
 const express = require("express");
 const sql = require("mssql");
 const bodyParser = require("body-parser");
-const db = require("./config");
+const { dbConfig } = require("../config/dbConfig");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -29,7 +29,7 @@ app.delete('/pantry/:pantry_id/ingredients', pantryController.removeIngredientFr
 app.listen(port, async () => {
   try {
     // Connect to the database
-    await sql.connect(db);
+    await sql.connect(dbConfig);
     console.log("Database connection established successfully");
   } catch (err) {
     console.error("Database connection error:", err);
