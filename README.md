@@ -418,6 +418,27 @@ user_id is in paramaeters as req.param.id
 ```
 - Status 400 Bad Request
 
+### 10. Get Recipes based on Pantry
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/fetch`
+- **Description:** Function to get all available recipes (maximum of 5 per call) based on available pantry
+- **Authorisation:** JWT Cookie
+
+#### Example Response Body 
+```
+N/A Uses JWT Token to retrieve userid
+```
+
+### In-Depth Explaination of GetRecipe(s)
+This function is quite complex, utilising 4 requests at one go, which will be explained below
+
+1) GET PantryIngredients
+- **Method:** GET
+- **Request URL:** `N/A Nested Request`
+- **Description:** Function to get all available ingredients in a user's pantry, based on user ID
+- **Authorisation:** JWT Cookie
+
 ------------------------------------------------
 ### Ng Kai Huat Jason
 ### 1. Retrieve User Pantry
