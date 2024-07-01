@@ -11,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
 const { connectDB } = require('./config/dbConfig');
 const mongoose = require('mongoose');
+const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3500;
 
 // Connect to MongoDB
@@ -35,6 +36,14 @@ app.use(express.json());  // Ensure this is before the routes
 //middleware for cookies
 app.use(cookieParser());
 
+// Import Controllers 
+const userController = require("./controllers/user_sqlController");
+const pantryController = require("./controllers/pantryController");
+
+// Body Parser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
+
 //serve static files
 app.use('/', express.static(path.join(__dirname, '/public')));
 
@@ -50,6 +59,20 @@ app.use(verifyJWT);
 app.use('/users', require('./routes/api/users'));
 app.use('/pantry', require('./routes/api/pantryRoutes'));
 app.use('/recipes', require('./routes/api/recipeRoutes'));
+
+// Jason SQL User Routes
+app.post("/users", userController.createUser); // works
+app.get("/users", userController.getAllUsers); // works
+app.get("/users/:user_id", userController.getUserByUID); // works
+
+// Jason Pantry Routes
+app.post('/pantry/:user_id', pantryController.createPantry); // Create a pantry for a user // works
+app.get('/pantry/:user_id', pantryController.getPantryIDByUserID); // Get the pantry ID for a user // works
+app.post('/pantry/:pantry_id/ingredients', pantryController.addIngredientToPantry); // Add an ingredient to a pantry // works
+app.get('/pantry/:pantry_id/ingredients', pantryController.getIngredientsByPantryID); // Get all ingredients in a pantry // works
+app.put('/pantry/:pantry_id/ingredients', pantryController.updateIngredientInPantry); // Update an ingredient in a pantry // works
+app.delete('/pantry/:pantry_id/ingredients', pantryController.removeIngredientFromPantry); // Remove an ingredient from a pantry // works
+
 // Error handling middleware
 app.use(errorHandler);
 
