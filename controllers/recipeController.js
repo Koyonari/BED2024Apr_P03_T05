@@ -1,5 +1,5 @@
 const recipeService = require('../services/recipeService');
-const pantry = require('../models/pantry');
+const pantryService = require('../services/pantryService');
 const { getRecipesByUserId, insertRecipe, updateRecipe, deleteRecipe } = require('../models/recipe');
 
 // Get recipes and store them in the database
@@ -12,7 +12,7 @@ const getRecipes = async (req, res) => {
     console.log('User ID:', userId);
 
     // Get ingredients from pantry 
-    const ingredients = await pantry.getIngredients(userId);
+    const ingredients = await pantryService.getIngredients(userId);
     console.log('Fetched ingredients:', ingredients);
 
     // Parse into into SPoonacular API
@@ -107,20 +107,31 @@ const getFilteredRecipesByUser = async (req, res) => {
 const insertRecipeByUserId = async (req, res) => {
   try {
     const userId = req.userid; // Assuming user ID is obtained from request
-    const recipe = req.body; // Assuming recipe details are sent in the request body
+    const recipes = req.body;
 
-    if (!userId || !recipe) {
-      return res.status(400).json({ message: 'User ID and recipe details must be provided' });
+    if (!userId || !Array.isArray(recipes) || recipes.length === 0) {
+      return res.status(400).json({ message: 'User ID and recipes array must be provided' });
     }
 
-    await insertRecipe(recipe, userId);
-    res.status(201).json({ message: 'Recipe inserted and linked to user successfully' });
+    for (const recipe of recipes) {
+      // Fetch the recipe details based on the recipe ID
+      const recipeDetails = await recipeService.fetchRecipeDetails(recipe.id);
+
+      if (!recipeDetails) {
+        return res.status(404).json({ message: `Recipe with ID ${recipe.id} not found` });
+      }
+
+      // Insert the recipe into the database
+      await insertRecipe(recipeDetails, userId);
+    }
+
+    res.status(201).json({ message: 'Recipes inserted and linked to user successfully' });
   } catch (error) {
     if (error.message.includes('Violation of PRIMARY KEY constraint')) {
-      return res.status(400).json({ message: 'User is already linked to this recipe', error: error.message });
+      return res.status(400).json({ message: 'One or more recipes are already linked to this user', error: error.message });
     }
-    console.error('Error inserting recipe:', error.message);
-    res.status(500).json({ message: 'Error inserting recipe', error: error.message });
+    console.error('Error inserting recipes:', error.message);
+    res.status(500).json({ message: 'Error inserting recipes', error: error.message });
   }
 };
 
