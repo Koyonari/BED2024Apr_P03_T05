@@ -42,6 +42,39 @@ class Pantry {
     }
   }
 
+  static async getIngredients(userId) {
+    let connection;
+    try {
+      const query = `
+        SELECT Ingredients.ingredient_id, Ingredients.ingredient_name, Ingredients.ingredient_image
+        FROM Pantry 
+        JOIN PantryIngredient ON Pantry.pantry_id = PantryIngredient.pantry_id 
+        JOIN Ingredients ON PantryIngredient.ingredient_id = Ingredients.ingredient_id 
+        WHERE Pantry.user_id = @userId
+      `;
+
+      connection = await sql.connect(dbConfig);
+      
+      const request = connection.request();
+      request.input("userId", sql.VarChar, userId);
+      
+      const result = await request.query(query);
+
+      return result.recordset.map((row) => ({
+        ingredient_id: row.ingredient_id,
+        ingredient_name: row.ingredient_name,
+        ingredient_image: row.ingredient_image,
+      }));
+    } catch (error) {
+      console.error("Error fetching ingredients:", error);
+      throw error; // Re-throw the error to be handled upstream
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
+    }
+  }
+
   static async getPantryIDByUserID(user_id) {
     let connection;
     try {
@@ -71,6 +104,7 @@ class Pantry {
     }
   }
 
+  
   static async addIngredientToPantry(pantry_id, ingredient_name, quantity) {
     let connection;
     try {

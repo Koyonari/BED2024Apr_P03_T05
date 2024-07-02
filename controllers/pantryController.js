@@ -14,7 +14,7 @@ const getPantryIngredients = async (req, res) => {
     }
 
     // Call pantry service with userId
-    const ingredients = await pantryService.getIngredients(userid);
+    const ingredients = await Pantry.getIngredients(userid);
     res.json(ingredients);
   } catch (error) {
     console.error("Error fetching pantry ingredients:", error);

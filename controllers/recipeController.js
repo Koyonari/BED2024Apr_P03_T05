@@ -1,5 +1,5 @@
 const recipeService = require('../services/recipeService');
-const pantryService = require('../services/pantryService');
+const pantry = require('../models/pantry');
 const { getRecipesByUserId, insertRecipe, updateRecipe, deleteRecipe } = require('../models/recipe');
 
 // Get recipes and store them in the database
@@ -12,7 +12,7 @@ const getRecipes = async (req, res) => {
     console.log('User ID:', userId);
 
     // Get ingredients from pantry 
-    const ingredients = await pantryService.getIngredients(userId);
+    const ingredients = await pantry.getIngredients(userId);
     console.log('Fetched ingredients:', ingredients);
 
     // Parse into into SPoonacular API
