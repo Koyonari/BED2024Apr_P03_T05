@@ -7,13 +7,15 @@ const verifyJWT = require('../../middleware/verifyJWT');
 router.get('/fetch', verifyJWT, recipeController.getRecipes);
 router.get('/byuser',recipeController.getAllRecipesByUserId);
 
-// POST /api/storerecipe - Store a new recipe
-router.post('/storerecipe', recipeController.storeRecipe);
+// POST /api/insertrecipe - Insert a new recipe and link to a user
+router.post('/insertrecipe', recipeController.insertRecipeByUserId);
+// POST /api/getfilteredrecipes - Get filtered recipes by user preferences
+router.post('/getfilteredrecipes', recipeController.getFilteredRecipesByUser);
 
-// PUT /api/updaterecipe/:id - Update an existing recipe
-router.put('/updaterecipe/:id', recipeController.updateRecipe);
+// PATCH /api/patchrecipe/:id - Update a recipe with provided parameters [id in parameter is recipe id]
+router.patch('/patchrecipe/:id', verifyJWT, recipeController.patchRecipe);
 
-// DELETE /api/deleterecipe/:id - Delete a recipe
-router.delete('/deleterecipe/:id', recipeController.deleteRecipe);
+// DELETE /api/deleterecipebyuser/:id - Delete a recipe by user ID and recipe ID [id in parameter is recipe id]
+router.delete('/deleterecipebyuser/:id', verifyJWT, recipeController.deleteRecipeByUserId);
 
 module.exports = router;

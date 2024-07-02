@@ -1,7 +1,7 @@
 const { sql, poolPromise } = require("../middleware/db");
 
 const getIngredients = async (userId) => {
-  const query = `SELECT Ingredients.ingredient_id, Ingredients.ingredient_name 
+  const query = `SELECT Ingredients.ingredient_id, Ingredients.ingredient_name , Ingredients.ingredient_image
                    FROM Pantry 
                    JOIN PantryIngredient ON Pantry.pantry_id = PantryIngredient.pantry_id 
                    JOIN Ingredients ON PantryIngredient.ingredient_id = Ingredients.ingredient_id 
@@ -17,6 +17,7 @@ const getIngredients = async (userId) => {
     return result.recordset.map((row) => ({
       ingredient_id: row.ingredient_id,
       ingredient_name: row.ingredient_name,
+      ingredient_image: row.ingredient_image,
     }));
   } catch (error) {
     console.error("Error fetching ingredients:", error);
