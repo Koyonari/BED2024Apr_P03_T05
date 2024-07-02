@@ -6,64 +6,47 @@ const getRecipesByUserId = async (userId) => {
   try {
     const pool = await sql.connect(dbConfig);
 
-    // Query to get recipes by user ID
+    // SQL query to get recipes by user ID
     const query = `
-      SELECT r.id, r.title, r.imageurl, r.servings, r.readyInMinutes, r.pricePerServing,
-       ri.amount AS ingredientAmount, ri.unit AS ingredientUnit, i.ingredient_name
-FROM Recipes r
-INNER JOIN RecipeIngredients ri ON r.id = ri.recipe_id
-INNER JOIN Ingredients i ON ri.ingredient_id = i.ingredient_id
-INNER JOIN Pantry p ON p.user_id = @userId -- Check this join condition
-INNER JOIN PantryIngredient pi ON p.pantry_id = pi.pantry_id -- Check this join condition
-WHERE p.user_id = @userId; -- Ensure correct usage of user_id or pantry_id
+      SELECT r.id, r.title, r.imageurl, r.servings, r.readyInMinutes, r.pricePerServing
+      FROM UserRecipes ur
+      INNER JOIN Recipes r ON ur.recipe_id = r.id
+      WHERE ur.user_id = @userId;
     `;
+
     const result = await pool.request()
       .input('userId', sql.VarChar(255), userId)
       .query(query);
 
-    // Organize recipes and ingredients data
-    const recipes = {};
-    result.recordset.forEach(row => {
-      const { id, title, imageurl, servings, readyInMinutes, pricePerServing, ingredientAmount, ingredientUnit, ingredient_name } = row;
-      if (!recipes[id]) {
-        recipes[id] = {
-          id,
-          title,
-          imageurl,
-          servings,
-          readyInMinutes,
-          pricePerServing,
-          ingredients: []
-        };
-      }
-      recipes[id].ingredients.push({
-        amount: ingredientAmount,
-        unit: ingredientUnit,
-        name: ingredient_name
-      });
-    });
-
-    return Object.values(recipes); // Convert object to array of recipes
+    return result.recordset;
   } catch (error) {
     console.error('Error fetching recipes by user ID:', error.message);
     throw error;
   } finally {
-    sql.close();
+    sql.close(); // Close the pool connection
   }
 };
 
-/// Insert a new recipe into the Recipes table
-const insertRecipe = async (recipe) => {
+// Insert a new recipe and link it to the user
+const insertRecipe = async (recipe, userId) => {
   const pool = await sql.connect(dbConfig);
+  const transaction = new sql.Transaction(pool);
+
   try {
-    await insertRecipeDetails(pool, recipe);
-    await insertRecipeIngredients(pool, recipe);
-    console.log(`Recipe inserted: ${recipe.title}`);
+    await transaction.begin();
+
+    await insertRecipeDetails(transaction, recipe);
+    await insertRecipeIngredients(transaction, recipe);
+    await linkUserToRecipe(transaction, userId, recipe.id);
+
+    await transaction.commit();
+    console.log(`Recipe inserted and linked to user ${userId}: ${recipe.title}`);
   } catch (err) {
+    await transaction.rollback();
     console.error('Error inserting recipe:', err.message);
     throw err;
   } finally {
-    pool.close(); // Close the pool to release resources
+    pool.close();
   }
 };
 
@@ -147,16 +130,17 @@ const insertOrUpdateIngredient = async (pool, ingredient) => {
   try {
     const ingredientQuery = `
       MERGE INTO Ingredients AS target
-      USING (VALUES (@id_insertOrUpdate, @name)) AS source (ingredient_id, ingredient_name)
+      USING (VALUES (@id_insertOrUpdate, @name, @image)) AS source (ingredient_id, ingredient_name, ingredient_image)
       ON target.ingredient_id = source.ingredient_id
       WHEN MATCHED THEN
-        UPDATE SET target.ingredient_name = source.ingredient_name
+        UPDATE SET target.ingredient_name = source.ingredient_name, target.ingredient_image = source.ingredient_image
       WHEN NOT MATCHED THEN
-        INSERT (ingredient_id, ingredient_name) VALUES (source.ingredient_id, source.ingredient_name);
+        INSERT (ingredient_id, ingredient_name, ingredient_image) VALUES (source.ingredient_id, source.ingredient_name, source.ingredient_image);
     `;
     await pool.request()
       .input('id_insertOrUpdate', sql.VarChar(255), ingredient.id.toString())
       .input('name', sql.NVarChar, ingredient.name)
+      .input('image', sql.NVarChar, ingredient.image || '') // Default to empty if image is not provided
       .query(ingredientQuery);
   } catch (error) {
     console.error('Error inserting/updating ingredient:', error.message);
@@ -201,152 +185,115 @@ const linkRecipeIngredient = async (pool, recipeId, ingredient) => {
   }
 };
 
-// SQL Transaction version of storeRecipe
-const storeRecipe = async (recipe) => {
+// Link user to recipe in UserRecipes table
+const linkUserToRecipe = async (transaction, userId, recipeId) => {
+  try {
+    // Check if the user-recipe link already exists
+    const checkQuery = `
+      SELECT COUNT(*) AS count
+      FROM UserRecipes
+      WHERE user_id = @userId AND recipe_id = @recipeId
+    `;
+    const result = await transaction.request()
+      .input('userId', sql.VarChar(255), userId.toString())
+      .input('recipeId', sql.VarChar(255), recipeId.toString())
+      .query(checkQuery);
+
+    if (result.recordset[0].count === 0) {
+      // If the combination doesn't exist, insert it
+      const insertQuery = `
+        INSERT INTO UserRecipes (user_id, recipe_id)
+        VALUES (@userId, @recipeId);
+      `;
+      await transaction.request()
+        .input('userId', sql.VarChar(255), userId.toString())
+        .input('recipeId', sql.VarChar(255), recipeId.toString())
+        .query(insertQuery);
+
+      console.log(`Linked user ${userId} to recipe ${recipeId}`);
+    } else {
+      console.log(`User ${userId} is already linked to recipe ${recipeId}`);
+    }
+  } catch (error) {
+    console.error('Error linking user to recipe:', error.message);
+    throw error;
+  }
+};
+
+
+//Update a recipe with provided parameters //Patch Functionaility
+const updateRecipe = async (recipeId, updates) => {
+  const pool = await sql.connect(dbConfig);
+
+  try {
+    const fields = Object.keys(updates).map(field => `${field} = @${field}`).join(', ');
+
+    const query = `
+      UPDATE Recipes
+      SET ${fields}
+      WHERE id = @recipeId;
+    `;
+
+    const request = pool.request().input('recipeId', sql.VarChar(255), recipeId);
+    Object.entries(updates).forEach(([key, value]) => {
+      request.input(key, sql.NVarChar, value);
+    });
+
+    await request.query(query);
+  } catch (error) {
+    console.error('Error updating recipe:', error.message);
+    throw error;
+  } finally {
+    pool.close();
+  }
+};
+
+// Delete a recipe by user ID and recipe ID
+const deleteRecipe = async (recipeId) => {
   const pool = await sql.connect(dbConfig);
   const transaction = new sql.Transaction(pool);
 
   try {
     await transaction.begin();
 
-    // Insert recipe details into Recipes table
-    const query = `
-          INSERT INTO Recipes (id, title, imageurl, servings, readyInMinutes, pricePerServing)
-          VALUES (@id, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing);
-      `;
-    await pool.request()
-      .input('id', sql.VarChar(255), recipe.id.toString()) // Convert id to string here
-      .input('title', sql.NVarChar, recipe.title)
-      .input('imageurl', sql.NVarChar, recipe.image)
-      .input('servings', sql.Int, recipe.servings)
-      .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
-      .input('pricePerServing', sql.Float, recipe.pricePerServing)
-      .query(query);
+    const deleteRecipeIngredientsQuery = `
+      DELETE FROM RecipeIngredients
+      WHERE recipe_id = @recipeId;
+    `;
+    await transaction.request()
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .query(deleteRecipeIngredientsQuery);
 
-    // Check if each ingredient exists in Ingredients table
-    for (const ingredient of recipe.extendedIngredients) {
-      const checkIngredientQuery = `
-              SELECT ingredient_id FROM Ingredients WHERE ingredient_id = @id;
-          `;
-      const checkResult = await pool.request()
-        .input('id', sql.Int, ingredient.id)
-        .query(checkIngredientQuery);
+    const deleteUserRecipesQuery = `
+      DELETE FROM UserRecipes
+      WHERE recipe_id = @recipeId;
+    `;
+    await transaction.request()
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .query(deleteUserRecipesQuery);
 
-      // If ingredient does not exist, insert it into Ingredients table
-      if (checkResult.recordset.length === 0) {
-        const insertIngredientQuery = `
-                  INSERT INTO Ingredients (ingredient_id, ingredient_name)
-                  VALUES (@id, @name);
-              `;
-        await pool.request()
-          .input('id', sql.Int, ingredient.id)
-          .input('name', sql.NVarChar, ingredient.name)
-          .query(insertIngredientQuery);
-      }
+    const deleteRecipeQuery = `
+      DELETE FROM Recipes
+      WHERE id = @recipeId;
+    `;
+    await transaction.request()
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .query(deleteRecipeQuery);
 
-      // Insert into RecipeIngredients table
-      const ingredientQuery = `
-              INSERT INTO RecipeIngredients (recipeid, ingredientid)
-              VALUES (@recipeid, @ingredientid);
-          `;
-      await pool.request()
-        .input('recipeid', sql.Int, recipe.id)
-        .input('ingredientid', sql.Int, ingredient.id)
-        .query(ingredientQuery);
-    }
-
-    // Commit the transaction if all operations succeed
     await transaction.commit();
-    console.log(`Recipe with id ${recipe.id} stored successfully`);
+    console.log(`Recipe with ID ${recipeId} and its associated ingredients deleted successfully.`);
   } catch (error) {
-    // Rollback the transaction if any error occurs
     await transaction.rollback();
-    console.error('Error storing recipe:', error);
-    throw error; // Re-throw the error to be handled upstream
+    console.error('Error deleting recipe:', error.message);
+    throw error;
   } finally {
-    // Close the pool to release resources
     pool.close();
-  }
-};
-
-// // Update an existing recipe in the Recipes table (this is for put)
-// const updateRecipe = async (recipe) => {
-//   try {
-//     const pool = await sql.connect(dbConfig);
-//     await pool.request()
-//       .input('id', sql.Int, recipe.id)
-//       .input('title', sql.NVarChar, recipe.title)
-//       .input('imageurl', sql.NVarChar, recipe.imageurl)
-//       .input('servings', sql.Int, recipe.servings)
-//       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
-//       .input('pricePerServing', sql.Float, recipe.pricePerServing)
-//       .query(`
-//         UPDATE Recipes
-//         SET title = @title, imageurl = @imageurl, servings = @servings, 
-//             readyInMinutes = @readyInMinutes, pricePerServing = @pricePerServing
-//         WHERE id = @id
-//       `);
-//     console.log(`Recipe updated: ${recipe.title}`);
-//   } catch (err) {
-//     console.error('Error updating recipe:', err.message);
-//     throw err; // Re-throw the error to be handled upstream
-//   }
-// };
-
-// Update an existing recipe in the Recipes table
-const updateRecipe = async (recipeId, updates) => {
-  try {
-    const pool = await sql.connect(dbConfig);
-
-    // Constructing the SET clause dynamically based on updates
-    const setClause = Object.keys(updates).map(key => `${key} = @${key}`).join(', ');
-
-    // Create a request object
-    const request = pool.request();
-
-    // Add recipeId as input parameter
-    request.input('id', sql.Int, recipeId);
-
-    // Add each update field as input parameter
-    Object.keys(updates).forEach(key => {
-      request.input(key, sql.NVarChar, updates[key]);
-    });
-
-    // Execute the update query
-    await request.query(`
-      UPDATE Recipes
-      SET ${setClause}
-      WHERE id = @id
-    `);
-
-    console.log(`Recipe with ID ${recipeId} updated`);
-  } catch (err) {
-    console.error('Error updating recipe:', err.message);
-    throw err; // Re-throw the error to be handled upstream
-  }
-};
-
-// Delete a recipe from the Recipes table based on its ID
-const deleteRecipe = async (recipeId) => {
-  try {
-    const pool = await sql.connect(dbConfig);
-    await pool.request()
-      .input('id', sql.Int, recipeId)
-      .query(`
-        DELETE FROM Recipes
-        WHERE id = @id
-      `);
-    console.log(`Recipe deleted with ID: ${recipeId}`);
-  } catch (err) {
-    console.error('Error deleting recipe:', err.message);
-    throw err; // Re-throw the error to be handled upstream
   }
 };
 
 module.exports = {
   getRecipesByUserId,
   insertRecipe,
-  storeRecipe,
   updateRecipe,
-  deleteRecipe
+  deleteRecipe,
 };
