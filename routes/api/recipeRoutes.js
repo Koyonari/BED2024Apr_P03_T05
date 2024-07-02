@@ -1,17 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const recipeController = require('../../controllers/recipeController');
+const verifyJWT = require('../../middleware/verifyJWT');
 
-// GET /fetchrecipes - Fetch all recipes
-router.get('/fetchrecipes', recipeController.getRecipes);
+// GET /api/fetchrecipes - Fetch all recipes
+router.get('/fetch', verifyJWT, recipeController.getRecipes);
+router.get('/byuser',recipeController.getAllRecipesByUserId);
 
-// POST /recipes - Create a new recipe
-router.post('/recipes', recipeController.insertRecipe);
+// POST /api/storerecipe - Store a new recipe
+router.post('/storerecipe', recipeController.storeRecipe);
 
-// PATCH /recipes/:id - Update a recipe
-router.patch('/recipes/:id', recipeController.updateRecipe);
+// PUT /api/updaterecipe/:id - Update an existing recipe
+router.put('/updaterecipe/:id', recipeController.updateRecipe);
 
-// DELETE /recipes/:id - Delete a recipe
-router.delete('/recipes/:id', recipeController.deleteRecipe);
+// DELETE /api/deleterecipe/:id - Delete a recipe
+router.delete('/deleterecipe/:id', recipeController.deleteRecipe);
 
 module.exports = router;
