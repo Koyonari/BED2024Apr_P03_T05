@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const {dbConfig} = require("../config/dbConfig");
+const { dbConfig } = require("../config/dbConfig");
 const axios = require("axios");
 
 class Pantry {
@@ -11,7 +11,6 @@ class Pantry {
   static async createPantry(user_id) {
     let connection;
     try {
-      // First, check if the user already has a pantry
       const existingPantryID = await this.getPantryIDByUserID(user_id);
       if (existingPantryID) {
         return existingPantryID;
@@ -54,10 +53,10 @@ class Pantry {
       `;
 
       connection = await sql.connect(dbConfig);
-      
+
       const request = connection.request();
       request.input("userId", sql.VarChar, userId);
-      
+
       const result = await request.query(query);
 
       return result.recordset.map((row) => ({
@@ -67,7 +66,7 @@ class Pantry {
       }));
     } catch (error) {
       console.error("Error fetching ingredients:", error);
-      throw error; // Re-throw the error to be handled upstream
+      throw error;
     } finally {
       if (connection) {
         await connection.close();
@@ -90,7 +89,7 @@ class Pantry {
       const result = await request.query(sqlQuery);
 
       if (result.recordset.length === 0) {
-        return null; // No pantry found for this user
+        return null;
       }
 
       return result.recordset[0].pantry_id;
@@ -104,7 +103,6 @@ class Pantry {
     }
   }
 
-  
   static async addIngredientToPantry(pantry_id, ingredient_name, quantity) {
     let connection;
     try {
@@ -127,11 +125,33 @@ class Pantry {
       }
       const ingredient_id = ingredientData.id;
       const ingredient_name_db = ingredientData.name;
+      const ingredient_image = ingredientData.image;
 
       // Check if the ingredient already exists in the Ingredients table
-      await this.checkIngredientQuery(ingredient_id, ingredient_name_db);
+      await this.checkIngredientQuery(
+        ingredient_id,
+        ingredient_name_db,
+        ingredient_image
+      );
 
-      connection = await sql.connect(dbConfig); // Reopens connection
+      // Check if the ingredient already exists in the PantryIngredient table
+      const existingIngredient = await this.getIngredientFromPantry(
+        pantry_id,
+        ingredient_id
+      );
+
+      if (existingIngredient) {
+        // Update the quantity if the ingredient exists
+        const newQuantity =
+          parseInt(existingIngredient.quantity) + parseInt(quantity);
+        return await this.updateIngredientInPantry(
+          pantry_id,
+          ingredient_id,
+          newQuantity
+        );
+      }
+
+      connection = await sql.connect(dbConfig);
       const request = connection.request();
 
       // Insert the ingredient into the PantryIngredient table
@@ -142,11 +162,15 @@ class Pantry {
 
       request.input("pantry_id", pantry_id);
       request.input("ingredient_id", ingredient_id);
-      request.input("quantity", quantity);
+      request.input("quantity", parseInt(quantity)); // Ensure quantity is an integer
 
       await request.query(sqlQuery);
 
-      return { ingredient_id, ingredient_name: ingredient_name_db, quantity };
+      return {
+        ingredient_id,
+        ingredient_name: ingredient_name_db,
+        quantity: parseInt(quantity),
+      };
     } catch (error) {
       console.error("Error adding ingredient to pantry", error);
       throw error;
@@ -157,7 +181,11 @@ class Pantry {
     }
   }
 
-  static async checkIngredientQuery(ingredient_id, ingredient_name) {
+  static async checkIngredientQuery(
+    ingredient_id,
+    ingredient_name,
+    ingredient_image
+  ) {
     let connection;
     try {
       connection = await sql.connect(dbConfig);
@@ -165,18 +193,49 @@ class Pantry {
       const checkIngredientQuery = `
         IF NOT EXISTS (SELECT 1 FROM Ingredients WHERE ingredient_id = @ingredient_id)
         BEGIN
-          INSERT INTO Ingredients (ingredient_id, ingredient_name) 
-          VALUES (@ingredient_id, @ingredient_name);
+          INSERT INTO Ingredients (ingredient_id, ingredient_name, ingredient_image) 
+          VALUES (@ingredient_id, @ingredient_name, @ingredient_image);
         END
       `;
       const request = connection.request();
       request.input("ingredient_id", ingredient_id);
       request.input("ingredient_name", ingredient_name);
+      request.input("ingredient_image", ingredient_image);
       await request.query(checkIngredientQuery);
 
-      return { ingredient_id, ingredient_name };
+      return { ingredient_id, ingredient_name, ingredient_image };
     } catch (error) {
       console.error("Error checking ingredient", error);
+      throw error;
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
+    }
+  }
+
+  static async getIngredientFromPantry(pantry_id, ingredient_id) {
+    let connection;
+    try {
+      connection = await sql.connect(dbConfig);
+
+      const sqlQuery = `
+        SELECT * FROM PantryIngredient WHERE pantry_id = @pantry_id AND ingredient_id = @ingredient_id;
+      `;
+
+      const request = connection.request();
+      request.input("pantry_id", pantry_id);
+      request.input("ingredient_id", ingredient_id);
+
+      const result = await request.query(sqlQuery);
+
+      if (result.recordset.length === 0) {
+        return null;
+      }
+
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Error getting ingredient from pantry", error);
       throw error;
     } finally {
       if (connection) {
@@ -191,7 +250,7 @@ class Pantry {
       connection = await sql.connect(dbConfig);
 
       const sqlQuery = `
-        SELECT i.ingredient_id, i.ingredient_name, pi.quantity
+        SELECT i.ingredient_id, i.ingredient_name, i.ingredient_image, pi.quantity
         FROM Ingredients i
         JOIN PantryIngredient pi ON i.ingredient_id = pi.ingredient_id
         WHERE pi.pantry_id = @pantry_id;
@@ -213,7 +272,6 @@ class Pantry {
     }
   }
 
-  // Update Ingredient Quantity in Pantry
   static async updateIngredientInPantry(pantry_id, ingredient_id, quantity) {
     let connection;
     try {
@@ -228,7 +286,7 @@ class Pantry {
       const request = connection.request();
       request.input("pantry_id", pantry_id);
       request.input("ingredient_id", ingredient_id);
-      request.input("quantity", quantity);
+      request.input("quantity", parseInt(quantity)); // Ensure quantity is an integer
 
       const result = await request.query(sqlQuery);
 
@@ -236,7 +294,7 @@ class Pantry {
         throw new Error("Ingredient not found in pantry");
       }
 
-      return { pantry_id, ingredient_id, quantity };
+      return { pantry_id, ingredient_id, quantity: parseInt(quantity) };
     } catch (error) {
       console.error("Error updating ingredient in pantry:", error);
       throw error;
@@ -247,8 +305,50 @@ class Pantry {
     }
   }
 
-  // Remove Ingredient from Pantry
-  static async removeIngredientFromPantry(pantry_id, ingredient_id) {
+  static async removeIngredientFromPantry(pantry_id, ingredient_id, quantity) {
+    let connection;
+    try {
+      connection = await sql.connect(dbConfig);
+
+      // First, get the current quantity of the ingredient
+      const currentIngredient = await this.getIngredientFromPantry(
+        pantry_id,
+        ingredient_id
+      );
+
+      if (!currentIngredient) {
+        throw new Error("Ingredient not found in pantry");
+      }
+
+      const newQuantity = currentIngredient.quantity - parseInt(quantity);
+
+      if (newQuantity > 0) {
+        // Update the quantity if it's greater than 0
+        return await this.updateIngredientInPantry(
+          pantry_id,
+          ingredient_id,
+          newQuantity
+        );
+      } else {
+        // Return an indication that the quantity is zero or less
+        return {
+          pantry_id,
+          ingredient_id,
+          quantity: 0,
+          message: "Ingredient quantity is zero or less",
+        };
+      }
+    } catch (error) {
+      console.error("Error removing ingredient from pantry:", error);
+      throw error;
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
+    }
+  }
+
+  static async deleteIngredientFromPantry(pantry_id, ingredient_id) {
     let connection;
     try {
       connection = await sql.connect(dbConfig);
@@ -262,15 +362,15 @@ class Pantry {
       request.input("pantry_id", pantry_id);
       request.input("ingredient_id", ingredient_id);
 
-      const result = await request.query(sqlQuery);
+      await request.query(sqlQuery);
 
-      if (result.rowsAffected[0] === 0) {
-        throw new Error("Ingredient not found in pantry");
-      }
-
-      return { pantry_id, ingredient_id };
+      return {
+        pantry_id,
+        ingredient_id,
+        message: "Ingredient removed from pantry",
+      };
     } catch (error) {
-      console.error("Error removing ingredient from pantry:", error);
+      console.error("Error deleting ingredient from pantry:", error);
       throw error;
     } finally {
       if (connection) {
@@ -279,8 +379,6 @@ class Pantry {
     }
   }
 }
-
-module.exports = Pantry;
 
 function generate5CharacterGene() {
   let result = "";
@@ -293,3 +391,5 @@ function generate5CharacterGene() {
   }
   return result;
 }
+
+module.exports = Pantry;

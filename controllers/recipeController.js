@@ -1,5 +1,4 @@
 const recipeService = require('../services/recipeService');
-const pantryService = require('../services/pantryService');
 const { getRecipesByUserId, insertRecipe, updateRecipe, deleteRecipe } = require('../models/recipe');
 
 // Get recipes and store them in the database

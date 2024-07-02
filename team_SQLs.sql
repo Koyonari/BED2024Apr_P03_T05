@@ -6,15 +6,8 @@ CREATE TABLE Users (
 
 -- Sample Data for Users Table // This is just a sample data
 INSERT INTO Users (user_id, username) VALUES 
-('UID1', 'Bob'),
-('UID2', 'John');
-('UID3', 'Alice');
-
--- Actual user from Mongo DB
-INSERT INTO Users (user_id, username) VALUES 
 ('668105073662e3dda4c190e3', 'TestUser'),
 ('668104e73662e3dda4c190e0', 'TestVolunteer');
-
 
 
 -- Create Pantry Table
@@ -24,30 +17,23 @@ CREATE TABLE Pantry (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
--- Sample Data for Pantry Table
-INSERT INTO Pantry (pantry_id, user_id) VALUES 
-('zW234', 'UID1'),
-('abcd4', 'UID2');
-
 -- Sample data for Pantry with actual users
 INSERT INTO Pantry (pantry_id, user_id) VALUES 
-('PantryUser1', '668105073662e3dda4c190e3'),
-('PantryVolunteer1', '668104e73662e3dda4c190e0');
+('Xy21z', '668105073662e3dda4c190e3'),
+('oTx5s', '668104e73662e3dda4c190e0');
 
 -- Create Ingredients Table
 CREATE TABLE Ingredients (
     ingredient_id VARCHAR(255) PRIMARY KEY,
-    ingredient_name VARCHAR(255) NOT NULL
+    ingredient_image VARCHAR(255) NOT NULL,
+    ingredient_name VARCHAR(255) NOT NULL,
 );
 
 -- Sample Data for Ingredients Table
-INSERT INTO Ingredients (ingredient_id, ingredient_name) VALUES 
-('10115261', 'fish'),
-('11529', 'tomato'),
-('13926', 'beef tenderloin'),
-('23003', 't bone steak'),
-('7961', 'sliced chicken breast');
-
+INSERT INTO Ingredients (ingredient_id, ingredient_image, ingredient_name) VALUES 
+('10115261', 'fish-fillet.jpg', 'fish'),
+('23572', 'beef-cubes-raw.png', 'beef'),
+('5062', 'chicken-breasts.png', 'chicken breast');
 
 
 -- Create PantryIngredient Table
@@ -61,11 +47,12 @@ CREATE TABLE PantryIngredient (
 );
 
 INSERT INTO PantryIngredient (pantry_id, ingredient_id, quantity) VALUES 
-('zW234', '10115261', 2),
-('zW234', '11529', 3),
-('abcd4', '13926', 1),
-('abcd4', '23003', 4),
-('abcd4', '7961', 5);
+('Xy21z', '10115261', 2),
+('Xy21z', '23572', 3),
+('Xy21z', '5062', 2),
+('oTx5s', '10115261', 2),
+('oTx5s', '23572', 3),
+('oTx5s', '5062', 1);
 
 
 -- Create Recipes Table
@@ -86,3 +73,10 @@ CREATE TABLE RecipeIngredients (
     FOREIGN KEY (ingredient_id) REFERENCES Ingredients(ingredient_id),
     PRIMARY KEY (recipe_id, ingredient_id)
 );
+
+SELECT * FROM Users;
+SELECT * FROM Pantry;
+SELECT * FROM Ingredients;
+SELECT * FROM PantryIngredient;
+SELECT * FROM Recipes;
+SELECT * FROM RecipeIngredients;
