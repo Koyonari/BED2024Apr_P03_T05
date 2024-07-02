@@ -432,6 +432,7 @@ N/A Uses JWT Token to retrieve userid
 
 ### In-Depth Explaination of GetRecipe(s)
 This function is quite complex, utilising 4 requests at one go, which will be explained below
+This is a "quick-start" button that automatically adds all available recipes based on a user's pantry, ignoring filters.
 
 a) GET PantryIngredients
 - **Method:** GET
@@ -447,7 +448,7 @@ a) GET PantryIngredients
 N/A, JWT Token is utilised to obtain userid
 ```
 #### Example Response Body 
-```
+```json
 [
     {
         "ingredient_id": "10115261",
@@ -484,7 +485,7 @@ b) Fetch Recipes
 Input json object here 
 ```
 #### Example Response Body 
-```
+```json
 {
     "offset": 0,
     "number": 2,
@@ -519,7 +520,7 @@ c) Fetch Recipe Information
 Previous response body parsed directly into this
 ```
 #### Example Response Body
-```
+```json
 {
     "id": 716429,
     "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
@@ -538,9 +539,47 @@ d) Insert Recipes
 - **Request URL:** `N/A Nested Request`
 - **Description:** Insert Recipes into SQL Tables Recipes, RecipeIngredients and Ingredients 
 ```
-This nested request is a 4-stage request to insert values into tables Recipes and Ingredients, in a many-to-many relationship with RecipeIngredients accomodating this relationship
+This nested request is a 3-stage request to insert values into tables Recipes and Ingredients, in a many-to-many relationship with RecipeIngredients accomodating this relationship
 ```
-i) 
+i) InsertRecipeDetails 
+- **Description:** Inserts into Recipe Table
+```
+      INSERT INTO Recipes (id, title, imageurl, servings, readyInMinutes, pricePerServing)
+      VALUES (@id_insert, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing);
+```
+ii) InsertRecipeIngredients
+- **Description:** Inserts into Ingredients Table first, followed by RecipeIngredients Table, which is linking Recipe to Ingredients in a many-to-many relationship
+```
+   MERGE INTO Ingredients AS target
+      USING (VALUES (@id_insertOrUpdate, @name, @image)) AS source (ingredient_id, ingredient_name, ingredient_image)
+      ON target.ingredient_id = source.ingredient_id
+      WHEN MATCHED THEN
+        UPDATE SET target.ingredient_name = source.ingredient_name, target.ingredient_image = source.ingredient_image
+      WHEN NOT MATCHED THEN
+        INSERT (ingredient_id, ingredient_name, ingredient_image) VALUES (source.ingredient_id, source.ingredient_name, source.ingredient_image);
+```
+```
+        INSERT INTO RecipeIngredients (recipe_id, ingredient_id, amount, unit)
+        VALUES (@recipeId, @ingredientId, @amount, @unit);
+```
+iii) LinkUserToRecipe
+- **Description:** Inserts into UserRecipes, to link Recipe and Users in a many-to-many relationship
+```
+        INSERT INTO UserRecipes (user_id, recipe_id)
+        VALUES (@userId, @recipeId);
+```
+
+### 11. Get All Recipes based on User ID
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/byuser`
+- **Description:** Function to get all stored recipes based on user id
+- **Authorisation:** JWT Cookie
+
+#### Example Response Body 
+```
+N/A Uses JWT Token to retrieve userid
+```
 ------------------------------------------------
 ### Ng Kai Huat Jason
 ### 1. Retrieve User Pantry
