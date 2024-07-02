@@ -6,9 +6,9 @@ const apiKey = process.env.SPOONACULAR_API_KEY;
 // Fetch Recipes based on ingredients, working
 const fetchRecipes = async (ingredients) => {
     try {
-         // Log the ingredients being mapped
-         const mappedIngredients = ingredients.map(ingredient => ingredient.ingredient_name).join(',');
-         console.log('Mapped Ingredients:', mappedIngredients);
+        // Log the ingredients being mapped
+        const mappedIngredients = ingredients.map(ingredient => ingredient.ingredient_name).join(',');
+        console.log('Mapped Ingredients:', mappedIngredients);
         const response = await axios.get('https://api.spoonacular.com/recipes/complexSearch', {
             params: {
                 apiKey: apiKey,
@@ -25,6 +25,39 @@ const fetchRecipes = async (ingredients) => {
         throw error; // Re-throw the error to be handled upstream
     }
 };
+
+// Function to fetch filtered recipes
+const fetchFilteredRecipes = async (ingredients, excludedIngredients = [], intolerances = [], diet = '') => {
+    try {
+      if (!Array.isArray(ingredients)) {
+        throw new Error('Ingredients should be an array');
+      }
+  
+      const mappedIngredients = ingredients.map(ingredient => ingredient.ingredient_name).join(',');
+      console.log('Mapped Ingredients:', mappedIngredients);
+  
+      const excludeIngredients = Array.isArray(excludedIngredients) ? excludedIngredients.join(',') : '';
+      const intoleranceList = Array.isArray(intolerances) ? intolerances.join(',') : '';
+  
+      const response = await axios.get('https://api.spoonacular.com/recipes/complexSearch', {
+        params: {
+          apiKey: apiKey,
+          includeIngredients: mappedIngredients,
+          excludeIngredients: excludeIngredients,
+          intolerances: intoleranceList,
+          diet: diet,
+          number: 5
+        }
+      });
+  
+      const recipes = response.data.results;
+      console.log(`Fetched ${recipes.length} recipes successfully`);
+      return recipes;
+    } catch (error) {
+      console.error('Error fetching recipes:', error.message);
+      throw error;
+    }
+  };
 
 const fetchRecipeDetails = async (recipeId) => {
     try {
@@ -45,5 +78,6 @@ const fetchRecipeDetails = async (recipeId) => {
 
 module.exports = {
     fetchRecipes,
+    fetchFilteredRecipes,
     fetchRecipeDetails
 };

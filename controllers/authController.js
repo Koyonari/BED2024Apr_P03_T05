@@ -28,6 +28,13 @@ const handleLogin = async (req, res) => {
                 roles: roles
             }
         };
+        
+           // Add dietary info to access token if the role is 'User'
+           if (roles.includes(2001)) { // Assuming 2001 is the code for 'User'
+            accessTokenPayload.UserInfo.dietaryRestrictions = foundUser.dietaryRestrictions;
+            accessTokenPayload.UserInfo.intolerances = foundUser.intolerances;
+            accessTokenPayload.UserInfo.excludedIngredients = foundUser.excludedIngredients;
+        }
 
         const accessToken = jwt.sign(
             accessTokenPayload,
