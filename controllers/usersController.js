@@ -20,7 +20,6 @@ const getAllUsers = async (req, res) => {
     }
 };
 
-
 const createNewUser = async (req, res) => {
     console.log('Request Body:', req.body);
 
@@ -80,9 +79,68 @@ const createNewUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
+    console.log('Request Body:', req.body);
+
+    const { username, password, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles, firstname, lastname, dateOfBirth } = req.body;
+    const userId = req.params.id; // Assuming user ID is in the URL parameters
+
+    // Check required fields
+    if (!username || !password || !email || !contact) {
+        return res.status(400).json({ message: 'Username, password, email, and contact are required.' });
+    }
+
+    // Check if trying to create an admin user
+    if (roles && roles.Admin) {
+        return res.status(403).json({ message: 'Cannot assign Admin role through this operation' });
+    }
+
+    try {
+        // Hash password if provided
+        const hashedPwd = password ? await bcrypt.hash(password, 10) : undefined;
+
+        // Prepare updated user object
+        const updatedUser = {
+            username,
+            password: hashedPwd || undefined, // Only include password if it's being updated
+            roles: roles || { User: 2001 },
+            firstname,
+            lastname,
+            address,
+            email,
+            contact,
+            dateOfBirth: new Date(dateOfBirth),
+            dietaryRestrictions: dietaryRestrictions || [],
+            intolerances: intolerances || [],
+            excludedIngredients: excludedIngredients || []
+        };
+
+        // Validate user input using middleware or function (assuming validateUser is defined)
+        validateUser(req, res, async () => {
+            try {
+                // Check if user exists
+                const existingUser = await User.findById(userId);
+                if (!existingUser) {
+                    return res.status(404).json({ message: 'User not found' });
+                }
+                // Update the user
+                await User.findByIdAndUpdate(userId, updatedUser, { new: true });
+                res.status(200).json({ message: `User ${username} updated successfully` });
+            } catch (err) {
+                console.error('Error updating user:', err.message);
+                res.status(500).json({ message: 'Failed to update user', error: err.message });
+            }
+        });
+
+    } catch (err) {
+        console.error('Internal server error:', err.message);
+        res.status(500).json({ message: 'Internal server error', error: err.message });
+    }
+};
+
+const editUser = async (req, res) => {
     const { id } = req.params; // Retrieve user ID from URL parameters
     const updates = req.body; // Updates to be applied
-    
+
     if (!id) {
         // Validation to check if user id is provided
         return res.status(400).json({ 'message': 'User ID is required' });
@@ -166,7 +224,7 @@ const deleteUser = async (req, res) => {
 
         // Delete the user
         await user.deleteOne();
-        
+
         res.json({ message: `User with ID ${userId} deleted successfully` });
     } catch (error) {
         console.error("Error deleting user:", error);
@@ -218,6 +276,7 @@ module.exports = {
     getAllUsers,
     createNewUser,
     updateUser,
+    editUser,
     deleteUser,
     getUser,
     checkAuthorisation
