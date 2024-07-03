@@ -20,10 +20,15 @@ router.route('/')
 // DELETE /users/:id - Delete a specific user (only admins)
 router.route('/:id')
     .get(usersController.getUser)  // GET /users/:id - Retrieve user by ID
-    .patch(
+    .put(
         verifyJWT,                // Middleware to verify JWT token
         checkAuthorisation,       // Middleware to check authorization
         usersController.updateUser // PATCH /users/:id - Update user by ID
+    )
+    .patch(
+        verifyJWT,                // Middleware to verify JWT token
+        checkAuthorisation,       // Middleware to check authorization
+        usersController.editUser // PATCH /users/:id - Update user by ID
     )
     .delete(
         verifyJWT,                        // Middleware to verify JWT token
