@@ -32,9 +32,7 @@ CREATE TABLE Ingredients (
 -- Sample Data for Ingredients Table
 INSERT INTO Ingredients (ingredient_id, ingredient_image, ingredient_name) VALUES 
 ('10115261', 'fish-fillet.jpg', 'fish'),
-('23572', 'beef-cubes-raw.png', 'beef'),
 ('5062', 'chicken-breasts.png', 'chicken breast');
-
 
 -- Create PantryIngredient Table
 CREATE TABLE PantryIngredient (
@@ -47,12 +45,8 @@ CREATE TABLE PantryIngredient (
 );
 
 INSERT INTO PantryIngredient (pantry_id, ingredient_id, quantity) VALUES 
-('Xy21z', '10115261', 2),
-('Xy21z', '23572', 3),
-('Xy21z', '5062', 2),
-('oTx5s', '10115261', 2),
-('oTx5s', '23572', 3),
-('oTx5s', '5062', 1);
+('oTx5s', '5062', 4),
+('Xy21z', '10115261', 10);
 
 
 -- Create Recipes Table
@@ -67,11 +61,20 @@ CREATE TABLE Recipes (
 
 -- Create RecipeIngredients Table
 CREATE TABLE RecipeIngredients (
-    recipe_id VARCHAR(255) NOT NULL,
-    ingredient_id VARCHAR(255) NOT NULL,
-    FOREIGN KEY (recipe_id) REFERENCES Recipes(id),
-    FOREIGN KEY (ingredient_id) REFERENCES Ingredients(ingredient_id),
+    recipe_id INT NOT NULL,
+    ingredient_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    unit VARCHAR(50) NOT NULL,
     PRIMARY KEY (recipe_id, ingredient_id)
+);
+
+-- Create UserRecipes Table
+CREATE TABLE UserRecipes (    
+    user_id VARCHAR(255) NOT NULL,
+    recipe_id VARCHAR(255) NOT NULL,   
+    PRIMARY KEY (user_id, recipe_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),    
+    FOREIGN KEY (recipe_id) REFERENCES Recipes(id),
 );
 
 SELECT * FROM Users;
