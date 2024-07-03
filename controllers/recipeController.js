@@ -1,5 +1,6 @@
+const pantry = require('../models/pantry');
 const recipeService = require('../services/recipeService');
-const { getRecipesByUserId, insertRecipe, updateRecipe, deleteRecipe } = require('../models/recipe');
+const { getRecipesByUserId, insertRecipe, updateRecipeDetails, editRecipe, deleteRecipe } = require('../models/recipe');
 
 // Get recipes and store them in the database
 const getRecipes = async (req, res) => {
@@ -11,7 +12,7 @@ const getRecipes = async (req, res) => {
     console.log('User ID:', userId);
 
     // Get ingredients from pantry 
-    const ingredients = await pantryService.getIngredients(userId);
+    const ingredients = await pantry.getIngredients(userId);
     console.log('Fetched ingredients:', ingredients);
 
     // Parse into into SPoonacular API
@@ -33,7 +34,7 @@ const getRecipes = async (req, res) => {
 };
 
 // Controller function to get recipes by user ID
-const getAllRecipesByUserId = async (req, res) => {
+const getAllRecipesByUser = async (req, res) => {
   try {
     const userId = req.userid; // Assuming user ID is obtained from request
 
@@ -103,9 +104,9 @@ const getFilteredRecipesByUser = async (req, res) => {
 
 
 // Insert a recipe by user ID
-const insertRecipeByUserId = async (req, res) => {
+const insertRecipeByUser = async (req, res) => {
   try {
-    const userId = req.userid; // Assuming user ID is obtained from request
+    const userId = req.userid; // Obtain from JWT token
     const recipes = req.body;
 
     if (!userId || !Array.isArray(recipes) || recipes.length === 0) {
@@ -135,35 +136,118 @@ const insertRecipeByUserId = async (req, res) => {
 };
 
 // Update a recipe with provided parameters
-const patchRecipe = async (req, res) => {
+const updateRecipeByUser = async (req, res) => {
   try {
-    const recipeId = req.params.id;
-    const updates = req.body;
-
-    if (!recipeId || !updates) {
-      return res.status(400).json({ message: 'Recipe ID or update data not provided' });
+    const userId = req.userid; // Extracted from JWT token
+    const recipeId = req.params.id; // Extracted from URL parameters
+    const updates = req.body; // Updates sent in request body
+    // Log the request body for debugging purposes
+    console.log('Request body:', updates);
+    // Check for missing parameters
+    if (!userId || !recipeId || !updates) {
+      return res.status(400).json({ message: 'User ID, Recipe ID, and updates must be provided' });
     }
 
-    await updateRecipe(recipeId, updates);
-    res.json({ message: `Recipe with ID ${recipeId} updated successfully` });
+    // Ensure that the recipe belongs to the user
+    const userRecipes = await getRecipesByUserId(userId);
+
+    // Ensure userRecipes is an array before using find
+    if (!Array.isArray(userRecipes)) {
+      throw new Error('Error fetching recipes for user');
+    }
+
+    const recipe = userRecipes.find(r => r.id === recipeId);
+
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
+    }
+
+    // Update the recipe object with new values
+    const updatedRecipe = {
+      ...recipe,
+      ...updates // Override fields with updates
+    };
+
+    // Call service to update the recipe details
+    await updateRecipeDetails(updatedRecipe);
+    res.status(200).json({ message: 'Recipe updated successfully' });
   } catch (error) {
     console.error('Error updating recipe:', error.message);
     res.status(500).json({ message: 'Error updating recipe', error: error.message });
   }
 };
 
+// Update a recipe with provided parameters
+const patchRecipeByUser = async (req, res) => {
+  try {
+    const userId = req.userid; // Extracted from JWT token
+    const recipeId = req.params.id; // Extracted from URL parameters
+    const updates = req.body; // Updates sent in request body
+
+    // Log the request body for debugging purposes
+    console.log('Request body:', updates);
+
+    // Check for missing parameters
+    if (!userId || !recipeId || !updates) {
+      return res.status(400).json({ message: 'User ID, Recipe ID, and updates must be provided' });
+    }
+
+    // Ensure that the recipe belongs to the user
+    const userRecipes = await getRecipesByUserId(userId);
+
+    // Ensure userRecipes is an array before using find
+    if (!Array.isArray(userRecipes)) {
+      throw new Error('Error fetching recipes for user');
+    }
+
+    const recipe = userRecipes.find(r => r.id === recipeId);
+
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
+    }
+
+    // Call the service to perform a partial update
+    await editRecipe(recipeId, updates);
+
+    res.status(200).json({ message: 'Recipe updated successfully' });
+  } catch (error) {
+    console.error('Error updating recipe:', error.message);
+    res.status(500).json({ message: 'Error updating recipe', error: error.message });
+  }
+};
+
+
 // Delete a recipe by user ID and recipe ID
 const deleteRecipeByUserId = async (req, res) => {
   try {
-    const userId = req.userid;
-    const recipeId = req.params.id;
+    const userId = req.userid; // Extracted from JWT token
+    const recipeId = req.params.id; // Extracted from URL parameters
 
-    if (!userId || !recipeId) {
-      return res.status(400).json({ message: 'User ID or recipe ID not provided' });
+    // Log the request for debugging purposes
+    console.log('Request to delete recipe with ID:', recipeId);
+
+    if (!recipeId) {
+      return res.status(400).json({ message: 'Recipe ID must be provided' });
     }
 
+    // Ensure that the recipe belongs to the user
+    const userRecipes = await getRecipesByUserId(userId);
+
+    // Ensure userRecipes is an array before using find
+    if (!Array.isArray(userRecipes)) {
+      throw new Error('Error fetching recipes for user');
+    }
+
+    const recipe = userRecipes.find(r => r.id === recipeId);
+
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
+    }
+
+    // Call the deleteRecipe function
     await deleteRecipe(recipeId);
-    res.json({ message: `Recipe with ID ${recipeId} deleted successfully` });
+
+    res.status(200).json({ message: 'Recipe and associated ingredients deleted successfully' });
   } catch (error) {
     console.error('Error deleting recipe:', error.message);
     res.status(500).json({ message: 'Error deleting recipe', error: error.message });
@@ -172,9 +256,10 @@ const deleteRecipeByUserId = async (req, res) => {
 
 module.exports = {
   getRecipes,
-  getAllRecipesByUserId,
+  getAllRecipesByUser,
   getFilteredRecipesByUser,
-  insertRecipeByUserId,
-  patchRecipe,
+  insertRecipeByUser,
+  updateRecipeByUser,
+  patchRecipeByUser,
   deleteRecipeByUserId,
 };
