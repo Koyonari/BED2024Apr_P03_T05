@@ -418,6 +418,168 @@ user_id is in paramaeters as req.param.id
 ```
 - Status 400 Bad Request
 
+### 10. Get Recipes based on Pantry
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/fetch`
+- **Description:** Function to get all available recipes (maximum of 5 per call) based on available pantry
+- **Authorisation:** JWT Cookie
+
+#### Example Response Body 
+```
+N/A Uses JWT Token to retrieve userid
+```
+
+### In-Depth Explaination of GetRecipe(s)
+This function is quite complex, utilising 4 requests at one go, which will be explained below
+This is a "quick-start" button that automatically adds all available recipes based on a user's pantry, ignoring filters.
+
+a) GET PantryIngredients
+- **Method:** GET
+- **Request URL:** `N/A Nested Request`
+- **Description:** Function to get all available ingredients in a user's pantry, based on user ID
+- **Authorisation:** JWT Cookie
+  ```
+  This nested request is to getIngredients from the Pantry based on a userID, which is parsed in through the JWT using middleware verifyJWT.
+  This request returns an array of ingredients, mapped with ingredientid and ingredient_name as keys
+  ```
+#### Example Request Body
+```
+N/A, JWT Token is utilised to obtain userid
+```
+#### Example Response Body 
+```json
+[
+    {
+        "ingredient_id": "10115261",
+        "ingredient_name": "fish"
+    },
+    {
+        "ingredient_id": "11529",
+        "ingredient_name": "tomato"
+    },
+    {
+        "ingredient_id": "13926",
+        "ingredient_name": "beef tenderloin"
+    },
+    {
+        "ingredient_id": "23003",
+        "ingredient_name": "t bone steak"
+    },
+    {
+        "ingredient_id": "7961",
+        "ingredient_name": "sliced chicken breast"
+    }
+]
+```
+
+b) Fetch Recipes
+- **Method:** N/A
+- **Request URL:** `N/A Nested Request`
+- **Description:** API Request to obtain recipes from spoonacular API
+  ```
+  This nested request is obtain recipes from spoonacular API. Response body utilises the ingredient_name parameter in previous "GET Pantry Ingredients". Return body is an array of recipes from the API
+  ```
+#### Example Request Body
+```
+Input json object here 
+```
+#### Example Response Body 
+```json
+{
+    "offset": 0,
+    "number": 2,
+    "results": [
+        {
+            "id": 716429,
+            "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+            "image": "https://img.spoonacular.com/recipes/716429-312x231.jpg",
+            "imageType": "jpg",
+        },
+        {
+            "id": 715538,
+            "title": "What to make for dinner tonight?? Bruschetta Style Pork & Pasta",
+            "image": "https://img.spoonacular.com/recipes/715538-312x231.jpg",
+            "imageType": "jpg",
+        }
+    ],
+    "totalResults": 86
+}
+```
+- NOTE: This json object is a snippet of the full documentation, please refer to [Spoonacular API](https://spoonacular.com/food-api/docs#Search-Recipes-Complex) for more information
+
+c) Fetch Recipe Information
+- **Method:** N/A
+- **Request URL:** `N/A Nested Request`
+- **Description:** API Request to obtain recipe information from spoonacular API
+  ```
+  This nested request is to recieve recipe information for each recipe listed within the array provided in the previous "Fetch Recipes". This will retrieve information such as recipe id, title, imaageurl, servings, readyInMinutes and it's associated ingredients required for each recipe.
+  ```
+#### Example Request Body 
+```
+Previous response body parsed directly into this
+```
+#### Example Response Body
+```json
+{
+    "id": 716429,
+    "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+    "image": "https://img.spoonacular.com/recipes/716429-556x370.jpg",
+    "imageType": "jpg",
+    "servings": 2,
+    "readyInMinutes": 45,
+    "pricePerServing": 163.15,
+    "extendedIngredients": [
+        {
+```
+- NOTE: This json object is a snippet of the full documentation, please refer to [Spoonacular API](https://spoonacular.com/food-api/docs#Get-Recipe-Information) for more information
+
+d) Insert Recipes
+- **Method:** N/A
+- **Request URL:** `N/A Nested Request`
+- **Description:** Insert Recipes into SQL Tables Recipes, RecipeIngredients and Ingredients 
+```
+This nested request is a 3-stage request to insert values into tables Recipes and Ingredients, in a many-to-many relationship with RecipeIngredients accomodating this relationship
+```
+i) InsertRecipeDetails 
+- **Description:** Inserts into Recipe Table
+```
+      INSERT INTO Recipes (id, title, imageurl, servings, readyInMinutes, pricePerServing)
+      VALUES (@id_insert, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing);
+```
+ii) InsertRecipeIngredients
+- **Description:** Inserts into Ingredients Table first, followed by RecipeIngredients Table, which is linking Recipe to Ingredients in a many-to-many relationship
+```
+   MERGE INTO Ingredients AS target
+      USING (VALUES (@id_insertOrUpdate, @name, @image)) AS source (ingredient_id, ingredient_name, ingredient_image)
+      ON target.ingredient_id = source.ingredient_id
+      WHEN MATCHED THEN
+        UPDATE SET target.ingredient_name = source.ingredient_name, target.ingredient_image = source.ingredient_image
+      WHEN NOT MATCHED THEN
+        INSERT (ingredient_id, ingredient_name, ingredient_image) VALUES (source.ingredient_id, source.ingredient_name, source.ingredient_image);
+```
+```
+        INSERT INTO RecipeIngredients (recipe_id, ingredient_id, amount, unit)
+        VALUES (@recipeId, @ingredientId, @amount, @unit);
+```
+iii) LinkUserToRecipe
+- **Description:** Inserts into UserRecipes, to link Recipe and Users in a many-to-many relationship
+```
+        INSERT INTO UserRecipes (user_id, recipe_id)
+        VALUES (@userId, @recipeId);
+```
+
+### 11. Get All Recipes based on User ID
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/byuser`
+- **Description:** Function to get all stored recipes based on user id
+- **Authorisation:** JWT Cookie
+
+#### Example Response Body 
+```
+N/A Uses JWT Token to retrieve userid
+```
 ------------------------------------------------
 ### Ng Kai Huat Jason
 ### 1. Retrieve User Pantry
