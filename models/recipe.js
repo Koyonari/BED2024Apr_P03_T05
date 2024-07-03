@@ -116,14 +116,58 @@ const insertRecipeDetails = async (pool, recipe) => {
 // Update existing recipe details
 const updateRecipeDetails = async (pool, recipe) => {
   try {
+    console.log('Received recipe for update:', recipe); // Log received recipe
     // Debugging: Check if recipe and its properties are defined
     if (!recipe || !recipe.id || !recipe.title) {
       throw new Error('Recipe object, id, or title is undefined');
     }
 
-    const updateQuery = `
+      const updateQuery = `
       UPDATE Recipes
-      SET title = @title, imageurl = @imageurl, servings = @servings, readyInMinutes = @readyInMinutes, pricePerServing = @pricePerServing
+      SET 
+        title = @title, 
+        imageurl = @imageurl, 
+        servings = @servings, 
+        readyInMinutes = @readyInMinutes, 
+        pricePerServing = @pricePerServing
+      WHERE id = @id_update;
+    `;
+    
+    await pool.request()
+      .input('id_update', sql.VarChar(255), recipe.id.toString()) // Make sure recipe.id is defined
+      .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
+      .input('imageurl', sql.NVarChar, recipe.image || '') // Default to empty if recipe.image is not provided
+      .input('servings', sql.Int, recipe.servings)
+      .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
+      .input('pricePerServing', sql.Float, recipe.pricePerServing)
+      .query(updateQuery);
+
+    console.log(`Recipe details updated for recipe with id ${recipe.id}.`);
+  } catch (error) {
+    console.error('Error updating recipe details:', error.message);
+    throw error;
+  }
+};
+
+// Update existing recipe details, no pool parameter
+const updateRecipeDetailsbyUser = async (recipe) => {
+    // Connect to database
+    const pool = await sql.connect(dbConfig);
+  try {
+    console.log('Received recipe for update:', recipe); // Log received recipe
+    // Debugging: Check if recipe and its properties are defined
+    if (!recipe || !recipe.id || !recipe.title) {
+      throw new Error('Recipe object, id, or title is undefined');
+    }
+
+      const updateQuery = `
+      UPDATE Recipes
+      SET 
+        title = @title, 
+        imageurl = @imageurl, 
+        servings = @servings, 
+        readyInMinutes = @readyInMinutes, 
+        pricePerServing = @pricePerServing
       WHERE id = @id_update;
     `;
     
@@ -352,6 +396,7 @@ module.exports = {
   getRecipesByUserId,
   insertRecipe,
   updateRecipeDetails,
+  updateRecipeDetailsbyUser,
   editRecipe,
   deleteRecipe,
 };
