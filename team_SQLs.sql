@@ -74,6 +74,14 @@ CREATE TABLE RecipeIngredients (
     PRIMARY KEY (recipe_id, ingredient_id)
 );
 
+CREATE TABLE UserRecipes (    
+    user_id VARCHAR(255) NOT NULL,
+    recipe_id VARCHAR(255) NOT NULL,   
+    PRIMARY KEY (user_id, recipe_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),    
+    FOREIGN KEY (recipe_id) REFERENCES Recipes(id),
+);
+
 SELECT * FROM Users;
 SELECT * FROM Pantry;
 SELECT * FROM Ingredients;
