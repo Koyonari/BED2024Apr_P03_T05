@@ -1,9 +1,22 @@
 const sql = require('mssql');
 const { dbConfig } = require('../config/dbConfig');
 
+// Class for Recipe
+class Recipe {
+  constructor(id, title, imageurl, servings, readyInMinutes, pricePerServing, userId) {
+    this.id = id;
+    this.title = title;
+    this.imageurl = imageurl;
+    this.servings = servings;
+    this.readyInMinutes = readyInMinutes;
+    this.pricePerServing = pricePerServing;
+    this.userId = userId;
+  }
+}
 // Function to get all recipes by user ID
 const getRecipesByUserId = async (userId) => {
   try {
+    // Connect to database
     const pool = await sql.connect(dbConfig);
 
     // SQL query to get recipes by user ID
@@ -29,6 +42,7 @@ const getRecipesByUserId = async (userId) => {
 
 // Insert a new recipe and link it to the user
 const insertRecipe = async (recipe, userId) => {
+  // Connect to database
   const pool = await sql.connect(dbConfig);
   const transaction = new sql.Transaction(pool);
 
@@ -89,17 +103,30 @@ const insertRecipeDetails = async (pool, recipe) => {
 };
 
 // Update existing recipe details
-const updateRecipeDetails = async (pool, recipe) => {
+const updateRecipeDetails = async (recipe) => {
   try {
+    // Connect to database
+    const pool = await sql.connect(dbConfig);
+
+    // Validate update fields
+    validateUpdateFields(recipe);
+
     const updateQuery = `
-      UPDATE Recipes
-      SET title = @title, imageurl = @imageurl, servings = @servings, readyInMinutes = @readyInMinutes, pricePerServing = @pricePerServing
-      WHERE id = @id_update;
-    `;
+    UPDATE Recipes
+    SET 
+      title = @title, 
+      imageurl = @imageurl, 
+      servings = @servings, 
+      readyInMinutes = @readyInMinutes, 
+      pricePerServing = @pricePerServing
+    WHERE id = @id;
+  `;
+
+    // Update Query for SQL
     await pool.request()
-      .input('id_update', sql.VarChar(255), recipe.id.toString())
+      .input('id', sql.VarChar(255), recipe.id.toString()) // Make sure this parameter is defined
       .input('title', sql.NVarChar, recipe.title)
-      .input('imageurl', sql.NVarChar, recipe.image) // Assuming recipe.image is the URL
+      .input('imageurl', sql.NVarChar, recipe.imageurl || '') // Ensure this is not NULL
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
@@ -109,6 +136,35 @@ const updateRecipeDetails = async (pool, recipe) => {
   } catch (error) {
     console.error('Error updating recipe details:', error.message);
     throw error;
+  }
+};
+
+// Validating Recipe Format
+const validateUpdateFields = (updates) => {
+  // Check if updates is an object and not an array
+  if (typeof updates !== 'object' || Array.isArray(updates)) {
+    throw new Error('Updates must be an object');
+  }
+
+  // Validate required fields
+  if (typeof updates.title !== 'string') {
+    throw new Error('Title must be a string');
+  }
+
+  if (typeof updates.imageurl !== 'string') {
+    throw new Error('Image URL must be a string');
+  }
+
+  if (!Number.isInteger(updates.servings)) {
+    throw new Error('Servings must be an integer');
+  }
+
+  if (!Number.isInteger(updates.readyInMinutes)) {
+    throw new Error('Ready in minutes must be an integer');
+  }
+
+  if (typeof updates.pricePerServing !== 'number') {
+    throw new Error('Price per serving must be a number');
   }
 };
 
@@ -222,11 +278,18 @@ const linkUserToRecipe = async (transaction, userId, recipeId) => {
 
 
 //Update a recipe with provided parameters //Patch Functionaility
-const updateRecipe = async (recipeId, updates) => {
+const editRecipe = async (recipeId, updates) => {
   const pool = await sql.connect(dbConfig);
 
   try {
-    const fields = Object.keys(updates).map(field => `${field} = @${field}`).join(', ');
+    // Build the SET clause dynamically
+    const fields = Object.keys(updates)
+      .map(field => `${field} = @${field}`)
+      .join(', ');
+
+    if (fields.length === 0) {
+      throw new Error('No fields to update');
+    }
 
     const query = `
       UPDATE Recipes
@@ -234,16 +297,34 @@ const updateRecipe = async (recipeId, updates) => {
       WHERE id = @recipeId;
     `;
 
+    // Prepare the SQL request
     const request = pool.request().input('recipeId', sql.VarChar(255), recipeId);
+
+    // Dynamically add parameters to the request based on the updates object
     Object.entries(updates).forEach(([key, value]) => {
-      request.input(key, sql.NVarChar, value);
+      // Determine the SQL data type based on the value
+      let type;
+      if (typeof value === 'string') {
+        type = sql.NVarChar;
+      } else if (typeof value === 'number') {
+        type = sql.Float;
+      } else if (Number.isInteger(value)) {
+        type = sql.Int;
+      } else {
+        throw new Error(`Unsupported data type for field ${key}`);
+      }
+      request.input(key, type, value);
     });
 
+    // Execute the query
     await request.query(query);
+
+    console.log(`Recipe updated successfully for recipeId ${recipeId}.`);
   } catch (error) {
     console.error('Error updating recipe:', error.message);
     throw error;
   } finally {
+    // Ensure the pool connection is closed
     pool.close();
   }
 };
@@ -292,8 +373,10 @@ const deleteRecipe = async (recipeId) => {
 };
 
 module.exports = {
+  Recipe,
   getRecipesByUserId,
   insertRecipe,
-  updateRecipe,
+  updateRecipeDetails,
+  editRecipe,
   deleteRecipe,
 };
