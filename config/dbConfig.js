@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
 const dbConfig = {
-    user: "BackEnd123", // Replace with your SQL Server login username
+    user: "booksapi_user", // Replace with your SQL Server login username
     password: "123", // Replace with your SQL Server login password
     server: "localhost",
-    database: "backendtest",
+    database: "NutriAID",
     trustServerCertificate: true,
     options: {
       port: 1433, // Default SQL Server port
-      connectionTimeout: 15000 // Connection timeout in milliseconds
+      connectionTimeout: 60000, // Connection timeout in milliseconds
     },
 };
 
