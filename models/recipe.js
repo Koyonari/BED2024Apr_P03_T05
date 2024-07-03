@@ -67,7 +67,19 @@ const insertRecipe = async (recipe, userId) => {
 // Inserting recipe details, part of insertRecipe
 const insertRecipeDetails = async (pool, recipe) => {
   try {
-    const idString = recipe.id.toString();
+
+    // Validate recipe fields
+    if (!recipe || !recipe.id || !recipe.title) {
+      throw new Error('Recipe object, id, or title is undefined');
+    }
+
+    const idString = recipe.id.toString(); // Check this line
+    console.log('Recipe ID:', idString);
+
+    // Ensure title is a string
+    if (typeof recipe.title !== 'string') {
+      throw new Error(`Recipe title must be a string, but received ${typeof recipe.title}`);
+    }
 
     // Check if the recipe with the same id already exists
     const existingRecipe = await pool.request()
@@ -75,10 +87,9 @@ const insertRecipeDetails = async (pool, recipe) => {
       .query('SELECT * FROM Recipes WHERE id = @id_check');
 
     if (existingRecipe.recordset.length > 0) {
-      // Recipe already exists, update it
       console.log(`Recipe with id ${recipe.id} already exists. Updating.`);
-      await updateRecipeDetails(pool, recipe); // Implement update logic
-      return; // Exit the function after updating
+      await updateRecipeDetails(pool, recipe);
+      return;
     }
 
     // If recipe doesn't exist, insert it
@@ -89,7 +100,7 @@ const insertRecipeDetails = async (pool, recipe) => {
     await pool.request()
       .input('id_insert', sql.VarChar(255), idString)
       .input('title', sql.NVarChar, recipe.title)
-      .input('imageurl', sql.NVarChar, recipe.image) // Assuming recipe.image is the URL
+      .input('imageurl', sql.NVarChar, recipe.image || '')
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
@@ -103,30 +114,23 @@ const insertRecipeDetails = async (pool, recipe) => {
 };
 
 // Update existing recipe details
-const updateRecipeDetails = async (recipe) => {
+const updateRecipeDetails = async (pool, recipe) => {
   try {
-    // Connect to database
-    const pool = await sql.connect(dbConfig);
-
-    // Validate update fields
-    validateUpdateFields(recipe);
+    // Debugging: Check if recipe and its properties are defined
+    if (!recipe || !recipe.id || !recipe.title) {
+      throw new Error('Recipe object, id, or title is undefined');
+    }
 
     const updateQuery = `
-    UPDATE Recipes
-    SET 
-      title = @title, 
-      imageurl = @imageurl, 
-      servings = @servings, 
-      readyInMinutes = @readyInMinutes, 
-      pricePerServing = @pricePerServing
-    WHERE id = @id;
-  `;
-
-    // Update Query for SQL
+      UPDATE Recipes
+      SET title = @title, imageurl = @imageurl, servings = @servings, readyInMinutes = @readyInMinutes, pricePerServing = @pricePerServing
+      WHERE id = @id_update;
+    `;
+    
     await pool.request()
-      .input('id', sql.VarChar(255), recipe.id.toString()) // Make sure this parameter is defined
-      .input('title', sql.NVarChar, recipe.title)
-      .input('imageurl', sql.NVarChar, recipe.imageurl || '') // Ensure this is not NULL
+      .input('id_update', sql.VarChar(255), recipe.id.toString()) // Make sure recipe.id is defined
+      .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
+      .input('imageurl', sql.NVarChar, recipe.image || '') // Default to empty if recipe.image is not provided
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
@@ -136,35 +140,6 @@ const updateRecipeDetails = async (recipe) => {
   } catch (error) {
     console.error('Error updating recipe details:', error.message);
     throw error;
-  }
-};
-
-// Validating Recipe Format
-const validateUpdateFields = (updates) => {
-  // Check if updates is an object and not an array
-  if (typeof updates !== 'object' || Array.isArray(updates)) {
-    throw new Error('Updates must be an object');
-  }
-
-  // Validate required fields
-  if (typeof updates.title !== 'string') {
-    throw new Error('Title must be a string');
-  }
-
-  if (typeof updates.imageurl !== 'string') {
-    throw new Error('Image URL must be a string');
-  }
-
-  if (!Number.isInteger(updates.servings)) {
-    throw new Error('Servings must be an integer');
-  }
-
-  if (!Number.isInteger(updates.readyInMinutes)) {
-    throw new Error('Ready in minutes must be an integer');
-  }
-
-  if (typeof updates.pricePerServing !== 'number') {
-    throw new Error('Price per serving must be a number');
   }
 };
 
