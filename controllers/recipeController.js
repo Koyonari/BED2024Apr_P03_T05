@@ -1,6 +1,6 @@
 const pantry = require('../models/pantry');
 const recipeService = require('../services/recipeService');
-const { getRecipesByUserId, insertRecipe, updateRecipeDetails, editRecipe, deleteRecipe } = require('../models/recipe');
+const { getRecipesByUserId, insertRecipe, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe } = require('../models/recipe');
 
 // Get recipes and store them in the database
 const getRecipes = async (req, res) => {
@@ -135,14 +135,19 @@ const insertRecipeByUser = async (req, res) => {
   }
 };
 
+
 // Update a recipe with provided parameters
 const updateRecipeByUser = async (req, res) => {
   try {
     const userId = req.userid; // Extracted from JWT token
     const recipeId = req.params.id; // Extracted from URL parameters
     const updates = req.body; // Updates sent in request body
+
     // Log the request body for debugging purposes
-    console.log('Request body:', updates);
+    console.log('User ID:', userId);
+    console.log('Recipe ID:', recipeId);
+    console.log('Request body (updates):', updates);
+
     // Check for missing parameters
     if (!userId || !recipeId || !updates) {
       return res.status(400).json({ message: 'User ID, Recipe ID, and updates must be provided' });
@@ -162,14 +167,20 @@ const updateRecipeByUser = async (req, res) => {
       return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
     }
 
+    // Log the found recipe
+    console.log('Found recipe:', recipe);
+
     // Update the recipe object with new values
     const updatedRecipe = {
       ...recipe,
       ...updates // Override fields with updates
     };
 
+    // Log the updated recipe
+    console.log('Updated recipe:', updatedRecipe);
+
     // Call service to update the recipe details
-    await updateRecipeDetails(updatedRecipe);
+    await updateRecipeDetailsbyUser(updatedRecipe);
     res.status(200).json({ message: 'Recipe updated successfully' });
   } catch (error) {
     console.error('Error updating recipe:', error.message);
