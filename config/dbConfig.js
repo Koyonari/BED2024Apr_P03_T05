@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
+require('dotenv').config(); // Load environment variables from .env file
 
 const dbConfig = {
-    user: "BackEnd123", // Replace with your SQL Server login username
-    password: "123", // Replace with your SQL Server login password
-    server: "localhost",
-    database: "backendtest",
+    // Sensitive database information taken from .env file
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    server: process.env.DB_SERVER,
+    database: process.env.DB_DATABASE,
     trustServerCertificate: true,
     options: {
       port: 1433, // Default SQL Server port
