@@ -664,7 +664,7 @@ iii) LinkUserToRecipe
 ```
 - Status 404 Not Found
 
-### 13. Get All Recipes based on User ID
+### 13. Get All Recipes based on User ID from Database
 
 - **Method:** GET
 - **Request URL:** `http://localhost:3500/recipes/byuser`
@@ -711,6 +711,23 @@ N/A, JWT Token is utilised to obtain user id
 - **Description:** Function to get insert a recipe into database, request body will be an array of recipes
 - **Authorisation:** JWT Cookie
 
+#### SQL Code to insert into database
+```
+      INSERT INTO Recipes (id, title, imageurl, servings, readyInMinutes, pricePerServing)
+          VALUES (@id, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing);
+```
+- Inserts recipe object into recipe table, utilising json request body
+```
+	INSERT INTO Ingredients (ingredient_id, ingredient_name)
+		VALUES (@id, @name);
+```
+- Inserts ingredients object into ingredients table, it is retrieved from array of ingredients, after calling recipe details
+```
+         INSERT INTO RecipeIngredients (recipeid, ingredientid)
+              VALUES (@recipeid, @ingredientid);
+```
+- Insert recipe ingredients into recipe ingredients table, mapping from recipe to ingredients in a many to many relationship
+
 #### Example Request Body 
 ```json
 [
@@ -723,6 +740,56 @@ N/A, JWT Token is utilised to obtain user id
         "pricePerServing": 500
     }
 ]
+```
+
+### 15. Update Recipe Details by Recipe ID
+
+- **Method:** PUT
+- **Request URL:** `http://localhost:3500/recipes/updaterecipedetails/{id}`
+- **Description:** Function to put a new recipe, replacing the old information in the previous recipe object
+- **Authorisation:** JWT Cookie
+
+#### Example Request Body
+```json
+
+    {
+        "id": "639851",
+        "title": "changed",
+        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "servings": 4,
+        "readyInMinutes": 6,
+        "pricePerServing": 626.14
+    }
+```
+- JSON Request body has all parameters required for recipe object
+
+
+### 16. Update Recipe Details by Recipe ID
+
+- **Method:** PATCH
+- **Request URL:** `http://localhost:3500/recipes/editrecipedetails/{id}`
+- **Description:** Function to patch a recipe, finding by recipe id
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```json
+   {
+        "servings": 2,
+        "pricePerServing": 500
+    }
+```
+- Only parameters intended to be patched will be put into the request body
+
+### 17. Update Recipe Details by Recipe ID
+
+- **Method:** DELETE
+- **Request URL:** `http://localhost:3500/recipes/deleterecipe/{id}`
+- **Description:** Function to delete a recipe, based on ID
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```
+N/A, recipe id is from req.params.id
 ```
 
 ------------------------------------------------
