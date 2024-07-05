@@ -976,3 +976,4 @@ N/A, recipe id is from req.params.id
 [User Password Authentication | Node.js & Express Tutorials for Beginners] https://www.youtube.com/watch?v=Nlg0JrUt0qg&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=5&ab_channel=DaveGray
 [JWT Authentication | Node JS and Express tutorials for Beginners] https://www.youtube.com/watch?v=favjC6EKFgw&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=6&ab_channel=DaveGray
 [How to Authorize User Roles and Permissions | Node.js & Express Authorization Tutorial] https://www.youtube.com/watch?v=fUWkVxCv4IQ&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=7&ab_channel=DaveGray
+[Refresh Token Rotation and Reuse Detection in Node.js JWT Authentication] https://www.youtube.com/watch?v=s-4k5TcGKHg&list=PL0Zuz27SZ-6PFkIxaJ6Xx_X46avTM1aYw&index=17&ab_channel=DaveGray
