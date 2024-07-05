@@ -966,5 +966,8 @@ N/A, recipe id is from req.params.id
 ### External Sources Utilised:
 - [Spooncular API](https://spoonacular.com/food-api)
 - [MongoDB](https://www.mongodb.com/)
-
+### References:
+[Node.js and Express.js Tutorial] https://www.youtube.com/watch?v=Oe421EPjeBE&t=27893s&ab_channel=freeCodeCamp.org
+[Node.js/Express - Build 4 Projects] https://www.youtube.com/watch?v=qwfE7fSVaZM&t=34734s&ab_channel=freeCodeCamp.org
+[Node.js Full Course for Beginners] https://www.youtube.com/watch?v=f2EqECiTBL8&t=7333s&ab_channel=DaveGray
 
