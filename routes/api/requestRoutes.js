@@ -1,9 +1,9 @@
 const express = require('express');
-const reqController = require("./controllers/requestController");
+const reqController = require("../../controllers/requestController");
 const sql = require("mssql");
-const dbConfig = require("./dbConfig");
+const dbConfig = require("../../dbConfig");
 const bodyParser = require("body-parser");
-const { validateRequest, validatePatchAcceptedRequest, validatePatchApproveRequest } = require("./middleware/validateRequest");
+const { validateRequest, validatePatchAcceptedRequest, validatePatchApproveRequest } = require("../../middleware/validateRequest");
 
 const app = express();
 const port = 5000;
