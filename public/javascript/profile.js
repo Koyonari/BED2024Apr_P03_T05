@@ -4,7 +4,7 @@ var excludedIngredients = null;
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  const role = "Volunteer"; // This should be fetched from the database
+  const role = "User"; // This should be fetched from the database
 
   const profileData = {
     username: "john_doe",

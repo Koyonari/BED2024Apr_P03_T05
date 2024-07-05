@@ -1,4 +1,5 @@
 # BED2024Apr_P03_T05
+BED 2024 Assignment
 
 # NutriAid
 
@@ -347,9 +348,54 @@ JWT Cookie is also required
 
 ### 8. Update user by ID 
 
+- **Method:** PUT
+- **Request URL:** `http://localhost:3500/users/{id}`
+- **Description:** Update information based on user_id as paramaters, authenthicated as either user themselves or admin, full User object has to be input
+- **Authorisation:** JWT Cookie, verified either by Role Authenthication to be an Admin, or the User/Volunteer themselves
+
+#### Example Request Body for updateUser:
+```json
+{
+  "username": "TestUser",
+  "password": "User123!",
+  "firstname": "PUT user",
+  "lastname": "User",
+  "roles": {
+    "User": 2001
+  },
+  "address": "123 Main St",
+  "email": "john.doe@example.com",
+  "contact": "12345678",
+  "dateOfBirth": "2024-06-06",
+  "dietaryRestrictions": ["Pescetarian", "Paleo"],
+  "intolerances": ["Sesame", "Shellfish"],
+  "excludedIngredients": ["fish", "chicken", "beef"]
+}
+```
+- Authenthication done by verifyJWT.js and checkAuthorisation.js
+
+#### Example Successful Response Body for updateUser:
+```json
+{
+    "message": "User TestUser updated successfully"
+}
+```
+
+#### Example of Errorneous Response Body for updateUser:
+
+##### User is attempting to update another user
+```json
+{
+    "message": "Unauthorized to update this user"
+}
+```
+- Status 403 Forbidden
+
+### 9. Edit user by ID 
+
 - **Method:** PATCH
 - **Request URL:** `http://localhost:3500/users/{id}`
-- **Description:** Update information based on user_id as paramaters, authenthicated as either user themselves or admin.
+- **Description:** Edit information based on user_id as paramaters, authenthicated as either user themselves or admin, only edited fields have to be input
 - **Authorisation:** JWT Cookie, verified either by Role Authenthication to be an Admin, or the User/Volunteer themselves
 
 #### Example Request Body for updateUser:
@@ -379,7 +425,9 @@ JWT Cookie is also required
     "message": "Unauthorized to update this user"
 }
 ```
-### 9. Delete User by ID
+- Status 403 Forbidden
+
+### 10. Delete User by ID
 
 - **Method:** DELETE
 - **Request URL:** `http://localhost:3500/users/{id}`
@@ -416,6 +464,333 @@ user_id is in paramaeters as req.param.id
 }
 ```
 - Status 400 Bad Request
+
+### 11. Get Recipes based on Pantry
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/fetch`
+- **Description:** Function to get all available recipes (maximum of 5 per call) based on available pantry
+- **Authorisation:** JWT Cookie
+
+#### Example Response Body 
+```
+N/A Uses JWT Token to retrieve userid
+```
+
+### In-Depth Explaination of GetRecipe(s)
+This function is quite complex, utilising 4 requests at one go, which will be explained below
+This is a "quick-start" button that automatically adds all available recipes based on a user's pantry, ignoring filters.
+- Example Error body will be omitted due to nested error handling.
+
+a) GET PantryIngredients
+- **Method:** GET
+- **Request URL:** `N/A Nested Request`
+- **Description:** Function to get all available ingredients in a user's pantry, based on user ID
+- **Authorisation:** JWT Cookie
+  ```
+  This nested request is to getIngredients from the Pantry based on a userID, which is parsed in through the JWT using middleware verifyJWT.
+  This request returns an array of ingredients, mapped with ingredientid and ingredient_name as keys
+  ```
+#### Example Request Body
+```
+N/A, JWT Token is utilised to obtain userid
+```
+#### Example Response Body 
+```json
+[
+    {
+        "ingredient_id": "10115261",
+        "ingredient_name": "fish"
+    },
+    {
+        "ingredient_id": "11529",
+        "ingredient_name": "tomato"
+    },
+    {
+        "ingredient_id": "13926",
+        "ingredient_name": "beef tenderloin"
+    },
+    {
+        "ingredient_id": "23003",
+        "ingredient_name": "t bone steak"
+    },
+    {
+        "ingredient_id": "7961",
+        "ingredient_name": "sliced chicken breast"
+    }
+]
+```
+
+b) Fetch Recipes
+- **Method:** N/A
+- **Request URL:** `N/A Nested Request`
+- **Description:** API Request to obtain recipes from spoonacular API
+  ```
+  This nested request is obtain recipes from spoonacular API. Response body utilises the ingredient_name parameter in previous "GET Pantry Ingredients". Return body is an array of recipes from the API
+  ```
+#### Example Request Body
+```
+Input json object here 
+```
+#### Example Response Body 
+```json
+{
+    "offset": 0,
+    "number": 2,
+    "results": [
+        {
+            "id": 716429,
+            "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+            "image": "https://img.spoonacular.com/recipes/716429-312x231.jpg",
+            "imageType": "jpg",
+        },
+        {
+            "id": 715538,
+            "title": "What to make for dinner tonight?? Bruschetta Style Pork & Pasta",
+            "image": "https://img.spoonacular.com/recipes/715538-312x231.jpg",
+            "imageType": "jpg",
+        }
+    ],
+    "totalResults": 86
+}
+```
+- NOTE: This json object is a snippet of the full documentation, please refer to [Spoonacular API](https://spoonacular.com/food-api/docs#Search-Recipes-Complex) for more information
+
+c) Fetch Recipe Information
+- **Method:** N/A
+- **Request URL:** `N/A Nested Request`
+- **Description:** API Request to obtain recipe information from spoonacular API
+  ```
+  This nested request is to recieve recipe information for each recipe listed within the array provided in the previous "Fetch Recipes". This will retrieve information such as recipe id, title, imaageurl, servings, readyInMinutes and it's associated ingredients required for each recipe.
+  ```
+#### Example Request Body 
+```
+Previous response body parsed directly into this
+```
+#### Example Response Body
+```json
+{
+    "id": 716429,
+    "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+    "image": "https://img.spoonacular.com/recipes/716429-556x370.jpg",
+    "imageType": "jpg",
+    "servings": 2,
+    "readyInMinutes": 45,
+    "pricePerServing": 163.15,
+    "extendedIngredients": [
+        {
+```
+- NOTE: This json object is a snippet of the full documentation, please refer to [Spoonacular API](https://spoonacular.com/food-api/docs#Get-Recipe-Information) for more information
+
+d) Insert Recipes
+- **Method:** N/A
+- **Request URL:** `N/A Nested Request`
+- **Description:** Insert Recipes into SQL Tables Recipes, RecipeIngredients and Ingredients 
+```
+This nested request is a 3-stage request to insert values into tables Recipes and Ingredients, in a many-to-many relationship with RecipeIngredients accomodating this relationship
+```
+i) InsertRecipeDetails 
+- **Description:** Inserts into Recipe Table
+```
+      INSERT INTO Recipes (id, title, imageurl, servings, readyInMinutes, pricePerServing)
+      VALUES (@id_insert, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing);
+```
+ii) InsertRecipeIngredients
+- **Description:** Inserts into Ingredients Table first, followed by RecipeIngredients Table, which is linking Recipe to Ingredients in a many-to-many relationship
+```
+   MERGE INTO Ingredients AS target
+      USING (VALUES (@id_insertOrUpdate, @name, @image)) AS source (ingredient_id, ingredient_name, ingredient_image)
+      ON target.ingredient_id = source.ingredient_id
+      WHEN MATCHED THEN
+        UPDATE SET target.ingredient_name = source.ingredient_name, target.ingredient_image = source.ingredient_image
+      WHEN NOT MATCHED THEN
+        INSERT (ingredient_id, ingredient_name, ingredient_image) VALUES (source.ingredient_id, source.ingredient_name, source.ingredient_image);
+```
+```
+        INSERT INTO RecipeIngredients (recipe_id, ingredient_id, amount, unit)
+        VALUES (@recipeId, @ingredientId, @amount, @unit);
+```
+iii) LinkUserToRecipe
+- **Description:** Inserts into UserRecipes, to link Recipe and Users in a many-to-many relationship
+```
+        INSERT INTO UserRecipes (user_id, recipe_id)
+        VALUES (@userId, @recipeId);
+```
+
+### 12. Obtain Recipes with Filter and Search
+
+- **Method:** POST
+- **Request URL:** `http://localhost:3500/recipes/getfilteredrecipes`
+- **Description:** Function to get recipes based on filters stored in database and input ingredients
+- **Authorisation:** JWT Cookie
+
+#### Example Request Body 
+```json
+[
+    {
+        "ingredient_id": "10115261",
+        "ingredient_name": "fish fillets"
+   	"ingredient_image": "fish-fillet.jpg"
+    },
+    {
+        "ingredient_id": "11529",
+        "ingredient_name": "tomato"
+	"ingredient_image": "tomato.jpg"
+    }
+]
+```
+- This is a snippet of an Array of Ingredients
+
+#### Example Successful Response Body
+```json
+[
+    {
+        "id": "639851",
+        "title": "changed",
+        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "servings": 2,
+        "readyInMinutes": 6,
+        "pricePerServing": 500
+    },
+```
+- This is a snippet of one recipe object, within an array of recipes
+#### Example Errorneous Body:
+
+##### No Recipes stored for User, i.e Array of Recipe length < 0
+```json
+{
+    "message": "No recipes found for the user"
+}
+```
+- Status 404 Not Found
+
+### 13. Get All Recipes based on User ID from Database
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/byuser`
+- **Description:** Function to get all stored recipes based on user id
+- **Authorisation:** JWT Cookie
+
+#### Example Request Body 
+```
+N/A, JWT Token is utilised to obtain user id
+```
+
+#### Example Successful Response Body
+```json
+[
+    {
+        "id": 639851,
+        "title": "Cod with Tomato-Olive-Chorizo Sauce and Mashed Potatoes",
+        "image": "https://img.spoonacular.com/recipes/639851-312x231.jpg",
+        "imageType": "jpg"
+    },
+    {
+        "id": 639957,
+        "title": "Colorful Tomato and Spinach Seafood Pasta",
+        "image": "https://img.spoonacular.com/recipes/639957-312x231.jpg",
+        "imageType": "jpg"
+    },
+```
+- This is an array of recipes
+
+#### Example Errorneous Response Body
+
+##### Request Body for Ingredient Object is incorrect
+```json
+{
+    "message": "Each ingredient must have a valid ingredient_name"
+}
+```
+- Status 400 Bad Request
+
+### 14. Insert Recipes into Database
+
+- **Method:** POST
+- **Request URL:** `http://localhost:3500/recipes/insertrecipe`
+- **Description:** Function to get insert a recipe into database, request body will be an array of recipes
+- **Authorisation:** JWT Cookie
+
+#### SQL Code to insert into database
+```
+      INSERT INTO Recipes (id, title, imageurl, servings, readyInMinutes, pricePerServing)
+          VALUES (@id, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing);
+```
+- Inserts recipe object into recipe table, utilising json request body
+```
+	INSERT INTO Ingredients (ingredient_id, ingredient_name)
+		VALUES (@id, @name);
+```
+- Inserts ingredients object into ingredients table, it is retrieved from array of ingredients, after calling recipe details
+```
+         INSERT INTO RecipeIngredients (recipeid, ingredientid)
+              VALUES (@recipeid, @ingredientid);
+```
+- Insert recipe ingredients into recipe ingredients table, mapping from recipe to ingredients in a many to many relationship
+
+#### Example Request Body 
+```json
+[
+    {
+        "id": "999999" ,
+        "title": "TestRecipePost",
+        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "servings": 2,
+        "readyInMinutes": 6,
+        "pricePerServing": 500
+    }
+]
+```
+
+### 15. Update Recipe Details by Recipe ID
+
+- **Method:** PUT
+- **Request URL:** `http://localhost:3500/recipes/updaterecipedetails/{id}`
+- **Description:** Function to put a new recipe, replacing the old information in the previous recipe object
+- **Authorisation:** JWT Cookie
+
+#### Example Request Body
+```json
+
+    {
+        "id": "639851",
+        "title": "changed",
+        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "servings": 4,
+        "readyInMinutes": 6,
+        "pricePerServing": 626.14
+    }
+```
+- JSON Request body has all parameters required for recipe object
+
+
+### 16. Update Recipe Details by Recipe ID
+
+- **Method:** PATCH
+- **Request URL:** `http://localhost:3500/recipes/editrecipedetails/{id}`
+- **Description:** Function to patch a recipe, finding by recipe id
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```json
+   {
+        "servings": 2,
+        "pricePerServing": 500
+    }
+```
+- Only parameters intended to be patched will be put into the request body
+
+### 17. Update Recipe Details by Recipe ID
+
+- **Method:** DELETE
+- **Request URL:** `http://localhost:3500/recipes/deleterecipe/{id}`
+- **Description:** Function to delete a recipe, based on ID
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```
+N/A, recipe id is from req.params.id
+```
 
 ------------------------------------------------
 ### Ng Kai Huat Jason
