@@ -1,15 +1,16 @@
 {
-  "name": "12tut",
+  "name": "backenddev_assignment_t03_group5",
   "version": "1.0.0",
-  "description": "Express tutorial",
+  "description": "Express server for BackEndDev_Assignment_T03_Group5, SQL Server and MongoDB",
   "main": "server.js",
   "scripts": {
     "start": "node server",
     "dev": "nodemon server"
   },
-  "author": "Dave Gray",
+  "author": "BackEndDev_Assignment_T03_Group5",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.2",
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -19,6 +20,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^8.4.4",
+    "mssql": "^11.0.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

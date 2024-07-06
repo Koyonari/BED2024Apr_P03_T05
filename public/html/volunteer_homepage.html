@@ -68,37 +68,17 @@
     </nav>
     <!-- Navbar End -->
 
-    <div class="volunteer-home-container">
-      <h1>Welcome to your home page</h1>
-      <div class="row mt-4">
-        <div class="col-md-4">
-          <button
-            id="volunteer-profile-btn"
-            class="volunteer-home-btn"
-            onclick="location.href='personal_profile.html'"
-          >
-            <i class="fas fa-user"></i> Personal Profile
-          </button>
-        </div>
-        <div class="col-md-4">
-          <button
-            id="volunteer-pantry-btn"
-            class="volunteer-home-btn"
-            onclick="location.href='pantry.html'"
-          >
-            <i class="fas fa-warehouse"></i> Pantry
-          </button>
-        </div>
-        <div class="col-md-4">
-          <button
-            id="volunteer-request-btn"
-            class="volunteer-home-btn"
-            onclick="location.href='requests.html'"
-          >
-            <i class="fas fa-hand-holding-heart"></i> Requests
-          </button>
-        </div>
-      </div>
+    <h1 class = "home">Welcome to your home page</h1>
+    <div class="home-container">
+        <button class="home-btn" onclick="location.href='personal_profile.html'"><b></b>
+            <b>Personal Profile</b>
+        </button>
+        <button class="home-btn" onclick="location.href='./volunteer_avail_req.html'">
+            <b>Requests</b>
+        </button>
+        <button class="home-btn" onclick="location.href='requests.html'">
+            <b>Pantry</b>
+        </button>
     </div>
 
     <script src="../javascript/volunteersignup.js"></script>

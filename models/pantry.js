@@ -7,7 +7,6 @@ class Pantry {
     this.pantry_id = pantry_id;
     this.user_id = user_id;
   }
-
   static async createPantry(user_id) {
     let connection;
     try {

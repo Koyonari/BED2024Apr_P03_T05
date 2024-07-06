@@ -664,7 +664,7 @@ iii) LinkUserToRecipe
 ```
 - Status 404 Not Found
 
-### 13. Get All Recipes based on User ID
+### 13. Get All Recipes based on User ID from Database
 
 - **Method:** GET
 - **Request URL:** `http://localhost:3500/recipes/byuser`
@@ -711,6 +711,23 @@ N/A, JWT Token is utilised to obtain user id
 - **Description:** Function to get insert a recipe into database, request body will be an array of recipes
 - **Authorisation:** JWT Cookie
 
+#### SQL Code to insert into database
+```
+      INSERT INTO Recipes (id, title, imageurl, servings, readyInMinutes, pricePerServing)
+          VALUES (@id, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing);
+```
+- Inserts recipe object into recipe table, utilising json request body
+```
+	INSERT INTO Ingredients (ingredient_id, ingredient_name)
+		VALUES (@id, @name);
+```
+- Inserts ingredients object into ingredients table, it is retrieved from array of ingredients, after calling recipe details
+```
+         INSERT INTO RecipeIngredients (recipeid, ingredientid)
+              VALUES (@recipeid, @ingredientid);
+```
+- Insert recipe ingredients into recipe ingredients table, mapping from recipe to ingredients in a many to many relationship
+
 #### Example Request Body 
 ```json
 [
@@ -723,6 +740,56 @@ N/A, JWT Token is utilised to obtain user id
         "pricePerServing": 500
     }
 ]
+```
+
+### 15. Update Recipe Details by Recipe ID
+
+- **Method:** PUT
+- **Request URL:** `http://localhost:3500/recipes/updaterecipedetails/{id}`
+- **Description:** Function to put a new recipe, replacing the old information in the previous recipe object
+- **Authorisation:** JWT Cookie
+
+#### Example Request Body
+```json
+
+    {
+        "id": "639851",
+        "title": "changed",
+        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "servings": 4,
+        "readyInMinutes": 6,
+        "pricePerServing": 626.14
+    }
+```
+- JSON Request body has all parameters required for recipe object
+
+
+### 16. Update Recipe Details by Recipe ID
+
+- **Method:** PATCH
+- **Request URL:** `http://localhost:3500/recipes/editrecipedetails/{id}`
+- **Description:** Function to patch a recipe, finding by recipe id
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```json
+   {
+        "servings": 2,
+        "pricePerServing": 500
+    }
+```
+- Only parameters intended to be patched will be put into the request body
+
+### 17. Update Recipe Details by Recipe ID
+
+- **Method:** DELETE
+- **Request URL:** `http://localhost:3500/recipes/deleterecipe/{id}`
+- **Description:** Function to delete a recipe, based on ID
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```
+N/A, recipe id is from req.params.id
 ```
 
 ------------------------------------------------
@@ -865,19 +932,436 @@ N/A, JWT Token is utilised to obtain user id
   ```
 ------------------------------------------------
 ### An Yong Shyan 
-### 1. Template
+### 1. User View Their Requests
 - **Method:** GET
-- **Request:** `https://localhost:5000/users/{id}`
-- **Description:** Retrieve information pertaining to a user, identified by ID.
-- **Example Response:**
-  ```json
-  {
-    "id": "12345",
-    "name": "John Doe",
+- **Request URL:** `http://localhost:5000/req/user/{user_id}`
+- **Description:** Retrieve request information pertaining to a user, identified by ID.
+---
+**Example Successful Response Body for getRequestByUserId(1) when user_id = 1:**
+- 200 OK
+#### User inputs valid user_id ####
+```json
+[
+    {
+        "request_id": 1,
+        "title": "Urgent food request",
+        "category": "Urgent",
+        "description": "Require immediate food, preferably meat",
+        "user_id": 1,
+        "volunteer_id": 2,
+        "isCompleted": true,
+        "admin_id": 3
+    },
+    {
+        "request_id": 4,
+        "title": "Requesting for water",
+        "category": "Low Priority",
+        "description": "Require water, need not be urgent",
+        "user_id": 1,
+        "volunteer_id": 2,
+        "isCompleted": true,
+        "admin_id": null
+    }
+]
+```
+---
+**Example Error Response Body for getRequestByUserId(4) when user_id = 4:**
+- 404 not found
+#### User inputs invalid user_id ####
+```
+No requests found for this user
+```
+---
+- 500 HTTP Internal Server Error
+```
+Error retrieving requests
+```
+---
+### 2. User Create Request
+- **Method:** POST
+- **Request URL:** `http://localhost:5000/req`
+- **Description:** Create new request, request_id is auto-increment.
+---
+**Example Successful Response Body for createRequest():**
+- 201 Created
+#### User creates a new request ####
+```json
+{
+    "title": "Requesting for water",
+    "category": "Low Priority",
+    "description": "Require water, need not be urgent",
+    "user_id": 1,
+    "volunteer_id": 2,
+    "isCompleted": true,
+    "admin_id": null
+}
+```
+---
+**Example Error Response Body for createRequest():**
+- 400 Bad Request
+#### User does not input required fields ####
+```json
+{
+    "message": "Validation error",
+    "errors": [
+        "\"title\" is required",
+        "\"category\" is required",
+        "\"description\" is required",
+        "\"user_id\" is required",
+        "\"isCompleted\" is required"
+    ]
+}
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error creating request
+```
+---
+### 3. Volunteers & Admins view available requests
+- **Method:** GET
+- **Request URL:** `http://localhost:5000/available`
+- **Description:** View available requests - volunteer_id = null, admin_id = null, isCompleted = false.
+---
+**Example Successful Response Body for getAvailableRequests():**
+- 200 OK
+#### Volunteer & Admins view available requests ####
+```json
+[
+    {
+        "request_id": 3,
+        "title": "Baked Goods",
+        "category": "High Priority",
+        "description": "I need some baked goods for meals",
+        "user_id": 3,
+        "volunteer_id": null,
+        "isCompleted": false,
+        "admin_id": null
+    }
+]
+```
+---
+**Example Error Response Body for getAvailableRequests():**
+- 404 Not Found
+#### No Available Requests ####
+```
+No available requests found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error retrieving available requests
+```
+---
+### 4. Volunteers accepts requests
+- **Method:** PATCH
+- **Request URL:** `http://localhost:5000/req/accepted/update/{request_id}`
+- **Description:** Volunteer updates the volunteer_id in appropriate request_id with their own id.
+---
+**Example Successful Response Body for updateAcceptedRequest():**
+- 200 OK
+#### Volunteer inputs valid volunteer_id into request_id = 2  ####
+
+Input:
+```json
+{
+    "volunteer_id": 1
+}
+```
+Output:
+```json
+{
+    "request_id": 2,
+    "title": "Liquids Please",
+    "category": "Low Priority",
+    "description": "Require liquids like water, plus protein powder",
+    "user_id": 2,
+    "volunteer_id": 1,
+    "isCompleted": false,
+    "admin_id": null
+}
+```
+---
+**Example Error Response Body for updateAcceptedRequest():**
+- 404 Not Found
+#### No Requests Found ####
+```
+Request not found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error updating accepted request
+```
+### 5. Volunteer view accepted requests
+- **Method:** GET
+- **Request URL:** `http://localhost:5000/req/accepted/{volunteer_id}`
+- **Description:** Volunteer updates the volunteer_id in appropriate request_id with their own id.
+---
+**Example Successful Response Body for getAcceptedRequestById(2) when volunteer_id = 2:**
+- 200 OK
+#### Volunteer with volunteer id = 2 views accepted request ####
+```json
+[
+    {
+        "request_id": 1,
+        "title": "Urgent food request",
+        "category": "Urgent",
+        "description": "Require immediate food, preferably meat",
+        "user_id": 1,
+        "volunteer_id": 2,
+        "isCompleted": true,
+        "admin_id": 3
+    },
+    {
+        "request_id": 4,
+        "title": "Requesting for water",
+        "category": "Low Priority",
+        "description": "Require water, need not be urgent",
+        "user_id": 1,
+        "volunteer_id": 2,
+        "isCompleted": true,
+        "admin_id": null
+    }
+]
+```
+---
+**Example Error Response Body for getAcceptedRequestById():**
+- 404 Not Found
+#### No Requests Found ####
+```
+No accepted requests found for this volunteer
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error retrieving accepted requests
+```
+### 6. User updates request to be completed
+- **Method:** PATCH
+- **Request URL:** `http://localhost:5000/req/completed/{request_id}`
+- **Description:** User updates the appropriate request by request id to be isCompleted = true.
+---
+**Example Successful Response Body for updateCompletedRequest(1) when request_id = 1:**
+- 200 OK
+#### User updates valid request to be completed ####
+```json
+{
+    "request_id": 1,
+    "title": "Urgent food request",
+    "category": "Urgent",
+    "description": "Require immediate food, preferably meat",
+    "user_id": 1,
+    "volunteer_id": 2,
+    "isCompleted": true,
+    "admin_id": 3
+}
+```
+---
+**Example Error Response Body for updateCompletedRequest():**
+- 404 Not Found
+#### No Requests Found ####
+```
+Request not found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error updating request to completed
+```
+### 7. Allows details of specific requests to be viewed
+- **Method:** GET
+- **Request URL:** `http://localhost:5000/req/{request_id}`
+- **Description:** User views request by request id.
+---
+**Example Successful Response Body for getRequestById(1) when request_id = 1:**
+- 200 OK
+#### Allows specific requests to be viewed ####
+```json
+{
+    "request_id": 1,
+    "title": "Urgent food request",
+    "category": "Urgent",
+    "description": "Require immediate food, preferably meat",
+    "user_id": 1,
+    "volunteer_id": 2,
+    "isCompleted": true,
+    "admin_id": 3
+}
+```
+---
+**Example Error Response Body for getRequestById():**
+- 404 Not Found
+#### No Requests Found ####
+```
+Request not found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error retrieving request
+```
+### 8. Volunteers view User Profile
+- **Method:** GET
+- **Request URL:** `http://localhost:5000/user/{user_id}`
+- **Description:** Volunteers view specific user profile by user_id.
+---
+**Example Successful Response Body for getUserDetailsById(1) when user_id = 1:**
+- 200 OK
+#### Allows a specific user to be viewed ####
+```json
+{
+    "user_id": 1,
+    "firstname": "John",
+    "lastname": "Doe",
+    "dob": "1985-01-15T00:00:00.000Z",
+    "address": "123 Main St, Anytown, USA",
     "email": "john.doe@example.com",
-    "role": "user"
-  }
-  ```
+    "contact": "555-1234",
+    "password": "password123",
+    "dietaryrestrictions": "Vegan",
+    "intolerances": "Gluten",
+    "excludedingredients": "Peanuts"
+}
+```
+---
+**Example Error Response Body for getRequestById():**
+- 404 Not Found
+#### No User Found ####
+```
+User not found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error retrieving user details
+```
+### 9. Volunteers view User Profile
+- **Method:** PATCH
+- **Request URL:** `http://localhost:5000/req/approve/{admin_id}`
+- **Description:** Admin approves requests.
+---
+**Example Successful Response Body for updateApproveRequest(1) when admin_id = 1:**
+- 200 OK
+#### Allows admin to approve request by updating the admin_id ####
+Input:
+```json
+{
+    "admin_id": 1
+}
+```
+Output:
+```json
+{
+    "request_id": 1,
+    "title": "Urgent food request",
+    "category": "Urgent",
+    "description": "Require immediate food, preferably meat",
+    "user_id": 1,
+    "volunteer_id": 2,
+    "isCompleted": true,
+    "admin_id": 1
+}
+```
+---
+**Example Error Response Body for updateApproveRequest():**
+- 404 Not Found
+#### No User Found ####
+```
+Request not found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error approving request
+```
+### 10. View Accepted Requests
+- **Method:** GET
+- **Request URL:** `http://localhost:5000/accepted`
+- **Description:** View accepted requests when volunteer id is not null.
+---
+**Example Successful Response Body for getAcceptedRequest():**
+- 200 OK
+#### Allows admin to view request that has volunteer id as not null ####
+```json
+[
+    {
+        "request_id": 1,
+        "title": "Urgent food request",
+        "category": "Urgent",
+        "description": "Require immediate food, preferably meat",
+        "user_id": 1,
+        "volunteer_id": 2,
+        "isCompleted": true,
+        "admin_id": 1
+    },
+    {
+        "request_id": 2,
+        "title": "Liquids Please",
+        "category": "Low Priority",
+        "description": "Require liquids like water, plus protein powder",
+        "user_id": 2,
+        "volunteer_id": 1,
+        "isCompleted": false,
+        "admin_id": null
+    },
+    {
+        "request_id": 4,
+        "title": "Requesting for water",
+        "category": "Low Priority",
+        "description": "Require water, need not be urgent",
+        "user_id": 1,
+        "volunteer_id": 2,
+        "isCompleted": true,
+        "admin_id": null
+    }
+]
+```
+---
+**Example Error Response Body for getAcceptedRequest():**
+- 404 Not Found
+#### No Request Found ####
+```
+No accepted requests found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error retrieving accepted requests
+```
+### 11. View Accepted Requests
+- **Method:** DELETE
+- **Request URL:** `http://localhost:5000/req/{request_id}`
+- **Description:** Delete appropriate request.
+---
+**Example Successful Response Body for deleteRequest(1):**
+- 200 OK
+#### Allows admin to delete request according to the request id ####
+```
+Request deleted successfully
+```
+---
+**Example Error Response Body for deleteRequest():**
+- 404 Not Found
+#### No Request Found ####
+```
+Request not found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error deleting request
+```
 ------------------------------------------------
 ### Node Packages Utilised:
 - express: A web framework for building web applications and APIs.
@@ -899,5 +1383,14 @@ N/A, JWT Token is utilised to obtain user id
 ### External Sources Utilised:
 - [Spooncular API](https://spoonacular.com/food-api)
 - [MongoDB](https://www.mongodb.com/)
-
-
+### References:
+- [Node.js and Express.js Tutorial](https://www.youtube.com/watch?v=Oe421EPjeBE&t=27893s&ab_channel=freeCodeCamp.org)
+- [Node.js/Express - Build 4 Projects](https://www.youtube.com/watch?v=qwfE7fSVaZM&t=34734s&ab_channel=freeCodeCamp.org)
+- [Node.js Full Course for Beginners](https://www.youtube.com/watch?v=f2EqECiTBL8&t=7333s&ab_channel=DaveGray)
+- [What is Middleware in Express JS? | Node.js Tutorials for Beginners](https://www.youtube.com/watch?v=y18ubz7gOsQ&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=2&ab_channel=DaveGray)
+- [How to Setup Routes with Express Router | Node.js & Express tutorials for Beginners](https://www.youtube.com/watch?v=Zh7psmf1KAA&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=3&ab_channel=DaveGray)
+- [MVC Model-View-Controller Example | CRUD REST API | Node.js & Express tutorials for Beginners](https://www.youtube.com/watch?v=Dco1gzVZKVk&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=4&ab_channel=DaveGray)
+- [User Password Authentication | Node.js & Express Tutorials for Beginners](https://www.youtube.com/watch?v=Nlg0JrUt0qg&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=5&ab_channel=DaveGray)
+- [JWT Authentication | Node JS and Express tutorials for Beginners](https://www.youtube.com/watch?v=favjC6EKFgw&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=6&ab_channel=DaveGray)
+- [How to Authorize User Roles and Permissions | Node.js & Express Authorization Tutorial](https://www.youtube.com/watch?v=fUWkVxCv4IQ&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=7&ab_channel=DaveGray)
+- [Refresh Token Rotation and Reuse Detection in Node.js JWT Authentication](https://www.youtube.com/watch?v=s-4k5TcGKHg&list=PL0Zuz27SZ-6PFkIxaJ6Xx_X46avTM1aYw&index=17&ab_channel=DaveGray)
