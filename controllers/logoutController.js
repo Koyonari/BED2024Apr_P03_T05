@@ -1,28 +1,35 @@
+// Import moduels
 const User = require('../models/user');
 
+// handleLogout function, handles logout process
 const handleLogout = async (req, res) => {
-    // On client, also delete the accessToken
+    // Extract the refreshToken from the cookie
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(204); // No content
-
+    // If the cookie is not present, return a 204 status code
+    if (!cookies?.jwt) return res.sendStatus(204);
+    // Extract the refreshToken from the cookie
     const refreshToken = cookies.jwt;
 
-    // Is refreshToken in db?
+    // Check if the refreshToken exists in the database
     const foundUser = await User.findOne({ refreshToken }).exec();
     if (!foundUser) {
+        // Clear JWT cookie from the client
         res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-        return res.sendStatus(204); // No content
+        // Return a 204 status code
+        return res.sendStatus(204);
     }
 
-    // Delete refreshToken in db
+    // Clear the refreshToken from the user object in MongoDB
     foundUser.refreshToken = '';
+    // Save the updated user object in MongoDB
     const result = await foundUser.save();
+    console.log ('Refresh Token has been cleared', result);
 
     // Clear the cookie from the client
     res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
     
-    // Send a response indicating successful logout
-    res.sendStatus(204); // No content
+    // Send a 204 No Content response indicating successful logout
+    res.sendStatus(204);
 }
 
 module.exports = { handleLogout }
