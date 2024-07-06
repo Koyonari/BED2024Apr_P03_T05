@@ -1,3 +1,4 @@
+// Import modules
 const sql = require('mssql');
 const { dbConfig } = require('../config/dbConfig');
 
@@ -40,7 +41,7 @@ const getRecipesByUserId = async (userId) => {
   }
 };
 
-// Function to get a recipe by recipe ID
+// Function to get a recipe by recipe ID, stored in database
 const getRecipeById = async (recipeId) => {
   try {
     // Connect to the database
@@ -71,7 +72,7 @@ const getRecipeById = async (recipeId) => {
   }
 };
 
-// Function to get all recipes
+// Function to get all recipes stored in database
 const getAllStoredRecipes = async () => {
   try {
     // Connect to the database
