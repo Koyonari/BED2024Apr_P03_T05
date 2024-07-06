@@ -1243,7 +1243,7 @@ User not found
 ```
 Error retrieving user details
 ```
-### 9. Volunteers view User Profile
+### 9. Admin approves requests
 - **Method:** PATCH
 - **Request URL:** `http://localhost:5000/req/approve/{admin_id}`
 - **Description:** Admin approves requests.
@@ -1338,7 +1338,7 @@ No accepted requests found
 ```
 Error retrieving accepted requests
 ```
-### 11. View Accepted Requests
+### 11. Delete request
 - **Method:** DELETE
 - **Request URL:** `http://localhost:5000/req/{request_id}`
 - **Description:** Delete appropriate request.
