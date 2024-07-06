@@ -1,7 +1,8 @@
 // Import necessary modules
 const pantry = require('../models/pantry');
 const recipeService = require('../services/recipeService');
-const { getRecipeById, getRecipesByUserId, insertRecipe, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe } = require('../models/recipe');
+const { getRecipeById, getRecipesByUserId, getAllStoredRecipes, insertRecipe, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe } = require('../models/recipe');
+const { de } = require('date-fns/locale');
 
 // Controller function to fetch recipes based on pantry ingredients, stores them in SQL Database
 const getRecipes = async (req, res) => {
@@ -64,6 +65,31 @@ const getAllRecipesByUser = async (req, res) => {
 
     // Default error response
     res.status(500).json({ message: 'Error getting recipes by user ID', error: error.message });
+  }
+};
+
+// Controller function to get all recipes
+const getAllRecipes = async (req, res) => {
+  try {
+    // Fetch all recipes from the database
+    const recipes = await getAllStoredRecipes();
+
+    // Check if any recipes were found
+    if (!recipes || recipes.length === 0) {
+      return res.status(404).json({ message: 'No recipes found' });
+    }
+
+    res.status(200).json(recipes);
+  } catch (error) {
+    console.error('Error getting all recipes:', error);
+
+    // Check if it's a specific type of error
+    if (error.name === 'RequestError') {
+      return res.status(500).json({ message: 'Database error', error: error.message });
+    }
+
+    // Default error response
+    res.status(500).json({ message: 'Error getting all recipes', error: error.message });
   }
 };
 
@@ -200,7 +226,7 @@ const updateRecipeByUser = async (req, res) => {
 };
 
 // Controller function to update a recipe by recipe ID, this is for admin purposes
-const updateRecipeByRecipeID = async (req, res) => {
+const updateRecipeByRecipeId = async (req, res) => {
   try {
     const recipeId = req.params.id; // Extracted from URL parameters
     const updates = req.body; // Updates sent in request body
@@ -236,7 +262,7 @@ const updateRecipeByRecipeID = async (req, res) => {
 
     // Call the updateRecipeDetails function in the recipe model to update the recipe (put)
     await updateRecipeDetailsbyUser(updatedRecipe);
-    res.status(200).json({ message: 'Recipe updated successfully' });
+    res.status(200).json({ message: 'Recipe updated successfully by Admin' });
   } catch (error) {
     console.error('Error updating recipe:', error.message);
     res.status(500).json({ message: 'Error updating recipe', error: error.message });
@@ -282,9 +308,33 @@ const patchRecipeByUser = async (req, res) => {
   }
 };
 
+// Update a recipe by recipe ID
+const patchRecipeByRecipeId = async (req, res) => {
+  try {
+    const recipeId = req.params.id; // Extracted from URL parameters
+    const updates = req.body; // Updates sent in request body
+
+    // Log the request body for debugging purposes
+    console.log('Request body:', updates);
+
+    // Check for missing parameters
+    if (!recipeId || !updates) {
+      return res.status(400).json({ message: 'Recipe ID and updates must be provided' });
+    }
+
+    // Call the editRecipe function in recipe model to patch the recipe
+    await editRecipe(recipeId, updates);
+
+    res.status(200).json({ message: 'Recipe updated successfully by Admin' });
+  } catch (error) {
+    console.error('Error updating recipe:', error.message);
+    res.status(500).json({ message: 'Error updating recipe', error: error.message });
+  }
+};
+
 
 // Delete a recipe by user ID and recipe ID
-const deleteRecipeByUserId = async (req, res) => {
+const deleteRecipeByUser = async (req, res) => {
   try {
     const userId = req.userid; // Extracted from JWT token
     const recipeId = req.params.id; // Extracted from URL parameters
@@ -320,13 +370,48 @@ const deleteRecipeByUserId = async (req, res) => {
   }
 };
 
+// Delete a recipe by recipe ID (for admins)
+const deleteRecipeByRecipeId = async (req, res) => {
+  try {
+    const recipeId = req.params.id; // Extracted from URL parameters
+
+    // Log the request for debugging purposes
+    console.log('Admin request to delete recipe with ID:', recipeId);
+
+    if (!recipeId) {
+      return res.status(400).json({ message: 'Recipe ID must be provided' });
+    }
+     // Fetch all recipes to validate if the recipe exists
+     const allRecipes = await getAllStoredRecipes();
+     // Check if there was an error fetching recipes
+    if (!allRecipes) {
+      return res.status(500).json({ message: 'Error getting recipes' });
+    }
+    // Check if the recipe ID exists in the fetched recipes
+    const recipeToDelete = allRecipes.find(recipe => recipe.id === recipeId);
+    if (!recipeToDelete) {
+      return res.status(404).json({ message: 'Recipe not found' });
+    }
+    // Call the deleteRecipe function
+    await deleteRecipe(recipeId);
+    res.status(200).json({ message: 'Recipe deleted successfully by Admin' });
+  } catch (error) {
+    console.error('Error deleting recipe:', error.message);
+    res.status(500).json({ message: 'Error deleting recipe', error: error.message });
+  }
+};
+
+
 module.exports = {
   getRecipes,
   getAllRecipesByUser,
   getFilteredRecipesByUser,
+  getAllRecipes,
   insertRecipeByUser,
   updateRecipeByUser,
-  updateRecipeByRecipeID,
+  updateRecipeByRecipeId,
   patchRecipeByUser,
-  deleteRecipeByUserId,
+  patchRecipeByRecipeId,
+  deleteRecipeByUser,
+  deleteRecipeByRecipeId
 };
