@@ -40,6 +40,62 @@ const getRecipesByUserId = async (userId) => {
   }
 };
 
+// Function to get a recipe by recipe ID
+const getRecipeById = async (recipeId) => {
+  try {
+    // Connect to the database
+    const pool = await sql.connect(dbConfig);
+
+    // SQL query to get a recipe by its ID
+    const query = `
+      SELECT id, title, imageurl, servings, readyInMinutes, pricePerServing
+      FROM Recipes
+      WHERE id = @recipeId;
+    `;
+
+    const result = await pool.request()
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .query(query);
+
+    // Check if a recipe was found
+    if (result.recordset.length === 0) {
+      return null; // No recipe found with the given ID
+    }
+
+    return result.recordset[0]; // Return the first (and only) recipe found
+  } catch (error) {
+    console.error('Error fetching recipe by ID:', error.message);
+    throw error;
+  } finally {
+    sql.close(); // Close the pool connection
+  }
+};
+
+// Function to get all recipes
+const getAllStoredRecipes = async () => {
+  try {
+    // Connect to the database
+    const pool = await sql.connect(dbConfig);
+
+    // SQL query to get all recipes
+    const query = `
+      SELECT id, title, imageurl, servings, readyInMinutes, pricePerServing
+      FROM Recipes;
+    `;
+
+    const result = await pool.request().query(query);
+
+    // Return the list of recipes
+    return result.recordset;
+  } catch (error) {
+    console.error('Error fetching all recipes:', error.message);
+    throw error;
+  } finally {
+    sql.close(); // Close the pool connection
+  }
+};
+
+
 // Insert a new recipe and link it to the user
 const insertRecipe = async (recipe, userId) => {
   // Connect to database
@@ -393,7 +449,9 @@ const deleteRecipe = async (recipeId) => {
 
 module.exports = {
   Recipe,
+  getRecipeById,
   getRecipesByUserId,
+  getAllStoredRecipes,
   insertRecipe,
   updateRecipeDetails,
   updateRecipeDetailsbyUser,
