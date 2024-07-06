@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const dbConfig = require('../dbConfig');
+const dbConfig = require('../config/dbConfig');
 
 class Request {
     constructor(request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id){
