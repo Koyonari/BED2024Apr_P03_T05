@@ -40,6 +40,7 @@ class Pantry {
     }
   }
 
+  // Function to get all ingredients in the pantry from the database given a user ID - Jin Rong
   static async getIngredients(userId) {
     let connection;
     try {

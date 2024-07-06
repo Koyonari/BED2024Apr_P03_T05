@@ -1,4 +1,5 @@
-const User = require("../models/user_sql");
+// This controller is deprecated, utilised for testing purposes without MongoDB
+const { createSQLUser } = require("../models/usersql");
 
 const createUser = async (req, res) => {
   const newUser = req.body;
