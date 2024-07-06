@@ -198,7 +198,6 @@ N/A request is the JWT cookie itself
     {
         "_id": "667feba5b8086ea59d41f0b3",
         "username": "Admin123",
-        "password": "$2b$10$Dm/sdhOAslQF5tKRJzxeie5fO2cmoNZNsWxSsu9Dgl0LU8vx83lXS",
         "roles": {
             "Admin": 2003
         },
@@ -210,10 +209,10 @@ N/A request is the JWT cookie itself
         "contact": "97346328",
         "dateCreated": "2024-06-29T11:10:29.484Z",
         "__v": 0,
-        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTk2NTk2ODUsImV4cCI6MTcxOTc0NjA4NX0.zSig95MuxJmzfS-deqjQP-t0aKTovt5eZNJNNFBkOqg"
     }
 ```
 - This is one object, however after there can be more User objects nested within this array
+- Password and refreshToken are sanitised from json object for security
 
 #### Example Errorneous Response Body for getAllUsers:
 
@@ -300,7 +299,6 @@ JWT Cookie is also required
 {
     "_id": "667fec594fac620972580636",
     "username": "TestUser",
-    "password": "$2b$10$jlSbIApG/j9HDWYSa15S0./V7JoTqKSX0ZxSMp9jD3h/4oB6xBNWG",
     "roles": {
         "User": 2001
     },
@@ -321,11 +319,10 @@ JWT Cookie is also required
     "email": "john.doe@example.com",
     "contact": "12345678",
     "dateCreated": "2024-06-29T11:13:29.097Z",
-    "__v": 0,
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2NjdmZWM1OTRmYWM2MjA5NzI1ODA2MzYiLCJpYXQiOjE3MTk2NzMyNzgsImV4cCI6MTcxOTc1OTY3OH0.Vm7JbZ_-wRha3wl-9eqzEB-tTR2ltv6VAYV6oLrkAE0"
-}
+    "__v": 0
 ```
 - Status 200 OK
+- - Password and refreshToken are sanitised from json object for security
 
 #### Example Errorneous Response Body for getUserById:
 
