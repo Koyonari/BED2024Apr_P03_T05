@@ -378,6 +378,40 @@ class Pantry {
       }
     }
   }
+
+  static async addIngredientQuantity(pantry_id, ingredient_id, quantity) {
+    let connection;
+    try {
+      connection = await sql.connect(dbConfig);
+
+      const sqlQuery = `
+        UPDATE PantryIngredient 
+        SET quantity = quantity + @quantity
+        WHERE pantry_id = @pantry_id AND ingredient_id = @ingredient_id;
+      `;
+
+      const request = connection.request();
+      request.input("pantry_id", pantry_id);
+      request.input("ingredient_id", ingredient_id);
+      request.input("quantity", parseInt(quantity)); // Ensure quantity is an integer
+
+      const result = await request.query(sqlQuery);
+
+      if (result.rowsAffected[0] === 0) {
+        throw new Error("Ingredient not found in pantry");
+      }
+
+      return { pantry_id, ingredient_id, quantity: parseInt(quantity) };
+    } catch (error) {
+      console.error("Error adding ingredient quantity:", error);
+      throw error;
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
+    }
+  }
+
 }
 
 function generate5CharacterGene() {
