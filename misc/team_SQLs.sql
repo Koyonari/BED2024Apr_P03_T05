@@ -92,11 +92,6 @@ CREATE TABLE requests (
     CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES Users(user_id)
 );
 
--- Insert data into the requests table
-INSERT INTO requests (request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id)
-VALUES 
-('123456789012345ewq901000', 'Urgent food request', 'Urgent', 'Require immediate food, preferably meat', '668105073662e3dda4c190e3', NULL, 0, NULL)
-
 SELECT * FROM Users;
 SELECT * FROM Pantry;
 SELECT * FROM Ingredients;
