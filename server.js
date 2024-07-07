@@ -9,7 +9,9 @@ const errorHandler = require('./middleware/errorHandler');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
+const reqController = require("./controllers/requestController");
 const { connectDB } = require('./config/dbConfig');
+const { validateRequest, validatePatchAcceptedRequest, validatePatchApproveRequest } = require("./middleware/validateRequest");
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3500;
@@ -47,7 +49,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 //serve static files
 app.use('/', express.static(path.join(__dirname, '/public')));
 
-// routes
+// Edric routes
 app.use('/', require('./routes/root'));
 app.use('/register', require('./routes/register'));
 app.use('/auth', require('./routes/auth'));
@@ -64,6 +66,21 @@ app.use('/recipes', require('./routes/api/recipeRoutes'));
 app.post("/users", userController.createUser); // works
 app.get("/users", userController.getAllUsers); // works
 app.get("/users/:user_id", userController.getUserByUID); // works
+
+// YongShyan Request Routes
+app.get("/req/user/:id", reqController.getRequestByUserId);
+app.post('/req', validateRequest, reqController.createRequest);
+app.get("/available", reqController.getAvailableRequest);
+app.patch("/req/accepted/update/:id", validatePatchAcceptedRequest, reqController.updateAcceptedRequest);
+app.get("/req/accepted/:id", reqController.getAcceptedRequestById);
+app.patch("/req/completed/:id", reqController.updateCompletedRequest);
+app.get("/req/:id", reqController.getRequestById);
+app.patch("/req/approve/:id", validatePatchApproveRequest, reqController.updateApproveRequest);
+app.get("/accepted", reqController.getAcceptedRequest); 
+app.delete("/req/:id", reqController.deleteRequest);
+
+// YongShyan User Routes
+app.get("/user/:id", reqController.getUserDetailsById);
 
 // Error handling middleware
 app.use(errorHandler);
