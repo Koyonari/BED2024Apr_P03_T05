@@ -132,6 +132,19 @@ async function removeIngredientFromPantry(req, res) {
   }
 }
 
+async function addIngredientQuantity(req, res) {
+  try {
+    const { pantry_id } = req.params;
+    const { ingredient_id, quantity } = req.body;
+    const result = await Pantry.addIngredientQuantity(pantry_id, ingredient_id, quantity);
+
+    res.status(200).json({ message: "Ingredient quantity updated in pantry", result });
+  } catch (error) {
+    console.error("Error updating ingredient quantity in pantry:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   getPantryIngredients,
   createPantry,
@@ -140,4 +153,5 @@ module.exports = {
   getIngredientsByPantryID,
   updateIngredientInPantry,
   removeIngredientFromPantry,
+  addIngredientQuantity,
 };

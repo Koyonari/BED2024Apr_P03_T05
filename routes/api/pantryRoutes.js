@@ -13,5 +13,6 @@ router.post('/:pantry_id/ingredients', pantryController.addIngredientToPantry); 
 router.get('/:pantry_id/ingredients', pantryController.getIngredientsByPantryID); // Get all ingredients in a pantry // works
 router.put('/:pantry_id/ingredients', pantryController.updateIngredientInPantry); // Update an ingredient in a pantry // works
 router.delete('/:pantry_id/ingredients', pantryController.removeIngredientFromPantry); // Remove an ingredient from a pantry // works
+router.post('/:pantry_id/addingredients',pantryController.addIngredientQuantity); // Add quantity to an ingredient in a pantry 
 
 module.exports = router;
