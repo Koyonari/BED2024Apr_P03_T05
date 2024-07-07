@@ -10,27 +10,35 @@ const mongoose = require('mongoose');
 
 const getAllUsers = async (req, res) => {
     try {
+        // Fetch all users from MongoDB
         const users = await User.find().exec();
+        // If no users are found, return a 204 status code
         if (!users || users.length === 0) {
             return res.status(204).json({ message: 'No users found' });
         }
         // Filter out sensitive fields from each user object, password and refreshToken
         const sanitizedUsers = users.map(user => {
+            // Deconstruct the user object and remove the password and refreshToken fields
             const { password, refreshToken, ...sanitizedUser } = user.toObject();
-            return sanitizedUser;
+            return sanitizedUser; // Return the sanitized user object
         });
-        res.json(sanitizedUsers);
+        // Return the sanitized user objects
+        res.status(200).json(sanitizedUsers);
     } catch (err) {
+        // Handle specific MongoDB errors
         if (err.name === 'UnauthorizedError') {
+            // Return a 401 status code if the error is an UnauthorizedError
             return res.status(401).json({ message: 'Unauthorized: Invalid or missing token' });
         }
+        // Send a 500 status code for other errors
         res.status(500).json({ message: err.message });
     }
 };
 
 const createNewUser = async (req, res) => {
+    // Log user information from the request body
     console.log('Request Body:', req.body);
-
+    // Deconstruct the user information from the request body
     const { username, password, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles, firstname, lastname, dateOfBirth } = req.body;
 
     // Check required fields
@@ -59,16 +67,17 @@ const createNewUser = async (req, res) => {
             contact,
             dateCreated: new Date(),
             dateOfBirth: new Date(dateOfBirth),
+            // Add dietary info if the role is 'User'
             dietaryRestrictions: roles.User === 2001 ? dietaryRestrictions || [] : [],
             intolerances: roles.User === 2001 ? intolerances || [] : [],
             excludedIngredients: roles.User === 2001 ? excludedIngredients || [] : []
         });
 
-        // Validate user input using middleware or function (assuming validateUser is defined)
+        // Validate user input using middleware or function
         validateUser(req, res, async () => {
             try {
                 // Attempt to create the user in MongoDB
-                const resultMongo = await newUserMongo.save(); // Assuming newUserMongo.save() persists user to MongoDB
+                const resultMongo = await newUserMongo.save(); // newUserMongo.save() persists user to MongoDB
                 const userId = resultMongo._id.toString();
                 // Attempt to create the user in SQL
                 const newUserSQL = await createSQLUser(userId, username);
@@ -93,8 +102,9 @@ const createNewUser = async (req, res) => {
 
 
 const updateUser = async (req, res) => {
+    // Log user information from the request body
     console.log('Request Body:', req.body);
-
+    // Destructure the user information from the request body
     const { username, password, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles, firstname, lastname, dateOfBirth } = req.body;
     const userId = req.params.id; // Assuming user ID is in the URL parameters
 
@@ -116,28 +126,29 @@ const updateUser = async (req, res) => {
         const updatedUser = {
             username,
             password: hashedPwd || undefined, // Only include password if it's being updated
-            roles: roles || { User: 2001 },
+            roles: roles || { User: 2001 }, // Default to User role
             firstname,
             lastname,
             address,
             email,
             contact,
-            dateOfBirth: new Date(dateOfBirth),
-            dietaryRestrictions: dietaryRestrictions || [],
-            intolerances: intolerances || [],
-            excludedIngredients: excludedIngredients || []
+            dateOfBirth: new Date(dateOfBirth), // Ensure date is correctly parsed
+            dietaryRestrictions: dietaryRestrictions || [], // Default to empty array
+            intolerances: intolerances || [],  // Default to empty array
+            excludedIngredients: excludedIngredients || [] // Default to empty array
         };
 
         // Validate user input using middleware or function (assuming validateUser is defined)
         validateUser(req, res, async () => {
             try {
-                // Check if user exists
+                // Check if user exists in MongoDB
                 const existingUser = await User.findById(userId);
                 if (!existingUser) {
                     return res.status(404).json({ message: 'User not found' });
                 }
                 // Update the user
                 await User.findByIdAndUpdate(userId, updatedUser, { new: true });
+                // Return success response
                 res.status(200).json({ message: `User ${username} updated successfully` });
             } catch (err) {
                 console.error('Error updating user:', err.message);
@@ -178,7 +189,7 @@ const editUser = async (req, res) => {
 
             // Handle special cases or validations (e.g., dateOfBirth)
             if (key === 'dateOfBirth') {
-                user[key] = new Date(updates[key]); // Example: Ensure date is correctly parsed
+                user[key] = new Date(updates[key]); // Ensure date is correctly parsed
             } else {
                 user[key] = updates[key];
             }
@@ -187,6 +198,7 @@ const editUser = async (req, res) => {
         // Validate the user object
         const validationResult = user.validateSync();
         if (validationResult) {
+            // Extract the error messages from the validation result
             const errors = Object.keys(validationResult.errors).map(key => ({
                 field: key,
                 message: validationResult.errors[key].message
@@ -213,6 +225,7 @@ const editUser = async (req, res) => {
         if (err.name === 'CastError' && err.kind === 'ObjectId') {
             return res.status(400).json({ message: `Invalid user ID ${id}` });
         }
+        // Send a 500 status code for other errors
         res.status(500).json({ message: 'Internal server error', error: err.message });
     }
 };
@@ -226,7 +239,6 @@ const deleteUser = async (req, res) => {
         if (!mongoose.isValidObjectId(userId)) {
             return res.status(400).json({ message: `Invalid user ID format: ${userId}` });
         }
-
 
         // Find the user by ID
         const user = await User.findById(userId);
@@ -266,7 +278,7 @@ const getUser = async (req, res) => {
         if (!mongoose.isValidObjectId(userId)) {
             return res.status(400).json({ 'message': 'Invalid user ID format' });
         }
-
+        // Find the user by ID
         const user = await User.findOne({ _id: userId }).exec();
         if (!user) {
             return res.status(404).json({ 'message': `User with ID ${userId} not found` });
