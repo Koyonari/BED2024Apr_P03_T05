@@ -682,3 +682,12 @@
 20240707	01:07:49	12a06b5e-80fb-4a41-9c3b-ec2db03c3cce	GET	undefined	/users/668105873662e3dda4c190f4
 20240707	01:07:51	3029bf22-1a9c-4799-98a6-bb824c1b7de1	GET	undefined	/users/668105873662e3dda4c190f4
 20240707	01:08:03	be198c14-c826-4224-99b9-af355fc83074	GET	undefined	/users/668104e73662e3dda4c190e0
+20240707	14:20:15	1ec6c524-39cd-4bb1-af92-941885571585	POST	undefined	/auth
+20240707	14:20:50	376059c3-5054-41a6-a2d6-fd96b557da5a	GET	undefined	/users
+20240707	14:20:56	8a65044c-8ddf-4d23-8fd5-586aee28a594	GET	undefined	/users
+20240707	14:21:12	9d0e75ed-e519-4e07-b7f3-4cc9ffabf42b	GET	undefined	/pantry/668105073662e3dda4c190e3
+20240707	14:24:01	28181248-0b21-47f1-b38a-eca94e8aae7a	POST	undefined	/pantry/Xy21z/ingredients
+20240707	14:24:24	11e8925d-a281-49d4-b22d-d36bda32e995	POST	undefined	/pantry/Xy21z/ingredients
+20240707	14:24:56	05ee437c-35b2-4fff-a126-18269615c23b	POST	undefined	/pantry/addingredients/Xy21z
+20240707	14:25:56	8128da41-aeea-4160-8d2b-ed241ae218d0	POST	undefined	/pantry/Xy21z/addingredients
+20240707	14:26:13	d01b6214-88f1-4381-9d9c-21ab46c7bad6	POST	undefined	/pantry/Xy21z/addingredients
