@@ -701,7 +701,37 @@ N/A, JWT Token is utilised to obtain user id
 ```
 - Status 400 Bad Request
 
-### 14. Insert Recipes into Database
+### 14. Get All Recipes within Database
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/fetchrecipes`
+- **Description:** Function to get all stored recipes in SQL Database
+- **Authorisation:** JWT Cookie
+- 
+#### Example Request Body 
+```
+N/A, JWT Token is utilised to obtain user id
+```
+
+#### Example Successful Response Body
+```json
+[
+    {
+        "id": 639851,
+        "title": "Cod with Tomato-Olive-Chorizo Sauce and Mashed Potatoes",
+        "image": "https://img.spoonacular.com/recipes/639851-312x231.jpg",
+        "imageType": "jpg"
+    },
+    {
+        "id": 639957,
+        "title": "Colorful Tomato and Spinach Seafood Pasta",
+        "image": "https://img.spoonacular.com/recipes/639957-312x231.jpg",
+        "imageType": "jpg"
+    },
+```
+- This is an array of recipes
+
+### 15. Insert Recipes into Database
 
 - **Method:** POST
 - **Request URL:** `http://localhost:3500/recipes/insertrecipe`
@@ -739,7 +769,7 @@ N/A, JWT Token is utilised to obtain user id
 ]
 ```
 
-### 15. Update Recipe Details by Recipe ID
+### 16. Update Recipe Details by Recipe ID
 
 - **Method:** PUT
 - **Request URL:** `http://localhost:3500/recipes/updaterecipedetails/{id}`
@@ -760,8 +790,28 @@ N/A, JWT Token is utilised to obtain user id
 ```
 - JSON Request body has all parameters required for recipe object
 
+### 17. Update Recipe Details by Recipe ID (Admin)
 
-### 16. Update Recipe Details by Recipe ID
+- **Method:** PUT
+- **Request URL:** `http://localhost:3500/recipes/updaterecipe/639411/{id}`
+- **Description:** Function to put a new recipe, replacing the old information in the previous recipe object, this is done by admin, hence no checks for recipe ownership
+- **Authorisation:** JWT Cookie
+
+#### Example Request Body
+```json
+
+    {
+        "id": "639851",
+        "title": "changed",
+        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "servings": 4,
+        "readyInMinutes": 6,
+        "pricePerServing": 626.14
+    }
+```
+- JSON Request body has all parameters required for recipe object
+
+### 18. Edit Recipe Details by Recipe ID
 
 - **Method:** PATCH
 - **Request URL:** `http://localhost:3500/recipes/editrecipedetails/{id}`
@@ -777,11 +827,39 @@ N/A, JWT Token is utilised to obtain user id
 ```
 - Only parameters intended to be patched will be put into the request body
 
-### 17. Update Recipe Details by Recipe ID
+### 19. Edit Recipe Details by Recipe ID [ADMIN]
+
+- **Method:** PATCH
+- **Request URL:** `http://localhost:3500/recipes/editrecipebyid/{id}`
+- **Description:** Function to patch a recipe, finding by recipe id, this is done by admin, hence no checks for recipe ownership
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```json
+   {
+        "servings": 2,
+        "pricePerServing": 500
+    }
+```
+- Only parameters intended to be patched will be put into the request body
+
+### 20. Delete Recipe by ID
 
 - **Method:** DELETE
 - **Request URL:** `http://localhost:3500/recipes/deleterecipe/{id}`
 - **Description:** Function to delete a recipe, based on ID
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```
+N/A, recipe id is from req.params.id
+```
+
+### 21. Delete Recipe by ID [ADMIN]
+
+- **Method:** DELETE
+- **Request URL:** `http://localhost:3500/recipes/deleterecipebyid/{id}`
+- **Description:** Function to delete a recipe, based on ID, this is done by admin, hence no checks for recipe ownership
 - **Authorisation:** JWT Token
 
 #### Example Request Body
@@ -1240,7 +1318,7 @@ User not found
 ```
 Error retrieving user details
 ```
-### 9. Volunteers view User Profile
+### 9. Admin approves requests
 - **Method:** PATCH
 - **Request URL:** `http://localhost:5000/req/approve/{admin_id}`
 - **Description:** Admin approves requests.
@@ -1335,7 +1413,7 @@ No accepted requests found
 ```
 Error retrieving accepted requests
 ```
-### 11. View Accepted Requests
+### 11. Delete request
 - **Method:** DELETE
 - **Request URL:** `http://localhost:5000/req/{request_id}`
 - **Description:** Delete appropriate request.
