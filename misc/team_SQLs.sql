@@ -8,7 +8,7 @@ CREATE TABLE Users (
 INSERT INTO Users (user_id, username) VALUES 
 ('668105073662e3dda4c190e3', 'TestUser'),
 ('668104e73662e3dda4c190e0', 'TestVolunteer');
-
+('668104e73662e3dda4c190e2', 'TestAdmin');
 
 -- Create Pantry Table
 CREATE TABLE Pantry (

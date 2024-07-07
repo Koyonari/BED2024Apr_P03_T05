@@ -32,26 +32,22 @@ class Request {
 
     // GET: Package 1.1 & 2.2.1 - Allows users to view their requests
     static async getRequestByUserId(userId) {
-        const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM requests WHERE user_id = @userId`;
-        const req = connection.request();
-        req.input('userId',sql.Int, userId);
-        const result = await req.query(sqlQuery);
-        connection.close();
-
-        if (result.recordset.length > 0) {
-            return result.recordset.map(record => new Request(
-                record.request_id,
-                record.title,
-                record.category,
-                record.description,
-                record.user_id,
-                record.volunteer_id,
-                record.isCompleted,
-                record.admin_id
-            ));
-        } else {
-            return null;
+        let connection;
+        try {
+            connection = await sql.connect(dbConfig);
+            await connection.connect();
+            const sqlQuery = `SELECT * FROM requests WHERE user_id = @userId`;
+            const request = connection.request();
+            request.input('userId', sql.VarChar(24), userId);
+            const result = await request.query(sqlQuery);
+            return result.recordset[0];
+        } catch (error) {
+            console.error("Error retrieving requests by user ID:", error);
+            throw error;
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
         }
     }
 
@@ -61,9 +57,6 @@ class Request {
         try {
             connection = await sql.connect(dbConfig);
             await connection.connect();
-            if (connection.state === 'closed') {
-                await connection.connect();
-            }
             const uuid = generateUUID24();
             const sqlQuery = `
             INSERT INTO requests (request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id) 
@@ -122,8 +115,8 @@ class Request {
         WHERE request_id = @id`;
     
         const request = connection.request();
-        request.input("id", sql.Int, id);
-        request.input("volunteer_id", sql.Int, newVolunteerId || null);
+        request.input("id", id);
+        request.input("volunteer_id", newVolunteerId || null);
     
         await request.query(sqlQuery);
     
@@ -137,7 +130,7 @@ class Request {
         const connection = await sql.connect(dbConfig);
         const sqlQuery = `SELECT * FROM requests WHERE volunteer_id = @volunteerId`;
         const req = connection.request();
-        req.input('volunteerId',sql.Int, volunteerId);
+        req.input('volunteerId', volunteerId);
         const result = await req.query(sqlQuery);
         connection.close();
 
@@ -180,20 +173,20 @@ class Request {
     static async getRequestById(id) {
         let connection;
         try {
-          connection = await sql.connect(dbConfig);
-          await connection.connect();
-          const sqlQuery = `SELECT * FROM requests WHERE request_id = @request_id`;
-          const request = connection.request();
-          request.input("request_id", id);
-          const result = await request.query(sqlQuery);
-          return result.recordset[0];
-        } catch (error) {
-          console.error("Error getting request by request ID", error);
-          throw error;
-        } finally {
-          if (connection) {
-            await connection.close();
-          }
+            connection = await sql.connect(dbConfig);
+            await connection.connect();
+            const sqlQuery = `SELECT * FROM requests WHERE request_id = @request_id`;
+            const request = connection.request();
+            request.input("request_id", id);
+            const result = await request.query(sqlQuery);
+            return result.recordset[0];
+            } catch (error) {
+                console.error("Error getting request by request ID", error);
+                throw error;
+            } finally {
+                if (connection) {
+                    await connection.close();
+                }
         }
     }
 
@@ -221,8 +214,8 @@ class Request {
             const sqlQuery = `UPDATE requests SET admin_id = @adminId WHERE request_id = @requestId`;
     
             const request = connection.request();
-            request.input('requestId', sql.Int, requestId);
-            request.input('adminId', sql.Int, adminId);
+            request.input('requestId', requestId);
+            request.input('adminId', adminId);
     
             await request.query(sqlQuery);
         } catch (error) {

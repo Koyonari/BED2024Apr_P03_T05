@@ -21,7 +21,7 @@ const validateRequest = (req, res, next) => {
 
 const validatePatchAcceptedRequest = (req, res, next) => {
   const schema = Joi.object({
-    volunteer_id: Joi.number().integer().allow(null)
+    volunteer_id: Joi.string().length(24).alphanum().allow(null)
   });
 
   const validation = schema.validate(req.body, { abortEarly: false }); // Validate request body
@@ -37,7 +37,7 @@ const validatePatchAcceptedRequest = (req, res, next) => {
 
 const validatePatchApproveRequest = (req, res, next) => {
   const schema = Joi.object({
-    admin_id: Joi.number().integer().allow(null)
+    admin_id: Joi.string().length(24).alphanum().allow(null)
   });
 
   const validation = schema.validate(req.body, { abortEarly: false }); // Validate request body

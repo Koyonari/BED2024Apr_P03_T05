@@ -2,24 +2,23 @@ const Request = require("../models/request");
 
 // Get requests by User ID
 async function getRequestByUserId(req, res) {
-  const userId = parseInt(req.params.id);
+  const userId = req.params.id;
   try {
-      const requests = await Request.getRequestByUserId(userId);
-      if (!requests) {
-          return res.status(404).send("No requests found for this user");
-      }
-      res.json(requests);
-  } catch (error) {
-      console.error(error);
-      res.status(500).send("Error retrieving requests");
-  }
+        const requests = await Request.getRequestByUserId(userId);
+        if (!requests) {
+            return res.status(404).send("No requests found for this user");
+        }
+        res.json(requests);
+    } catch (error) {
+        res.status(500).send("Error retrieving requests");
+    }
 }
 
 // Create a new request
 async function createRequest(req, res) {
-    const reqData = req.body;
+    const request = req.body;
     try {
-        const createdRequest = await Request.createRequest(reqData);
+        const createdRequest = await Request.createRequest(request);
         res.status(201).json(createdRequest);
     } catch (error) {
         console.error(error);
@@ -41,10 +40,9 @@ async function getAvailableRequest(req, res) {
     }
 }
 
-
 // Update an accepted request with a new volunteer ID
 async function updateAcceptedRequest(req, res) {
-    const requestId = parseInt(req.params.id);
+    const requestId = req.params.id;
     const newVolunteerId = req.body.volunteer_id;
 
     try {
@@ -61,7 +59,7 @@ async function updateAcceptedRequest(req, res) {
 
 // Get accepted requests by volunteer ID
 async function getAcceptedRequestById(req, res) {
-    const volunteerId = parseInt(req.params.id);
+    const volunteerId = req.params.id;
     try {
         const requests = await Request.getAcceptedRequestById(volunteerId);
         if (!requests) {
@@ -76,7 +74,7 @@ async function getAcceptedRequestById(req, res) {
 
 // Update request to completed
 async function updateCompletedRequest(req, res) {
-    const requestId = parseInt(req.params.id);
+    const requestId = req.params.id;
 
     try {
         const updatedRequest = await Request.updateCompletedRequest(requestId);
@@ -106,7 +104,7 @@ async function getRequestById(req, res) {
 
 // Get user details by id
 async function getUserDetailsById(req, res) {
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
     try {
         const user = await Request.getUserDetailsById(userId);
         if (!user) {
@@ -121,8 +119,8 @@ async function getUserDetailsById(req, res) {
 
 // Approve request
 async function updateApproveRequest(req, res) {
-    const requestId = parseInt(req.params.id);
-    const adminId = parseInt(req.body.admin_id);
+    const requestId = req.params.id;
+    const adminId = req.body.admin_id;
 
     try {
         const updatedRequest = await Request.updateApproveRequest(requestId, adminId);
@@ -152,7 +150,7 @@ async function getAcceptedRequest(req, res) {
 
 // Delete a request
 async function deleteRequest(req, res) {
-    const requestId = parseInt(req.params.id);
+    const requestId = req.params.id;
 
     try {
         const success = await Request.deleteRequest(requestId);
