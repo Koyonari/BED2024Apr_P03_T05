@@ -1,4 +1,7 @@
 const User = require('../models/user');
+const sql = require('mssql');
+const { createSQLUser } = require('../models/usersql');
+const { dbConfig } = require('../config/dbConfig');
 const bcrypt = require('bcrypt');
 const validateUser = require('../middleware/validateUser');
 const { date } = require('joi');
@@ -11,7 +14,12 @@ const getAllUsers = async (req, res) => {
         if (!users || users.length === 0) {
             return res.status(204).json({ message: 'No users found' });
         }
-        res.json(users);
+        // Filter out sensitive fields from each user object, password and refreshToken
+        const sanitizedUsers = users.map(user => {
+            const { password, refreshToken, ...sanitizedUser } = user.toObject();
+            return sanitizedUser;
+        });
+        res.json(sanitizedUsers);
     } catch (err) {
         if (err.name === 'UnauthorizedError') {
             return res.status(401).json({ message: 'Unauthorized: Invalid or missing token' });
@@ -39,8 +47,8 @@ const createNewUser = async (req, res) => {
         // Hash password
         const hashedPwd = await bcrypt.hash(password, 10);
 
-        // Prepare new user object
-        const newUser = {
+        // Prepare new user object for MongoDB
+        const newUserMongo = new User({
             username,
             password: hashedPwd,
             roles: roles || { User: 2001 },
@@ -50,22 +58,27 @@ const createNewUser = async (req, res) => {
             email,
             contact,
             dateCreated: new Date(),
-            dateOfBirth: new Date(dateOfBirth)
-        };
-
-        // If creating a regular user, include optional fields
-        if (newUser.roles.User === 2001) {
-            newUser.dietaryRestrictions = dietaryRestrictions || [];
-            newUser.intolerances = intolerances || [];
-            newUser.excludedIngredients = excludedIngredients || [];
-        }
+            dateOfBirth: new Date(dateOfBirth),
+            dietaryRestrictions: roles.User === 2001 ? dietaryRestrictions || [] : [],
+            intolerances: roles.User === 2001 ? intolerances || [] : [],
+            excludedIngredients: roles.User === 2001 ? excludedIngredients || [] : []
+        });
 
         // Validate user input using middleware or function (assuming validateUser is defined)
         validateUser(req, res, async () => {
             try {
-                // Attempt to create the user
-                const result = await User.create(newUser);
-                res.status(201).json({ message: `User ${username} created successfully` });
+                // Attempt to create the user in MongoDB
+                const resultMongo = await newUserMongo.save(); // Assuming newUserMongo.save() persists user to MongoDB
+                const userId = resultMongo._id.toString();
+                // Attempt to create the user in SQL
+                const newUserSQL = await createSQLUser(userId, username);
+
+                // Return success response after both operations are complete
+                res.status(201).json({
+                    message: `User ${username} created successfully in MongoDB and SQL BY Admin ${req.user.username}`,
+                    user: { mongoDB: resultMongo, sqlDB: newUserSQL }
+                });
+
             } catch (err) {
                 console.error(err);
                 res.status(500).json({ message: 'Failed to create user', error: err.message });
@@ -77,6 +90,7 @@ const createNewUser = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: err.message });
     }
 };
+
 
 const updateUser = async (req, res) => {
     console.log('Request Body:', req.body);
@@ -190,9 +204,8 @@ const editUser = async (req, res) => {
                 editedFields[key] = result[key];
             }
         });
-
         // Put the edited fields in the response
-        res.json({ message: 'User updated successfully', editedFields });
+        res.json({ message: 'User updated successfully', editedFields});
 
     } catch (err) {
         console.error('Error updating user:', err);
@@ -260,7 +273,9 @@ const getUser = async (req, res) => {
         }
 
         console.log('Retrieved User:', user); // Log the retrieved user object
-        res.json(user);
+        // Filter out sensitive fields from the user object
+        const { password, refreshToken, ...sanitizedUser } = user.toObject();
+        res.json(sanitizedUser);
     } catch (err) {
         // Handle specific MongoDB errors
         if (err.name === 'CastError' && err.kind === 'ObjectId') {
