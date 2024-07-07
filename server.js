@@ -76,11 +76,8 @@ app.get("/req/accepted/:id", reqController.getAcceptedRequestById);
 app.patch("/req/completed/:id", reqController.updateCompletedRequest);
 app.get("/req/:id", reqController.getRequestById);
 app.patch("/req/approve/:id", validatePatchApproveRequest, reqController.updateApproveRequest);
-app.get("/accepted", reqController.getAcceptedRequest); 
+app.get("/accepted", reqController.getAcceptedRequest);
 app.delete("/req/:id", reqController.deleteRequest);
-
-// YongShyan User Routes
-app.get("/user/:id", reqController.getUserDetailsById);
 
 // Error handling middleware
 app.use(errorHandler);
