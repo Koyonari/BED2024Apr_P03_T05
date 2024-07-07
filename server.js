@@ -77,18 +77,15 @@ app.delete('/pantry/:pantry_id/ingredients', pantryController.removeIngredientFr
 
 // YongShyan Request Routes
 app.get("/req/user/:id", reqController.getRequestByUserId);
-app.post('/req', validateRequest, reqController.createRequest);
+app.post('/req', validateRequest, reqController.createRequest); //works
 app.get("/available", reqController.getAvailableRequest);
 app.patch("/req/accepted/update/:id", validatePatchAcceptedRequest, reqController.updateAcceptedRequest);
 app.get("/req/accepted/:id", reqController.getAcceptedRequestById);
 app.patch("/req/completed/:id", reqController.updateCompletedRequest);
-app.get("/req/:id", reqController.getRequestById);
+app.get("/req/:id", reqController.getRequestById); //works
 app.patch("/req/approve/:id", validatePatchApproveRequest, reqController.updateApproveRequest);
 app.get("/accepted", reqController.getAcceptedRequest); 
 app.delete("/req/:id", reqController.deleteRequest);
-
-// YongShyan User Routes
-app.get("/user/:id", reqController.getUserDetailsById);
 
 // Error handling middleware
 app.use(errorHandler);

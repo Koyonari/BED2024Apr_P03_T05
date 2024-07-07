@@ -92,17 +92,17 @@ async function updateCompletedRequest(req, res) {
 
 // Get request by ID
 async function getRequestById(req, res) {
-    const requestId = parseInt(req.params.id);
+    const requestId = req.params.id;
     try {
-        const request = await Request.getRequestById(requestId);
-        if (!request) {
-            return res.status(404).send("Request not found");
-        }
-        res.json(request);
+      const request = await Request.getRequestById(requestId);
+      if (!request) {
+        return res.status(404).send("Request not found");
+      }
+      res.json(request);
     } catch (error) {
-        res.status(500).send("Error retrieving request");
+      res.status(500).send("Error retrieving request");
     }
-}
+  }
 
 // Get user details by id
 async function getUserDetailsById(req, res) {

@@ -77,31 +77,30 @@ CREATE TABLE UserRecipes (
     FOREIGN KEY (recipe_id) REFERENCES Recipes(id),
 );
 
+-- Create the requests table
+CREATE TABLE requests (
+    request_id VARCHAR(24) PRIMARY KEY,  
+    title NVARCHAR(255) NOT NULL,              
+    category NVARCHAR(100) NOT NULL,           
+    description NVARCHAR(MAX) NOT NULL,        
+    user_id VARCHAR(255) NOT NULL,                      
+    volunteer_id VARCHAR(255) NULL,                     
+    isCompleted BIT NOT NULL DEFAULT 0,        
+    admin_id VARCHAR(255) NULL,                         
+    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES Users(user_id),  
+    CONSTRAINT FK_Volunteer FOREIGN KEY (volunteer_id) REFERENCES Users(user_id),
+    CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES Users(user_id)
+);
+
+-- Insert data into the requests table
+INSERT INTO requests (request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id)
+VALUES 
+('123456789012345ewq901000', 'Urgent food request', 'Urgent', 'Require immediate food, preferably meat', '668105073662e3dda4c190e3', NULL, 0, NULL)
+
 SELECT * FROM Users;
 SELECT * FROM Pantry;
 SELECT * FROM Ingredients;
 SELECT * FROM PantryIngredient;
 SELECT * FROM Recipes;
 SELECT * FROM RecipeIngredients;
-
--- Create the requests table
-CREATE TABLE requests (
-    request_id INT PRIMARY KEY IDENTITY(1,1),  
-    title NVARCHAR(255) NOT NULL,              
-    category NVARCHAR(100) NOT NULL,           
-    description NVARCHAR(MAX) NOT NULL,        
-    user_id INT NOT NULL,                      
-    volunteer_id INT NULL,                     
-    isCompleted BIT NOT NULL DEFAULT 0,        
-    admin_id INT NULL,                         
-    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES Users(user_id),  
-    CONSTRAINT FK_Volunteer FOREIGN KEY (volunteer_id) REFERENCES Users(user_id),
-    CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES admins Users(user_id)
-);
-
--- Insert data into the requests table
-INSERT INTO requests (title, category, description, user_id, volunteer_id, isCompleted, admin_id)
-VALUES 
-('Urgent food request', 'Urgent', 'Require immediate food, preferably meat', 1, 2, 1, 3),
-('Liquids Please', 'Low Priority', 'Require liquids like water, plus protein powder', 2, 2, 0, NULL),
-('Baked Goods', 'High Priority', 'I need some baked goods for meals', 3, NULL, 0, NULL);
+SELECT * FROM requests;

@@ -1,5 +1,22 @@
 const sql = require('mssql');
-const dbConfig = require('../config/dbConfig');
+const {dbConfig} = require('../config/dbConfig');
+const crypto = require("crypto");
+
+// Generate a 24 varchar string
+function generateUUID24() {
+    // Define the characters to be used in the string
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    
+    let result = '';
+    // Generate 24 characters randomly
+    for (let i = 0; i < 24; i++) {
+      const randomIndex = crypto.randomInt(charactersLength);
+      result += characters[randomIndex];
+    }
+  
+    return result;
+}
 
 class Request {
     constructor(request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id){
@@ -40,24 +57,35 @@ class Request {
 
     // POST: Package 1.2 - Allows users to create requests
     static async createRequest(request) {
-        const connection = await sql.connect(dbConfig);
-        const sqlQuery = `
-            INSERT INTO requests (title, category, description, user_id, volunteer_id, isCompleted, admin_id) 
-            VALUES (@title, @category, @description, @user_id, @volunteer_id, @isCompleted, @admin_id); 
-            SELECT SCOPE_IDENTITY() AS id;
-        `;
-        const req = connection.request();
-        req.input('title', request.title);
-        req.input('category', request.category);
-        req.input('description', request.description);
-        req.input('user_id', request.user_id);
-        req.input('volunteer_id', request.volunteer_id);
-        req.input('isCompleted', request.isCompleted);
-        req.input('admin_id', request.admin_id);
-
-        const result = await req.query(sqlQuery);
-        connection.close();
-        return this.getRequestById(result.recordset[0].id);
+        let connection;
+        try {
+            connection = await sql.connect(dbConfig);
+            await connection.connect();
+            if (connection.state === 'closed') {
+                await connection.connect();
+            }
+            const uuid = generateUUID24();
+            const sqlQuery = `
+            INSERT INTO requests (request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id) 
+            VALUES (@request_id, @title, @category, @description, @user_id, NULL, 0, NULL);
+            `;
+            const req = connection.request();
+            req.input('request_id', uuid);
+            req.input('title', request.title);
+            req.input('category', request.category);
+            req.input('description', request.description);
+            req.input('user_id', request.user_id);
+        
+            await req.query(sqlQuery);
+            return this.getRequestById(uuid, connection);
+        } catch (error) {
+            console.error("Error creating requests:", error);
+            throw error;
+        } finally {
+                if (connection) {
+                await connection.close();
+            }
+        }
     }
 
     // GET: Package 2.1.2 & 9.2.1 - Allow Volunteers and Admins to view available requests
@@ -150,27 +178,22 @@ class Request {
 
     // GET: Package 2.2.2 & 6.2 - View details of specfic request
     static async getRequestById(id) {
-        const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM requests WHERE request_id = @id`;
-        const request = connection.request();
-        request.input("id", sql.Int, id);
-        const result = await request.query(sqlQuery);
-        connection.close();
-
-        if (result.recordset.length > 0) {
-            const record = result.recordset[0];
-            return new Request(
-                record.request_id,
-                record.title,
-                record.category,
-                record.description,
-                record.user_id,
-                record.volunteer_id,
-                record.isCompleted,
-                record.admin_id
-            );
-        } else {
-            return null;
+        let connection;
+        try {
+          connection = await sql.connect(dbConfig);
+          await connection.connect();
+          const sqlQuery = `SELECT * FROM requests WHERE request_id = @request_id`;
+          const request = connection.request();
+          request.input("request_id", id);
+          const result = await request.query(sqlQuery);
+          return result.recordset[0];
+        } catch (error) {
+          console.error("Error getting request by request ID", error);
+          throw error;
+        } finally {
+          if (connection) {
+            await connection.close();
+          }
         }
     }
 
