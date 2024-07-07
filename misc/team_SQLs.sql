@@ -94,9 +94,9 @@ CREATE TABLE requests (
     volunteer_id INT NULL,                     
     isCompleted BIT NOT NULL DEFAULT 0,        
     admin_id INT NULL,                         
-    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES users(user_id),  
-    CONSTRAINT FK_Volunteer FOREIGN KEY (volunteer_id) REFERENCES volunteers(volunteer_id),
-    CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES admins(admin_id)
+    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES Users(user_id),  
+    CONSTRAINT FK_Volunteer FOREIGN KEY (volunteer_id) REFERENCES Users(user_id),
+    CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES admins Users(user_id)
 );
 
 -- Insert data into the requests table
