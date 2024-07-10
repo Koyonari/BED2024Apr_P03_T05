@@ -5,10 +5,7 @@ const validateRequest = (req, res, next) => {
     title: Joi.string().min(3).max(70).required(),
     category: Joi.string().max(50).required(),
     description: Joi.string().min(0).max(150).required(),
-    user_id: Joi.number().integer().min(1).required(),
-    volunteer_id: Joi.number().integer().allow(null),
-    isCompleted: Joi.boolean().required(),
-    admin_id: Joi.number().integer().allow(null)
+    user_id: Joi.string().length(24).alphanum().required()
   });
 
   const validation = schema.validate(req.body, { abortEarly: false }); // Validate request body
@@ -24,7 +21,7 @@ const validateRequest = (req, res, next) => {
 
 const validatePatchAcceptedRequest = (req, res, next) => {
   const schema = Joi.object({
-    volunteer_id: Joi.number().integer().allow(null)
+    volunteer_id: Joi.string().length(24).alphanum().allow(null)
   });
 
   const validation = schema.validate(req.body, { abortEarly: false }); // Validate request body
@@ -40,7 +37,7 @@ const validatePatchAcceptedRequest = (req, res, next) => {
 
 const validatePatchApproveRequest = (req, res, next) => {
   const schema = Joi.object({
-    admin_id: Joi.number().integer().allow(null)
+    admin_id: Joi.string().length(24).alphanum().allow(null)
   });
 
   const validation = schema.validate(req.body, { abortEarly: false }); // Validate request body

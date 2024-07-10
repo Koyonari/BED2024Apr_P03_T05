@@ -62,9 +62,12 @@ const handleNewUser = async (req, res) => {
 
                 // Store the new user in SQL
                 await createSQLUser(userId, username);
+                // Return a success message
                 res.status(201).json({ 'success': `New user ${username} created!` });
             } catch (err) {
+                // Handle errors
                 console.error(err);
+                // Return an error message
                 res.status(500).json({ 'message': err.message });
             }
         });

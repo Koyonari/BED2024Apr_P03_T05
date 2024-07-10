@@ -173,7 +173,7 @@ const insertRecipeByUser = async (req, res) => {
 };
 
 
-// Controller function to update a recipe for a user by user ID and recipe ID
+// Controller function to update a recipe for a user by user ID and recipe ID (PUT)
 const updateRecipeByUser = async (req, res) => {
   try {
     const userId = req.userid; // Extracted from JWT token
@@ -225,7 +225,7 @@ const updateRecipeByUser = async (req, res) => {
   }
 };
 
-// Controller function to update a recipe by recipe ID, this is for admin purposes
+// Controller function to update a recipe by recipe ID, this is for admin purposes (PUT)
 const updateRecipeByRecipeId = async (req, res) => {
   try {
     const recipeId = req.params.id; // Extracted from URL parameters
@@ -269,7 +269,7 @@ const updateRecipeByRecipeId = async (req, res) => {
   }
 };
 
-// Update a recipe with provided parameters
+// Controller function to update a recipe with provided parameters (PATCH)
 const patchRecipeByUser = async (req, res) => {
   try {
     const userId = req.userid; // Extracted from JWT token
@@ -281,6 +281,7 @@ const patchRecipeByUser = async (req, res) => {
 
     // Check for missing parameters
     if (!userId || !recipeId || !updates) {
+      // Respond with error if any required parameters are missing
       return res.status(400).json({ message: 'User ID, Recipe ID, and updates must be provided' });
     }
 
@@ -295,20 +296,23 @@ const patchRecipeByUser = async (req, res) => {
     const recipe = userRecipes.find(r => r.id === recipeId);
     // Check if the recipe is found
     if (!recipe) {
+      // If recipe is not found or does not belong to user, respond with error
       return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
     }
 
     // Call the editRecipe function in recipe model to patch the recipe (patch)
     await editRecipe(recipeId, updates);
-
+    // Respond with success message
     res.status(200).json({ message: 'Recipe updated successfully' });
   } catch (error) {
+    // Log the error message
     console.error('Error updating recipe:', error.message);
+    // Respond with error message
     res.status(500).json({ message: 'Error updating recipe', error: error.message });
   }
 };
 
-// Update a recipe by recipe ID
+// Controller function to update a recipe with provided parameters, for admins (PATCH)
 const patchRecipeByRecipeId = async (req, res) => {
   try {
     const recipeId = req.params.id; // Extracted from URL parameters
@@ -319,21 +323,24 @@ const patchRecipeByRecipeId = async (req, res) => {
 
     // Check for missing parameters
     if (!recipeId || !updates) {
+      // Respond with error if any required parameters are missing
       return res.status(400).json({ message: 'Recipe ID and updates must be provided' });
     }
 
     // Call the editRecipe function in recipe model to patch the recipe
     await editRecipe(recipeId, updates);
-
+    // Respond with success message
     res.status(200).json({ message: 'Recipe updated successfully by Admin' });
   } catch (error) {
+    // Log the error message
     console.error('Error updating recipe:', error.message);
+    // Respond with error message
     res.status(500).json({ message: 'Error updating recipe', error: error.message });
   }
 };
 
 
-// Delete a recipe by user ID and recipe ID
+// Controller function to delete a recipe by recipe ID (for users)
 const deleteRecipeByUser = async (req, res) => {
   try {
     const userId = req.userid; // Extracted from JWT token
@@ -341,7 +348,7 @@ const deleteRecipeByUser = async (req, res) => {
 
     // Log the request for debugging purposes
     console.log('Request to delete recipe with ID:', recipeId);
-
+    // Check if recipe ID is provided
     if (!recipeId) {
       return res.status(400).json({ message: 'Recipe ID must be provided' });
     }
@@ -354,23 +361,27 @@ const deleteRecipeByUser = async (req, res) => {
       throw new Error('Error fetching recipes for user');
     }
 
+    // Find the recipe object in the user's recipes array, where the input recipe ID matches the primary key recipe ID
     const recipe = userRecipes.find(r => r.id === recipeId);
 
+    // Check if the recipe is found
     if (!recipe) {
       return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
     }
 
     // Call the deleteRecipe function
     await deleteRecipe(recipeId);
-
+    // Respond with success message
     res.status(200).json({ message: 'Recipe and associated ingredients deleted successfully' });
   } catch (error) {
+    // Log the error message
     console.error('Error deleting recipe:', error.message);
+    // Respond with error message
     res.status(500).json({ message: 'Error deleting recipe', error: error.message });
   }
 };
 
-// Delete a recipe by recipe ID (for admins)
+// Controller function to delete a recipe by recipe ID (for admins) 
 const deleteRecipeByRecipeId = async (req, res) => {
   try {
     const recipeId = req.params.id; // Extracted from URL parameters
@@ -378,6 +389,7 @@ const deleteRecipeByRecipeId = async (req, res) => {
     // Log the request for debugging purposes
     console.log('Admin request to delete recipe with ID:', recipeId);
 
+    // Check if recipe ID is provided
     if (!recipeId) {
       return res.status(400).json({ message: 'Recipe ID must be provided' });
     }
@@ -394,9 +406,12 @@ const deleteRecipeByRecipeId = async (req, res) => {
     }
     // Call the deleteRecipe function
     await deleteRecipe(recipeId);
+    // Respond with success message
     res.status(200).json({ message: 'Recipe deleted successfully by Admin' });
   } catch (error) {
+    // Log the error message
     console.error('Error deleting recipe:', error.message);
+    // Respond with error message
     res.status(500).json({ message: 'Error deleting recipe', error: error.message });
   }
 };

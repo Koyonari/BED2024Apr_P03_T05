@@ -14,6 +14,7 @@ class Recipe {
     this.userId = userId;
   }
 }
+
 // Function to get all recipes by user ID
 const getRecipesByUserId = async (userId) => {
   try {
@@ -27,13 +28,15 @@ const getRecipesByUserId = async (userId) => {
       INNER JOIN Recipes r ON ur.recipe_id = r.id
       WHERE ur.user_id = @userId;
     `;
-
+    // Execute the query with parameterized input
     const result = await pool.request()
       .input('userId', sql.VarChar(255), userId)
       .query(query);
 
+    // Return the fetched records
     return result.recordset;
   } catch (error) {
+    // Log and throw any errors
     console.error('Error fetching recipes by user ID:', error.message);
     throw error;
   } finally {
@@ -54,6 +57,7 @@ const getRecipeById = async (recipeId) => {
       WHERE id = @recipeId;
     `;
 
+    // Execute the query with parameterized input
     const result = await pool.request()
       .input('recipeId', sql.VarChar(255), recipeId)
       .query(query);
@@ -62,13 +66,15 @@ const getRecipeById = async (recipeId) => {
     if (result.recordset.length === 0) {
       return null; // No recipe found with the given ID
     }
-
-    return result.recordset[0]; // Return the first (and only) recipe found
+    // Return the first (and only) recipe found
+    return result.recordset[0];
   } catch (error) {
+    // Log and throw any errors
     console.error('Error fetching recipe by ID:', error.message);
     throw error;
   } finally {
-    sql.close(); // Close the pool connection
+    // Close the database connection in the finally block
+    sql.close();
   }
 };
 
@@ -84,44 +90,51 @@ const getAllStoredRecipes = async () => {
       FROM Recipes;
     `;
 
+    // Execute the query to get all recipes
     const result = await pool.request().query(query);
 
     // Return the list of recipes
     return result.recordset;
   } catch (error) {
+    // Log and throw any errors
     console.error('Error fetching all recipes:', error.message);
     throw error;
   } finally {
-    sql.close(); // Close the pool connection
+    // Close the database connection in the finally block
+    sql.close();
   }
 };
 
-
-// Insert a new recipe and link it to the user
+// Function to insert a new recipe and link it to the user
 const insertRecipe = async (recipe, userId) => {
   // Connect to database
   const pool = await sql.connect(dbConfig);
   const transaction = new sql.Transaction(pool);
 
   try {
+    // Begin a transaction to ensure data integrity
     await transaction.begin();
-
+    // Call function to Insert recipe details into recipe  table
     await insertRecipeDetails(transaction, recipe);
+    // Call function to Insert recipe ingredients into ingredients table
     await insertRecipeIngredients(transaction, recipe);
+    // Call function to Link user to recipe in UserRecipes table
     await linkUserToRecipe(transaction, userId, recipe.id);
-
+    // Commit the transaction if all operations are successful
     await transaction.commit();
     console.log(`Recipe inserted and linked to user ${userId}: ${recipe.title}`);
   } catch (err) {
+    // Rollback the transaction if any operation fails
     await transaction.rollback();
     console.error('Error inserting recipe:', err.message);
     throw err;
   } finally {
+    // Close the database connection in the finally block
     pool.close();
   }
 };
 
-// Inserting recipe details, part of insertRecipe
+// Function for Inserting recipe details, part of insertRecipe
 const insertRecipeDetails = async (pool, recipe) => {
   try {
 
