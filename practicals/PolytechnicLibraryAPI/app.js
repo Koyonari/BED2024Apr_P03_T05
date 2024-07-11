@@ -10,7 +10,7 @@ const verifyJWT = require("./middlewares/verifyJWT"); //Import verifyJWT middlew
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./models/swagger-output.json");
 const app = express();
-const port = process.env.PORT || 3000; // Use environment variable or default port
+const port = process.env.PORT || 3500; // Use environment variable or default port
 
 const staticMiddleware = express.static("public"); // Path to the public folder
 
