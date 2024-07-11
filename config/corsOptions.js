@@ -13,6 +13,7 @@ const corsOptions = {
             callback(new Error('Not allowed by CORS'));
         }
     },
+    credentials: true, // Enable credentials (cookies, authorization headers, TLS client certificates)
     optionsSuccessStatus: 200
 }
 
