@@ -13,24 +13,29 @@
   "paths": {
     "/register": {
       "post": {
-        "description": "",
+        "description": "Register a new user",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "username": {
+                  "type": "string",
                   "example": "any"
                 },
                 "password": {
+                  "type": "string",
                   "example": "any"
                 },
                 "role": {
+                  "type": "string",
                   "example": "any"
                 }
-              }
+              },
+              "required": ["username", "password"]
             }
           }
         ],
@@ -49,21 +54,25 @@
     },
     "/login": {
       "post": {
-        "description": "",
+        "description": "Login a user",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "username": {
+                  "type": "string",
                   "example": "any"
                 },
                 "password": {
+                  "type": "string",
                   "example": "any"
                 }
-              }
+              },
+              "required": ["username", "password"]
             }
           }
         ],
@@ -88,7 +97,7 @@
     },
     "/books": {
       "get": {
-        "description": "",
+        "description": "Get all books",
         "responses": {
           "200": {
             "description": "OK"
@@ -99,12 +108,35 @@
         }
       },
       "post": {
-        "description": "",
+        "description": "Create a new book",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "any"
+                },
+                "author": {
+                  "type": "string",
+                  "example": "any"
+                },
+                "availability": {
+                  "type": "string",
+                  "example": "Y"
+                }
+              },
+              "required": ["title", "author", "availability"]
+            }
           }
         ],
         "responses": {
@@ -128,7 +160,7 @@
     },
     "/books/{bookId}/availability": {
       "put": {
-        "description": "",
+        "description": "Update book availability",
         "parameters": [
           {
             "name": "bookId",
@@ -144,13 +176,16 @@
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "availability": {
+                  "type": "string",
                   "example": "any"
                 }
-              }
+              },
+              "required": ["availability"]
             }
           }
         ],
