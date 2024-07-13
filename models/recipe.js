@@ -143,7 +143,8 @@ const insertRecipeDetails = async (pool, recipe) => {
       throw new Error('Recipe object, id, or title is undefined');
     }
 
-    const idString = recipe.id.toString(); // Check this line
+    const idString = uuid4(); // Generate a unique ID for the recipe, primary key
+    const spoonacularid = recipe.id.toString() // Convert spoonacular id to string, this is a parameter *** important
     console.log('Recipe ID:', idString);
 
     // Ensure title is a string
@@ -153,13 +154,24 @@ const insertRecipeDetails = async (pool, recipe) => {
 
     // Check if the recipe with the same id already exists
     const existingRecipe = await pool.request()
-      .input('id_check', sql.VarChar(255), idString)
-      .query('SELECT * FROM Recipes WHERE id = @id_check');
+    .input('user_id_check', sql.VarChar(255), userId)
+    .input('spoonacularid_check', sql.VarChar(255), spoonacularid)
+    .query(`
+      SELECT *
+      FROM UserRecipes
+      INNER JOIN Recipes ON UserRecipes.recipe_id = Recipes.id
+      INNER JOIN Users ON UserRecipes.user_id = Users.id
+      WHERE user_id = @user_id_check AND spoonacularId = @spoonacularid_check`
+    );
 
     if (existingRecipe.recordset.length > 0) {
-      console.log(`Recipe with id ${recipe.id} already exists. Updating.`);
-      await updateRecipeDetails(pool, recipe);
-      return;
+      // Extract the recipe_id from the result set
+      const recipeId = existingRecipe.recordset[0].recipe_id;
+      console.log(`Recipe with spoonacularId ${spoonacularId} already exists with recipe_id ${recipeId}.`);
+      // Update the recipe details
+      await updateRecipeDetails(pool, recipe, recipeId);
+    } else {
+      console.log(`No existing recipe found with spoonacularId ${spoonacularId}.`);
     }
 
     // If recipe doesn't exist, insert it
@@ -174,6 +186,7 @@ const insertRecipeDetails = async (pool, recipe) => {
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
+      .input('spoonacularId', sql.VarChar(255), idString)
       .query(insertQuery);
 
     console.log(`Recipe with id ${recipe.id} inserted successfully.`);
@@ -184,7 +197,7 @@ const insertRecipeDetails = async (pool, recipe) => {
 };
 
 // Update existing recipe details
-const updateRecipeDetails = async (pool, recipe) => {
+const updateRecipeDetails = async (pool, recipe, recipeId) => {
   try {
     console.log('Received recipe for update:', recipe); // Log received recipe
     // Debugging: Check if recipe and its properties are defined
@@ -200,16 +213,18 @@ const updateRecipeDetails = async (pool, recipe) => {
         servings = @servings, 
         readyInMinutes = @readyInMinutes, 
         pricePerServing = @pricePerServing
+        spoonacularId = @spoonacularId
       WHERE id = @id_update;
     `;
     
     await pool.request()
-      .input('id_update', sql.VarChar(255), recipe.id.toString()) // Make sure recipe.id is defined
+      .input('id_update', sql.VarChar(255), recipeId) // Make sure recipe.id is defined
       .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
       .input('imageurl', sql.NVarChar, recipe.image || '') // Default to empty if recipe.image is not provided
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
+      .input(`spoonacularId`, sql.VarChar(255), recipe.id)
       .query(updateQuery);
 
     console.log(`Recipe details updated for recipe with id ${recipe.id}.`);
@@ -238,6 +253,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
         servings = @servings, 
         readyInMinutes = @readyInMinutes, 
         pricePerServing = @pricePerServing
+        spoonacularId = @spoonacularId
       WHERE id = @id_update;
     `;
     
@@ -248,6 +264,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
+      .input(`spoonacularId`, sql.VarChar(255), null)
       .query(updateQuery);
 
     console.log(`Recipe details updated for recipe with id ${recipe.id}.`);
