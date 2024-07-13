@@ -1,6 +1,7 @@
 // Import modules
 const sql = require('mssql');
 const { dbConfig } = require('../config/dbConfig');
+const { v4: uuid4 } = require('uuid');
 
 // Class for Recipe
 class Recipe {
@@ -115,7 +116,7 @@ const insertRecipe = async (recipe, userId) => {
     // Begin a transaction to ensure data integrity
     await transaction.begin();
     // Call function to Insert recipe details into recipe  table
-    await insertRecipeDetails(transaction, recipe);
+    await insertRecipeDetails(transaction, recipe, userId);
     // Call function to Insert recipe ingredients into ingredients table
     await insertRecipeIngredients(transaction, recipe);
     // Call function to Link user to recipe in UserRecipes table
@@ -135,7 +136,7 @@ const insertRecipe = async (recipe, userId) => {
 };
 
 // Function for Inserting recipe details, part of insertRecipe
-const insertRecipeDetails = async (pool, recipe) => {
+const insertRecipeDetails = async (pool, recipe, userId) => {
   try {
 
     // Validate recipe fields
@@ -144,7 +145,7 @@ const insertRecipeDetails = async (pool, recipe) => {
     }
 
     const idString = uuid4(); // Generate a unique ID for the recipe, primary key
-    const spoonacularid = recipe.id.toString() // Convert spoonacular id to string, this is a parameter *** important
+    const spoonacularId = recipe.id.toString() // Convert spoonacular id to string, this is a parameter *** important
     console.log('Recipe ID:', idString);
 
     // Ensure title is a string
@@ -154,15 +155,15 @@ const insertRecipeDetails = async (pool, recipe) => {
 
     // Check if the recipe with the same id already exists
     const existingRecipe = await pool.request()
-    .input('user_id_check', sql.VarChar(255), userId)
-    .input('spoonacularid_check', sql.VarChar(255), spoonacularid)
-    .query(`
-      SELECT *
-      FROM UserRecipes
-      INNER JOIN Recipes ON UserRecipes.recipe_id = Recipes.id
-      INNER JOIN Users ON UserRecipes.user_id = Users.id
-      WHERE user_id = @user_id_check AND spoonacularId = @spoonacularid_check`
-    );
+      .input('user_id_check', sql.VarChar(255), userId)
+      .input('spoonacularid_check', sql.VarChar(255), spoonacularId)
+      .query(`
+          SELECT *
+        FROM UserRecipes ur
+        INNER JOIN Recipes r ON ur.recipe_id = r.id
+        INNER JOIN Users u ON ur.user_id = u.user_id
+        WHERE ur.user_id = @user_id_check AND r.spoonacularId = @spoonacularid_check`
+      );
 
     if (existingRecipe.recordset.length > 0) {
       // Extract the recipe_id from the result set
@@ -205,7 +206,7 @@ const updateRecipeDetails = async (pool, recipe, recipeId) => {
       throw new Error('Recipe object, id, or title is undefined');
     }
 
-      const updateQuery = `
+    const updateQuery = `
       UPDATE Recipes
       SET 
         title = @title, 
@@ -216,7 +217,7 @@ const updateRecipeDetails = async (pool, recipe, recipeId) => {
         spoonacularId = @spoonacularId
       WHERE id = @id_update;
     `;
-    
+
     await pool.request()
       .input('id_update', sql.VarChar(255), recipeId) // Make sure recipe.id is defined
       .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
@@ -236,8 +237,8 @@ const updateRecipeDetails = async (pool, recipe, recipeId) => {
 
 // Update existing recipe details, no pool parameter
 const updateRecipeDetailsbyUser = async (recipe) => {
-    // Connect to database
-    const pool = await sql.connect(dbConfig);
+  // Connect to database
+  const pool = await sql.connect(dbConfig);
   try {
     console.log('Received recipe for update:', recipe); // Log received recipe
     // Debugging: Check if recipe and its properties are defined
@@ -245,7 +246,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
       throw new Error('Recipe object, id, or title is undefined');
     }
 
-      const updateQuery = `
+    const updateQuery = `
       UPDATE Recipes
       SET 
         title = @title, 
@@ -256,7 +257,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
         spoonacularId = @spoonacularId
       WHERE id = @id_update;
     `;
-    
+
     await pool.request()
       .input('id_update', sql.VarChar(255), recipe.id.toString()) // Make sure recipe.id is defined
       .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
