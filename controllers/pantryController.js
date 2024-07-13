@@ -1,3 +1,4 @@
+// Import Modules
 const Pantry = require("../models/pantry");
 
 // Controller function to get pantry ingredients for a user
@@ -6,21 +7,25 @@ const getPantryIngredients = async (req, res) => {
     const userid = req.userid;
     console.log("UserID:", userid);
 
+    // Check if the user ID is available
     if (!userid) {
       return res.status(401).json({ message: "Unauthorized: User information not available" });
     }
 
+    // Fetch pantry ingredients for the user
     const ingredients = await Pantry.getIngredients(userid);
-    res.json(ingredients);
+    res.status(200).json(ingredients);
   } catch (error) {
     console.error("Error fetching pantry ingredients:", error);
 
+    // Handle unauthorized and token expired errors
     if (error.name === "UnauthorizedError") {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });
     } else if (error.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Unauthorized: Token expired" });
     }
 
+    // Handle other errors
     res.status(500).json({
       message: "Error fetching pantry ingredients",
       error: error.message,
@@ -127,6 +132,19 @@ async function removeIngredientFromPantry(req, res) {
   }
 }
 
+async function addIngredientQuantity(req, res) {
+  try {
+    const { pantry_id } = req.params;
+    const { ingredient_id, quantity } = req.body;
+    const result = await Pantry.addIngredientQuantity(pantry_id, ingredient_id, quantity);
+
+    res.status(200).json({ message: "Ingredient quantity updated in pantry", result });
+  } catch (error) {
+    console.error("Error updating ingredient quantity in pantry:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   getPantryIngredients,
   createPantry,
@@ -135,4 +153,5 @@ module.exports = {
   getIngredientsByPantryID,
   updateIngredientInPantry,
   removeIngredientFromPantry,
+  addIngredientQuantity,
 };

@@ -2,65 +2,93 @@ var dietaryRestrictions = null;
 var intolerances = null;
 var excludedIngredients = null;
 
+document.addEventListener("DOMContentLoaded", async function () {
+  console.log("DOMContentLoaded event triggered");
+  try {
+    // Retrieve tokens and user ID from localStorage
+    const accessToken = localStorage.getItem("AccessToken");
+    const userId = JSON.parse(localStorage.getItem("UserInfo")).userid;
 
-document.addEventListener("DOMContentLoaded", function () {
-  const role = "User"; // This should be fetched from the database
+    console.log(`Fetching profile data for user: ${userId}`);
 
-  const profileData = {
-    username: "john_doe",
-    fullName: "John Doe",
-    dob: "1990-01-01",
-    address: "123 Main St, Anytown, USA",
-    email: "john.doe@example.com",
-    contact: "123-456-7890",
-    password: "password123",
-    role: role,
-    dietaryRestrictions: ["Gluten Free", "Vegetarian"],
-    intolerances: ["Seafood", "Dairy"],
-    excludedIngredients: "Sugar, Salt",
-  };
+    // Fetch user profile data
+    const response = await fetch(`http://localhost:3500/users/${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-  populateProfileFields(profileData);
+    if (!response.ok) {
+      throw new Error(`Error fetching user data: ${response.statusText}`);
+    }
+
+    const profileData = await response.json();
+
+    console.log("Profile data fetched: ", profileData);
+    populateProfileFields(profileData);
+  } catch (error) {
+    console.error(error);
+    alert("Failed to load profile data.");
+  }
 });
 
 function populateProfileFields(profileData) {
+  console.log("Populating profile fields");
   document.getElementById("username").value = profileData.username;
-  document.getElementById("fullName").value = profileData.fullName;
-  document.getElementById("dob").value = profileData.dob;
+  document.getElementById("firstName").value = profileData.firstname;
+  document.getElementById("lastName").value = profileData.lastname;
+
+  const dobString = profileData.dateOfBirth; // Assuming profileData.dateOfBirth is in ISO format
+  const dateParts = dobString.split("T")[0];
+  // Constructing the formatted date
+  document.getElementById("dob").value = dateParts;
+
+  // Extracting the role name
+  const roleName = Object.keys(profileData.roles).find(
+    (key) => profileData.roles[key] === 2001
+  );
+  document.getElementById("role").value = roleName;
+
   document.getElementById("address").value = profileData.address;
   document.getElementById("email-signup").value = profileData.email;
   document.getElementById("contact").value = profileData.contact;
   document.getElementById("password-signup").value = profileData.password;
-  document.getElementById("role").value = profileData.role;
-  document.getElementById("excluded-ingredients").value = profileData.excludedIngredients;
 
-profileData.dietaryRestrictions.forEach((restriction) => {
+  // Assuming profileData.roles is a Map object where key is the role name and value is the role ID
+
+  document.getElementById("excluded-ingredients").value =
+    profileData.excludedIngredients.join(", ");
+
+  profileData.dietaryRestrictions.forEach((restriction) => {
     const checkbox = document.querySelector(
-        `#dietary-restrictions input[value="${restriction}"]`
+      `#dietary-restrictions input[value="${restriction}"]`
     );
     if (checkbox) checkbox.checked = true;
-});
+  });
 
-profileData.intolerances.forEach((intolerance) => {
+  profileData.intolerances.forEach((intolerance) => {
     const checkbox = document.querySelector(
-        `#intolerances input[value="${intolerance}"]`
+      `#intolerances input[value="${intolerance}"]`
     );
     if (checkbox) checkbox.checked = true;
-});
+  });
 
-  if (profileData.role === "User") {
+  if (roleName == "User") {
     document.getElementById("restrictions-btn").style.display = "block";
     document.getElementById("intolerances-btn").style.display = "block";
     document.getElementById("excluded-ingredients").style.display = "block";
-    document.getElementById("excluded-ingredients-label").style.display = "block";
+    document.getElementById("excluded-ingredients-label").style.display =
+      "block";
   } else {
     document.getElementById("restrictions-btn").style.display = "none";
     document.getElementById("intolerances-btn").style.display = "none";
     document.getElementById("excluded-ingredients").style.display = "none";
-    document.getElementById("excluded-ingredients-label").style.display = "none";
+    document.getElementById("excluded-ingredients-label").style.display =
+      "none";
   }
 }
-
 
 ///////////////////////////////////////////////// Diet Restrictions Popup
 document

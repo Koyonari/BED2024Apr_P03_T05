@@ -38,16 +38,16 @@ app.use(express.json());  // Ensure this is before the routes
 //middleware for cookies
 app.use(cookieParser());
 
-// Import Controllers 
-const userController = require("./controllers/user_sqlController");
-const pantryController = require("./controllers/pantryController");
-
 // Body Parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 
-//serve static files
-app.use('/', express.static(path.join(__dirname, '/public')));
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Import Controllers 
+const userController = require("./controllers/user_sqlController");
+const pantryController = require("./controllers/pantryController");
 
 // Edric routes
 app.use('/', require('./routes/root'));
@@ -67,14 +67,6 @@ app.post("/users", userController.createUser); // works
 app.get("/users", userController.getAllUsers); // works
 app.get("/users/:user_id", userController.getUserByUID); // works
 
-// Jason Pantry Routes
-app.post('/pantry/:user_id', pantryController.createPantry); // Create a pantry for a user // works
-app.get('/pantry/:user_id', pantryController.getPantryIDByUserID); // Get the pantry ID for a user // works
-app.post('/pantry/:pantry_id/ingredients', pantryController.addIngredientToPantry); // Add an ingredient to a pantry // works
-app.get('/pantry/:pantry_id/ingredients', pantryController.getIngredientsByPantryID); // Get all ingredients in a pantry // works
-app.put('/pantry/:pantry_id/ingredients', pantryController.updateIngredientInPantry); // Update an ingredient in a pantry // works
-app.delete('/pantry/:pantry_id/ingredients', pantryController.removeIngredientFromPantry); // Remove an ingredient from a pantry // works
-
 // YongShyan Request Routes
 app.get("/req/user/:id", reqController.getRequestByUserId);
 app.post('/req', validateRequest, reqController.createRequest);
@@ -89,6 +81,11 @@ app.delete("/req/:id", reqController.deleteRequest);
 
 // Error handling middleware
 app.use(errorHandler);
+
+// Serve the frontend
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB');
