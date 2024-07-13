@@ -2209,9 +2209,4 @@
 20240713	13:21:47	5f6aa98b-71b0-408f-85ab-a0e4972f18ab	GET	undefined	/favicon.ico
 20240713	13:21:47	486bb638-dd9b-458c-943c-f65ee1ea1593	GET	undefined	/html/pantry.html
 20240713	13:21:47	e1337560-25e7-4adb-9748-f29d37d2371e	GET	undefined	/css/styles.css
-20240713	13:21:47	6d82e807-4865-4218-b9ea-74138dff19c8	GET	undefined	/javascript/pantry.js
-20240713	13:21:47	0bb0b632-437f-47a4-9ab6-79173afd0b19	GET	undefined	/css/normalize.css
-20240713	13:21:47	f1f3deec-a5dc-4d04-831a-c7c503eaa828	GET	undefined	/pantry/Xy21z/ingredients
-20240713	13:21:47	2fa49be1-13d9-4156-b3e3-1f35fc6e438b	GET	undefined	/favicon.ico
-20240713	13:21:53	c69409b5-abb5-42d2-ae00-110c5f2bf100	GET	undefined	/css/styles.css
-20240713	13:21:53	c7308571-dfb7-4858-9032-cb1bf15c22d9	GET	undefined	/css/normalize.css
+
