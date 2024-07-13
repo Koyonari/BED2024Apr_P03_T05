@@ -1,4 +1,4 @@
-@import url(normalize.css);
+@import url(../css/normalize.css);
 
 html {
   scroll-behavior: smooth;
@@ -998,3 +998,85 @@ p a:hover {
   margin-right: 3vw;
   margin-left: 3vw;
 }
+
+
+
+/* PRODUCT PAGE START */
+.pantry-body {
+  background-image: none;
+  background-color: white;
+}
+.pantry-container {
+  font-family: "Roboto Slab";
+  width: 1000px;
+  margin-top: 84px;
+  transition: 0.5s;
+  margin: 90px auto;
+}
+
+
+.pantry-container h1 {
+  padding-left: 60px;
+  color: black;
+  text-align: center;
+}
+.pantry-container header {
+  display: grid;
+  grid-template-columns: 1fr 50px;
+  margin-top: 50px;
+}
+
+.pantry-container .list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 20px;
+  row-gap: 20px;
+  margin-top: 50px;
+}
+.pantry-container .list .item {
+  /* Product Cards */
+  border: 1px solid black;
+  border-radius: 5px;
+  text-align: center;
+  background-color: #da8c43;
+  padding: 20px;
+  box-shadow: 0 10px 10px #757676;
+  letter-spacing: 1px;
+}
+
+.pantry-container .list .item.selected {
+  background-color: #8af198; /* Adjusted color for selected item */
+}
+.pantry-container .list .item .selected {
+  background-color: #97c6df; /* Adjusted color for selected button */
+}
+
+.pantry-container .list .item img {
+  background-color: white;
+  width: 80%;
+  height: 250px;
+  object-fit: cover;
+}
+.pantry-container .list .item .title {
+  font-weight: 600;
+  font-size: 35px;
+}
+.pantry-container .list .item .price {
+  margin: 10px;
+}
+.pantry-container .list .item button {
+  background-color: #1c1f25;
+  border-radius: 20px;
+  color: #fff;
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.pantry-container .list .item button:hover {
+  background-color: goldenrod;
+}
+
+
+/* PRODUCT PAGE END */
