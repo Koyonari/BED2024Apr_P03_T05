@@ -825,3 +825,4 @@
 20240713	20:06:45	ce6372b2-7526-4c30-9613-86b61cd7e04c	POST	undefined	/recipes/insertrecipe
 20240713	20:06:51	bd1812e8-9c8b-4cec-ae94-838db6bb7028	POST	undefined	/recipes/getfilteredrecipes
 20240713	20:07:47	9f016a7f-9e29-4c0d-bac9-7f168d884385	POST	undefined	/recipes/getfilteredrecipes
+20240713	20:11:37	3ca54c79-6dd4-41a1-8983-5ede38cbf666	GET	undefined	/recipes/fetch

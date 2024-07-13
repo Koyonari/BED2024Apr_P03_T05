@@ -139,14 +139,12 @@ const insertRecipe = async (recipe, userId) => {
 // Function for Inserting recipe details, part of insertRecipe
 const insertRecipeDetails = async (pool, recipe, userId) => {
   try {
-
     // Validate recipe fields
     if (!recipe || !recipe.id || !recipe.title) {
       throw new Error('Recipe object, id, or title is undefined');
     }
 
-    const idString = uuid4(); // Generate a unique ID for the recipe, primary key
-    const spoonacularId = recipe.id.toString() // Convert spoonacular id to string, this is a parameter *** important
+    const spoonacularId = recipe.id.toString(); // Convert spoonacular id to string
     console.log(spoonacularId);
 
     // Ensure title is a string
@@ -159,12 +157,12 @@ const insertRecipeDetails = async (pool, recipe, userId) => {
       .input('user_id_check', sql.VarChar(255), userId)
       .input('spoonacularid_check', sql.VarChar(255), spoonacularId)
       .query(`
-          SELECT *
+        SELECT *
         FROM UserRecipes ur
         INNER JOIN Recipes r ON ur.recipe_id = r.id
         INNER JOIN Users u ON ur.user_id = u.user_id
-        WHERE ur.user_id = @user_id_check AND r.spoonacularId = @spoonacularid_check`
-      );
+        WHERE ur.user_id = @user_id_check AND r.spoonacularId = @spoonacularid_check
+      `);
 
     if (existingRecipe.recordset.length > 0) {
       // Extract the recipe_id from the result set
@@ -172,10 +170,13 @@ const insertRecipeDetails = async (pool, recipe, userId) => {
       console.log(`Recipe with spoonacularId ${spoonacularId} already exists with recipe_id ${recipeId}.`);
       // Update the recipe details
       await updateRecipeDetails(pool, recipe, recipeId);
-      return {recipeId};
+      return { recipeId };
     } else {
       console.log(`No existing recipe found with spoonacularId ${spoonacularId}.`);
     }
+
+    // Generate a unique ID for the recipe, primary key
+    const idString = uuid4();
 
     // If recipe doesn't exist, insert it
     const insertQuery = `
@@ -189,10 +190,10 @@ const insertRecipeDetails = async (pool, recipe, userId) => {
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
-      .input('spoonacularId', sql.VarChar(255), recipe.id.toString())
+      .input('spoonacularId', sql.VarChar(255), spoonacularId)
       .query(insertQuery);
-    console.log(`Recipe with id ${idString} and spoonacular id of ${recipe.id}inserted successfully.`);
-    return { recipeId: idString};
+    console.log(`Recipe with id ${idString} and spoonacular id ${spoonacularId} inserted successfully.`);
+    return { recipeId: idString };
   } catch (error) {
     console.error('Error inserting/updating recipe details:', error.message);
     throw error;
