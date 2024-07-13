@@ -7,7 +7,7 @@ CREATE TABLE Users (
 -- Sample Data for Users Table // This is just a sample data
 INSERT INTO Users (user_id, username) VALUES 
 ('668105073662e3dda4c190e3', 'TestUser'),
-('668104e73662e3dda4c190e0', 'TestVolunteer');
+('668104e73662e3dda4c190e0', 'TestVolunteer'),
 ('668104e73662e3dda4c190e2', 'TestAdmin');
 
 -- Create Pantry Table
@@ -52,6 +52,7 @@ INSERT INTO PantryIngredient (pantry_id, ingredient_id, quantity) VALUES
 -- Create Recipes Table
 CREATE TABLE Recipes (
     id VARCHAR(255) PRIMARY KEY,
+    spoonacularId VARCHAR(255) NULL,
     title VARCHAR(255) NOT NULL,
     imageurl NVARCHAR(255) NOT NULL,
     servings INT NOT NULL,

@@ -17,7 +17,7 @@ document
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    console.log(username,password);
+    console.log(username, password);
 
     try {
       const response = await fetch("http://localhost:3500/auth", {
@@ -34,11 +34,11 @@ document
 
       const result = await response.json();
 
-      // Save the tokens to localStorage if necessary
+      // Save the tokens to localStorage
       localStorage.setItem("AccessToken", result.accessToken);
       localStorage.setItem("RefreshToken", result.refreshToken);
 
-      // Decode the access token to extract user info (optional, you may use the data directly)
+      // Decode the access token to extract user info
       const decodedAccessToken = JSON.parse(
         atob(result.accessToken.split(".")[1])
       );
@@ -49,8 +49,29 @@ document
         JSON.stringify(decodedAccessToken.UserInfo)
       );
 
-      // Redirect based on user role
+      const userId = decodedAccessToken.UserInfo.userid; // Corrected to use 'userid'
       const userRole = decodedAccessToken.UserInfo.roles[0];
+
+      // Create a pantry for user or volunteer roles
+      if (userRole === 2001 || userRole === 2002) {
+        const pantryResponse = await fetch(`http://localhost:3500/pantry/${userId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${result.accessToken}`
+          }
+        });
+
+        if (!pantryResponse.ok) {
+          throw new Error(`Error creating pantry: ${pantryResponse.statusText}`);
+        }
+
+        const pantryResult = await pantryResponse.json();
+        console.log("Pantry created:", pantryResult.pantry_id);
+        localStorage.setItem("PantryID", pantryResult.pantry_id);
+      }
+
+      // Redirect based on user role
       if (userRole === 2001) {
         // Assuming 2001 is the role code for a regular user
         window.location.href = "../html/user_homepage.html";
