@@ -9,6 +9,8 @@
 20240629	13:17:49	4be63bff-e7c6-4d61-a763-62072bdc6a85	TypeError: req.roles.some is not a function
 20240703	19:13:38	50ebe8c0-745e-4c80-a848-e8f1c1d2fc95	SyntaxError: Unexpected non-whitespace character after JSON at position 8
 20240707	20:20:46	dc59c95d-110e-47ae-b2f8-4638ba240d60	SyntaxError: Expected double-quoted property name in JSON at position 64
+20240713	20:04:34	e61eba94-3f96-4446-a029-9fc470709de5	SyntaxError: Expected double-quoted property name in JSON at position 195
+=======
 20240710	18:34:44	2fe0b906-ec57-49e4-9f23-055087b9bab8	Error: Not allowed by CORS
 20240710	18:37:50	fe2e572d-85d7-42b2-878a-e97972039601	Error: ENOENT: no such file or directory, stat 'C:\Users\zekke\Desktop\BED\BED Assignment\BED2024Apr_P03_T05\views\index.html'
 20240710	18:47:20	c52545d1-7469-46d3-9f81-5516a09d2666	Error: Not allowed by CORS
@@ -23,3 +25,4 @@
 20240713	12:51:52	69c55caa-a965-4ae9-a34b-1082366bd3dc	Error: Not allowed by CORS
 20240713	12:55:05	05016d78-f65e-4580-b6f7-26fa969422d2	Error: Not allowed by CORS
 20240713	13:00:43	7df4ff70-70d3-4dec-8f4c-5204b82dd0fe	Error: Not allowed by CORS
+
