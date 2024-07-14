@@ -1,8 +1,7 @@
 // Import necessary modules
 const pantry = require('../models/pantry');
 const recipeService = require('../services/recipeService');
-const { getRecipeById, getRecipesByUserId, getAllStoredRecipes,getRecipeIngredientsById, insertRecipe, updateRecipeDetails, 
-  updateRecipeDetailsbyUser, editRecipe, deleteRecipe } = require('../models/recipe');
+const { getRecipeById, getRecipesByUserId, getAllStoredRecipes, getRecipeIngredientsById, insertRecipe, insertRecipeIngredient, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe } = require('../models/recipe');
 const { de } = require('date-fns/locale');
 
 // Controller function to fetch recipes based on pantry ingredients, stores them in SQL Database
@@ -109,8 +108,8 @@ const getRecipeIngredients = async (req, res) => {
       return res.status(400).json({ error: 'Recipe ID is required' });
     }
 
-     // Check if user ID is provided
-     if (!userId) {
+    // Check if user ID is provided
+    if (!userId) {
       return res.status(400).json({ message: 'User ID not provided' });
     }
 
@@ -214,6 +213,45 @@ const insertRecipeByUser = async (req, res) => {
   }
 };
 
+// Controller function to fetch recipes based on pantry ingredients, stores them in SQL Database
+const insertRecipeIngredientsByRecipeId = async (req, res) => {
+  //Get user id from request
+  const userId = req.userid;
+  console.log('User ID:', userId);
+  const recipeId = req.params.id;
+  const ingredientsArray = req.body;
+  console.log('Ingredients:', ingredientsArray);
+  try {
+    for (const ingredient of ingredientsArray) {
+      console.log('Fetching ingredient:', ingredient.name);
+      const ingredientData = await recipeService.fetchRecipeIngredient(ingredient.name);
+      console.log('Ingredient Data:', ingredientData);
+      // Check if ingredientData is valid
+      if (!ingredientData || !ingredientData.id) {
+        return res.status(404).json({ message: `Ingredient with name ${ingredient.name} not found` });
+      }
+         // Create new ingredient object with desired format
+         const formattedIngredient = {
+          id: ingredientData.id,
+          name: ingredient.name,
+          image: ingredientData.image,
+          amount: ingredient.amount || null, // Get amount from request body if available, otherwise null
+          unit: ingredient.unit || null, // Get unit from request body if available, otherwise null
+        };
+      console.log('Inserting ingredient:', formattedIngredient);
+      await insertRecipeIngredient(formattedIngredient, recipeId);
+    }
+    res.status(201).json({ message: 'Recipe ingredients updated and stored in the database.' });
+  } catch (error) {
+    console.error('Error fetching and storing ingredients:', error);
+    if (error.response && error.response.status === 402) {
+      res.status(402).json({ message: 'API key expired or payment required', error: error.message });
+    }
+    else {
+      res.status(500).json({ message: 'Error fetching and storing recipes', error: error.message });
+    }
+  }
+};
 
 // Controller function to update a recipe for a user by user ID and recipe ID (PUT)
 const updateRecipeByUser = async (req, res) => {
@@ -466,6 +504,7 @@ module.exports = {
   getAllRecipes,
   getRecipeIngredients,
   insertRecipeByUser,
+  insertRecipeIngredientsByRecipeId,
   updateRecipeByUser,
   updateRecipeByRecipeId,
   patchRecipeByUser,

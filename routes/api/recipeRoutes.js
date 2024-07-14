@@ -14,6 +14,7 @@ router.get('/fetchingredients/:id', verifyJWT, recipeController.getRecipeIngredi
 
 // POST /api/insertrecipe - Insert a new recipe and link to a user
 router.post('/insertrecipe', recipeController.insertRecipeByUser);
+router.post('/insertrecipeingredients/:id', verifyJWT, recipeController.insertRecipeIngredientsByRecipeId);
 
 // POST /api/getfilteredrecipes - Get filtered recipes by user preferences
 router.post('/getfilteredrecipes', recipeController.getFilteredRecipesByUser);

@@ -11,11 +11,11 @@ class Recipe {
     this.imageurl = imageurl;
     this.servings = servings;
     this.readyInMinutes = readyInMinutes;
-    this.pricePerServing = pricePerServing; 
+    this.pricePerServing = pricePerServing;
     this.userId = userId;
   }
 }
-
+/// Recipe Functions
 // Function to get all recipes by user ID
 const getRecipesByUserId = async (userId) => {
   try {
@@ -99,42 +99,6 @@ const getAllStoredRecipes = async () => {
   } catch (error) {
     // Log and throw any errors
     console.error('Error fetching all recipes:', error.message);
-    throw error;
-  } finally {
-    // Close the database connection in the finally block
-    sql.close();
-  }
-};
-
-// Function to get a recipe by recipe ID, stored in database
-const getRecipeIngredientsById = async (recipeId) => {
-  try {
-    // Connect to the database
-    const pool = await sql.connect(dbConfig);
-
-    // SQL query to get a recipe by its ID
-    const query = `
-      SELECT i.ingredient_id, i.ingredient_name, i.ingredient_image, ri.amount, ri.unit
-      FROM RecipeIngredients ri
-      INNER JOIN Recipes r ON ri.recipe_id = r.id
-      INNER JOIN Ingredients i ON ri.ingredient_id = i.ingredient_id
-      WHERE recipe_id = @recipeId
-    `;
-
-    // Execute the query with parameterized input
-    const result = await pool.request()
-      .input('recipeId', sql.VarChar(255), recipeId.toString())
-      .query(query);
-
-    // Check if a recipe was found
-    if (result.recordset.length === 0) {
-      return null; // No recipe found with the given ID
-    }
-    // Return the first (and only) recipe found
-    return result.recordset;
-  } catch (error) {
-    // Log and throw any errors
-    console.error('Error fetching recipe by ID:', error.message);
     throw error;
   } finally {
     // Close the database connection in the finally block
@@ -326,6 +290,18 @@ const insertRecipeIngredients = async (pool, recipe, recipeId) => {
   }
 };
 
+const insertRecipeIngredient = async (ingredient, recipeId) => {
+  try {
+    // Connect to database
+    const pool = await sql.connect(dbConfig);
+    await insertOrUpdateIngredient(pool, ingredient);
+    await linkRecipeIngredient(pool, recipeId, ingredient);
+  } catch (error) {
+    console.error('Error inserting recipe ingredients:', error.message);
+    throw error;
+  }
+};
+
 // Inserting to ingredients table or update, part of insertRecipeIngredients (has to ensure foreign key)
 const insertOrUpdateIngredient = async (pool, ingredient) => {
   try {
@@ -372,12 +348,12 @@ const linkRecipeIngredient = async (pool, recipeId, ingredient) => {
       await pool.request()
         .input('recipeId', sql.VarChar(255), recipeId)
         .input('ingredientId', sql.VarChar(255), ingredient.id.toString())
-        .input('amount', sql.Float, ingredient.amount)
+        .input('amount', sql.Float, ingredient.amount || '')
         .input('unit', sql.NVarChar, ingredient.unit || '')
         .query(insertQuery);
 
       console.log(`Linked recipe ${recipeId} to ingredient ${ingredient.id}`);
-    } else {
+    } else if (result.recordset[0].count > 0) {
       console.log(`Recipe ${recipeId} is already linked to ingredient ${ingredient.id}`);
     }
   } catch (error) {
@@ -517,6 +493,45 @@ const deleteRecipe = async (recipeId) => {
   }
 };
 
+/// Recipe Ingredients Functions
+// Function to get a recipe by recipe ID, stored in database
+const getRecipeIngredientsById = async (recipeId) => {
+  try {
+    // Connect to the database
+    const pool = await sql.connect(dbConfig);
+
+    // SQL query to get a recipe by its ID
+    const query = `
+      SELECT i.ingredient_id, i.ingredient_name, i.ingredient_image, ri.amount, ri.unit
+      FROM RecipeIngredients ri
+      INNER JOIN Recipes r ON ri.recipe_id = r.id
+      INNER JOIN Ingredients i ON ri.ingredient_id = i.ingredient_id
+      WHERE recipe_id = @recipeId
+    `;
+
+    // Execute the query with parameterized input
+    const result = await pool.request()
+      .input('recipeId', sql.VarChar(255), recipeId.toString())
+      .query(query);
+
+    // Check if a recipe was found
+    if (result.recordset.length === 0) {
+      return null; // No recipe found with the given ID
+    }
+    // Return the first (and only) recipe found
+    return result.recordset;
+  } catch (error) {
+    // Log and throw any errors
+    console.error('Error fetching recipe by ID:', error.message);
+    throw error;
+  } finally {
+    // Close the database connection in the finally block
+    sql.close();
+  }
+};
+
+
+
 module.exports = {
   Recipe,
   getRecipeById,
@@ -524,6 +539,7 @@ module.exports = {
   getAllStoredRecipes,
   getRecipeIngredientsById,
   insertRecipe,
+  insertRecipeIngredient,
   updateRecipeDetails,
   updateRecipeDetailsbyUser,
   editRecipe,
