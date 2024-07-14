@@ -9,9 +9,7 @@ document.getElementById("close-btn").addEventListener("click", function () {
   document.getElementById("signup-container").classList.remove("active");
 });
 
-document
-  .getElementById("loginForm")
-  .addEventListener("submit", async function (e) {
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value;
@@ -49,7 +47,8 @@ document
         JSON.stringify(decodedAccessToken.UserInfo)
       );
 
-      const userId = decodedAccessToken.UserInfo.userid; // Corrected to use 'userid'
+      const userId = decodedAccessToken.UserInfo.userid;
+      localStorage.setItem("UserId", userId);
       const userRole = decodedAccessToken.UserInfo.roles[0];
 
       // Create a pantry for user or volunteer roles

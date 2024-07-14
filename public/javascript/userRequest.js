@@ -145,38 +145,64 @@ function togglepopup(popupid) {
     document.getElementById(popupid).classList.toggle("active");
 }
 
+// function closepopup(popupid) {
+//     document.getElementById(popupid).classList.toggle("none");
+// }
+
 async function confirmInput() {
-    var title = document.getElementById("ctitle").value;
-    var message = document.getElementById("cmessage").value;
-    var category = document.getElementById("cat").value;
+        // Capture input data
+        const title = document.getElementById('ctitle').value;
+        const category = document.getElementById('cat').value;
+        const description = document.getElementById('cmessage').value;
 
-    // Create a data object to send to the server
-    const requestData = {
-        title: title,
-        category: category,
-        description: message, // Assuming 'message' corresponds to 'description' in the database
-        user_id: 1, // Replace with actual user_id if available
-        volunteer_id: null // Assuming no volunteer_id initially
-    };
+        // Fetch user ID and token from storage
+        const userId = localStorage.getItem('UserId'); //not working
+        const accessToken = localStorage.getItem('AccessToken');
 
-    // try {
-    //     const response = await fetch('/api/requests', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(requestData)
-    //     });
+        // Validate the data
+        if (title.length < 3 || title.length > 70) {
+            alert('Title must be between 3 and 70 characters');
+            return;
+        }
+        if (category.length > 50) {
+            alert('Category must be 50 characters or less');
+            return;
+        }
+        if (description.length > 150) {
+            alert('Description must be 150 characters or less');
+            return;
+        }
 
-    //     if (!response.ok) {
-    //         throw new Error('Error creating request');
-    //     }
+        // Prepare the request body
+        const requestBody = {
+            title,
+            category,
+            description,
+            user_id: userId
+        };
 
-    //     const createdRequest = await response.json();
-    //     console.log('Created request:', createdRequest);
-    //     // Optionally, handle success feedback or redirect after creating request
-    // } catch (error) {
-    //     console.error('Error creating request:', error.message);
-    //     // Handle error feedback
-    // }
+        // Send data to the server
+        try {
+            const response = await fetch('http://localhost:3500/req', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert('Request created successfully');
+                // Clear the form
+                togglepopup('new-req');
+            } else {
+                const error = await response.json();
+                alert(`Error creating request: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while creating the request');
+        }
 }

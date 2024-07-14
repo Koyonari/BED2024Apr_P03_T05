@@ -469,7 +469,7 @@ p a:hover {
   padding: 20px;
   border-radius: 10px;
   margin: 20px auto 0;
-  width: 95%;
+  width: 92%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -598,7 +598,7 @@ p a:hover {
 
 /* Request Styles */
 .request-container {
-  width: 1250px;
+  width: 100vw;
   margin-top: 84px;
   transition: 0.5s;
   margin: 90px auto;

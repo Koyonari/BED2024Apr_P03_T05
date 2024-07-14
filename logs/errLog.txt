@@ -26,3 +26,6 @@
 20240713	12:55:05	05016d78-f65e-4580-b6f7-26fa969422d2	Error: Not allowed by CORS
 20240713	13:00:43	7df4ff70-70d3-4dec-8f4c-5204b82dd0fe	Error: Not allowed by CORS
 
+20240714	20:57:52	18e2b75d-9e63-4bcd-b2e8-7fdb41f71769	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
+20240714	20:57:57	e6ea5e93-f1a9-4e57-8c2d-bfb83a96eb44	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
+20240714	21:16:00	5e884996-b635-47cc-8ec3-1a80594740bb	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
