@@ -62,7 +62,7 @@ CREATE TABLE Recipes (
 
 -- Create RecipeIngredients Table
 CREATE TABLE RecipeIngredients (
-    recipe_id INT NOT NULL,
+    recipe_id VARCHAR(255) NOT NULL,
     ingredient_id INT NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     unit VARCHAR(50) NOT NULL,
@@ -100,3 +100,4 @@ SELECT * FROM PantryIngredient;
 SELECT * FROM Recipes;
 SELECT * FROM RecipeIngredients;
 SELECT * FROM requests;
+SELECT * FROM UserRecipes;
