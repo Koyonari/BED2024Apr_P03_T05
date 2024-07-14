@@ -32,7 +32,7 @@ app.post("/books", verifyJWT, validateBook, booksController.createBook);
 app.put("/books/:bookId/availability", verifyJWT,validateBook, booksController.updateBookAvailability);
 
 // Serve the Swagger UI at a specific route
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/pract-api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(port, async () => {
   try {

@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const getUserByUID = require('../models/user_sql').getUserByUID;
+const getUserByUID = require('../models/usersql').getUserByUID;
 
 const validateRequest = (req, res, next) => {
   const schema = Joi.object({

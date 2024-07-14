@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express');
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./models/swagger-output.json");
 const app = express();
 const path = require('path');
 const cors = require('cors');
@@ -14,58 +16,46 @@ const { connectDB } = require('./config/dbConfig');
 const { validateRequest, validatePatchAcceptedRequest, validatePatchApproveRequest } = require("./middleware/validateRequest");
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
+
 const PORT = process.env.PORT || 3500;
 
 // Connect to MongoDB
 connectDB();
 
-// custom middleware logger
+// Swagger setup
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Middleware setup
 app.use(logger);
-
-// Handle options credentials check - before CORS!
-// and fetch cookies credentials requirement
 app.use(credentials);
-
-// Cross Origin Resource Sharing
 app.use(cors(corsOptions));
-
-// built-in middleware to handle urlencoded form data
 app.use(express.urlencoded({ extended: false }));
-
-// built-in middleware for json 
-app.use(express.json());  // Ensure this is before the routes
-
-//middleware for cookies
+app.use(express.json());
 app.use(cookieParser());
-
-// Body Parser
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
-
-// Serve static files from the "public" directory
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Import Controllers 
+// Routes
 const userController = require("./controllers/user_sqlController");
 const pantryController = require("./controllers/pantryController");
 
-// Edric routes
 app.use('/', require('./routes/root'));
 app.use('/register', require('./routes/register'));
 app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 
-// Routes that require JWT verification
+// JWT protected routes
 app.use(verifyJWT);
 app.use('/users', require('./routes/api/users'));
 app.use('/pantry', require('./routes/api/pantryRoutes'));
 app.use('/recipes', require('./routes/api/recipeRoutes'));
 
 // Jason SQL User Routes
-app.post("/users", userController.createUser); // works
-app.get("/users", userController.getAllUsers); // works
-app.get("/users/:user_id", userController.getUserByUID); // works
+app.post("/users", userController.createUser);
+app.get("/users", userController.getAllUsers);
+app.get("/users/:user_id", userController.getUserByUID);
 
 // YongShyan Request Routes
 app.get("/req/user/:id", reqController.getRequestByUserId);
