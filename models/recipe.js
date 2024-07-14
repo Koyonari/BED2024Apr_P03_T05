@@ -3,7 +3,6 @@ const sql = require('mssql');
 const { dbConfig } = require('../config/dbConfig');
 const { v4: uuid4 } = require('uuid');
 
-
 // Class for Recipe
 class Recipe {
   constructor(id, title, imageurl, servings, readyInMinutes, pricePerServing, userId) {
@@ -12,7 +11,7 @@ class Recipe {
     this.imageurl = imageurl;
     this.servings = servings;
     this.readyInMinutes = readyInMinutes;
-    this.pricePerServing = pricePerServing;
+    this.pricePerServing = pricePerServing; 
     this.userId = userId;
   }
 }

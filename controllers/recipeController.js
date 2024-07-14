@@ -32,7 +32,12 @@ const getRecipes = async (req, res) => {
     res.status(201).json(recipes);
   } catch (error) {
     console.error('Error fetching and storing recipes:', error);
-    res.status(500).json({ message: 'Error fetching and storing recipes', error: error.message });
+    if (error.response && error.response.status === 402) {
+      res.status(402).json({ message: 'API key expired or payment required', error: error.message });
+    }
+    else {
+      res.status(500).json({ message: 'Error fetching and storing recipes', error: error.message });
+    }
   }
 };
 
@@ -164,9 +169,13 @@ const getFilteredRecipesByUser = async (req, res) => {
     if (error.name === 'RequestError') {
       return res.status(500).json({ message: 'Database error', error: error.message });
     }
-
-    // General error response
-    res.status(500).json({ message: 'Error getting filtered recipes', error: error.message });
+    else if (error.response && error.response.status === 402) {
+      return res.status(402).json({ message: 'API key expired or payment required', error: error.message });
+    }
+    else {
+      // General error response
+      return res.status(500).json({ message: 'Error getting filtered recipes', error: error.message });
+    }
   }
 };
 
@@ -425,9 +434,9 @@ const deleteRecipeByRecipeId = async (req, res) => {
     if (!recipeId) {
       return res.status(400).json({ message: 'Recipe ID must be provided' });
     }
-     // Fetch all recipes to validate if the recipe exists
-     const allRecipes = await getAllStoredRecipes();
-     // Check if there was an error fetching recipes
+    // Fetch all recipes to validate if the recipe exists
+    const allRecipes = await getAllStoredRecipes();
+    // Check if there was an error fetching recipes
     if (!allRecipes) {
       return res.status(500).json({ message: 'Error getting recipes' });
     }
