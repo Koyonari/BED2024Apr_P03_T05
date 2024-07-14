@@ -1,7 +1,8 @@
 // Import necessary modules
 const pantry = require('../models/pantry');
 const recipeService = require('../services/recipeService');
-const { getRecipeById, getRecipesByUserId, getAllStoredRecipes, insertRecipe, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe } = require('../models/recipe');
+const { getRecipeById, getRecipesByUserId, getAllStoredRecipes,getRecipeIngredientsById, insertRecipe, updateRecipeDetails, 
+  updateRecipeDetailsbyUser, editRecipe, deleteRecipe } = require('../models/recipe');
 const { de } = require('date-fns/locale');
 
 // Controller function to fetch recipes based on pantry ingredients, stores them in SQL Database
@@ -101,7 +102,7 @@ const getAllRecipes = async (req, res) => {
 // Controller to handle getting recipe ingredients by recipe ID
 const getRecipeIngredients = async (req, res) => {
   const userId = req.userid;
-  const { recipeId } = req.params.id;
+  const recipeId = req.params.id;
   try {
     // Validate recipeId
     if (!recipeId) {
