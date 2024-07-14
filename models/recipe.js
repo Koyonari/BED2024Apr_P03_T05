@@ -135,6 +135,42 @@ const insertRecipe = async (recipe, userId) => {
   }
 };
 
+// Function to get a recipe by recipe ID, stored in database
+const getRecipeIngredientsById = async (recipeId) => {
+  try {
+    // Connect to the database
+    const pool = await sql.connect(dbConfig);
+
+    // SQL query to get a recipe by its ID
+    const query = `
+      SELECT i.ingredient_id, i.ingredient_name, i.ingredient_image, ri.amount, ri.unit
+      FROM RecipeIngredients ri
+      INNER JOIN Recipes r ON ri.recipe_id = r.id
+      INNER JOIN Ingredients i ON ri.ingredient_id = i.ingredient_id
+      WHERE recipe_id = @recipeId
+    `;
+
+    // Execute the query with parameterized input
+    const result = await pool.request()
+      .input('recipeId', sql.VarChar(255), recipeId.toString())
+      .query(query);
+
+    // Check if a recipe was found
+    if (result.recordset.length === 0) {
+      return null; // No recipe found with the given ID
+    }
+    // Return the first (and only) recipe found
+    return result.recordset;
+  } catch (error) {
+    // Log and throw any errors
+    console.error('Error fetching recipe by ID:', error.message);
+    throw error;
+  } finally {
+    // Close the database connection in the finally block
+    sql.close();
+  }
+};
+
 // Function for Inserting recipe details, part of insertRecipe
 const insertRecipeDetails = async (pool, recipe, userId) => {
   try {
@@ -255,7 +291,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
         imageurl = @imageurl, 
         servings = @servings, 
         readyInMinutes = @readyInMinutes, 
-        pricePerServing = @pricePerServing
+        pricePerServing = @pricePerServing,
         spoonacularId = @spoonacularId
       WHERE id = @id_update;
     `;
@@ -493,45 +529,48 @@ const deleteRecipe = async (recipeId) => {
   }
 };
 
-/// Recipe Ingredients Functions
-// Function to get a recipe by recipe ID, stored in database
-const getRecipeIngredientsById = async (recipeId) => {
+// Function to delete recipe ingredients by recipe ID and ingredient ID
+const deleteRecipeIngredients = async (recipeId, ingredientId) => {
+  const pool = await sql.connect(dbConfig);
+  const transaction = new sql.Transaction(pool);
+
   try {
-    // Connect to the database
-    const pool = await sql.connect(dbConfig);
+    await transaction.begin();
+    // Check if the ingredient exists in the recipe
+    const checkIngredientQuery = `
+  SELECT COUNT(*)
+  FROM RecipeIngredients
+  WHERE recipe_id = @recipeId AND ingredient_id = @ingredientId;
+`;
+    const checkResult = await transaction.request()
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .input('ingredientId', sql.VarChar(255), ingredientId)
+      .query(checkIngredientQuery);
 
-    // SQL query to get a recipe by its ID
-    const query = `
-      SELECT i.ingredient_id, i.ingredient_name, i.ingredient_image, ri.amount, ri.unit
-      FROM RecipeIngredients ri
-      INNER JOIN Recipes r ON ri.recipe_id = r.id
-      INNER JOIN Ingredients i ON ri.ingredient_id = i.ingredient_id
-      WHERE recipe_id = @recipeId
-    `;
-
-    // Execute the query with parameterized input
-    const result = await pool.request()
-      .input('recipeId', sql.VarChar(255), recipeId.toString())
-      .query(query);
-
-    // Check if a recipe was found
-    if (result.recordset.length === 0) {
-      return null; // No recipe found with the given ID
+    if (checkResult.recordset[0][''] === 0) {
+      throw new Error('Ingredient does not exist in the specified recipe');
     }
-    // Return the first (and only) recipe found
-    return result.recordset;
+    const deleteRecipeIngredientsQuery = `
+      DELETE FROM RecipeIngredients
+      WHERE recipe_id = @recipeId AND ingredient_id = @ingredientId;
+    `;
+    await transaction.request()
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .input('ingredientId', sql.VarChar(255), ingredientId)
+      .query(deleteRecipeIngredientsQuery);
+
+    await transaction.commit();
+    console.log(`Ingredient with ID ${ingredientId} from recipe ${recipeId} deleted successfully.`);
   } catch (error) {
-    // Log and throw any errors
-    console.error('Error fetching recipe by ID:', error.message);
+    await transaction.rollback();
+    console.error('Error deleting recipe ingredient:', error.message);
     throw error;
   } finally {
-    // Close the database connection in the finally block
-    sql.close();
+    pool.close();
   }
 };
 
-
-
+// Export the module functions  
 module.exports = {
   Recipe,
   getRecipeById,
@@ -544,4 +583,5 @@ module.exports = {
   updateRecipeDetailsbyUser,
   editRecipe,
   deleteRecipe,
+  deleteRecipeIngredients
 };

@@ -1,7 +1,8 @@
 // Import necessary modules
 const pantry = require('../models/pantry');
 const recipeService = require('../services/recipeService');
-const { getRecipeById, getRecipesByUserId, getAllStoredRecipes, getRecipeIngredientsById, insertRecipe, insertRecipeIngredient, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe } = require('../models/recipe');
+const { getRecipeById, getRecipesByUserId, getAllStoredRecipes, getRecipeIngredientsById, insertRecipe,
+  insertRecipeIngredient, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe, deleteRecipeIngredients } = require('../models/recipe');
 const { de } = require('date-fns/locale');
 
 // Controller function to fetch recipes based on pantry ingredients, stores them in SQL Database
@@ -221,6 +222,12 @@ const insertRecipeIngredientsByRecipeId = async (req, res) => {
   const recipeId = req.params.id;
   const ingredientsArray = req.body;
   console.log('Ingredients:', ingredientsArray);
+  // Check if the recipe belongs to the user
+  const isUsersRecipe = await isUserRecipe(userId, recipeId);
+  if (!isUsersRecipe) {
+    return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
+  }
+
   try {
     for (const ingredient of ingredientsArray) {
       console.log('Fetching ingredient:', ingredient.name);
@@ -230,14 +237,14 @@ const insertRecipeIngredientsByRecipeId = async (req, res) => {
       if (!ingredientData || !ingredientData.id) {
         return res.status(404).json({ message: `Ingredient with name ${ingredient.name} not found` });
       }
-         // Create new ingredient object with desired format
-         const formattedIngredient = {
-          id: ingredientData.id,
-          name: ingredient.name,
-          image: ingredientData.image,
-          amount: ingredient.amount || null, // Get amount from request body if available, otherwise null
-          unit: ingredient.unit || null, // Get unit from request body if available, otherwise null
-        };
+      // Create new ingredient object with desired format
+      const formattedIngredient = {
+        id: ingredientData.id,
+        name: ingredient.name,
+        image: ingredientData.image,
+        amount: ingredient.amount || null, // Get amount from request body if available, otherwise null
+        unit: ingredient.unit || null, // Get unit from request body if available, otherwise null
+      };
       console.log('Inserting ingredient:', formattedIngredient);
       await insertRecipeIngredient(formattedIngredient, recipeId);
     }
@@ -364,22 +371,11 @@ const patchRecipeByUser = async (req, res) => {
       // Respond with error if any required parameters are missing
       return res.status(400).json({ message: 'User ID, Recipe ID, and updates must be provided' });
     }
-
-    // Ensure that the recipe belongs to the user
-    const userRecipes = await getRecipesByUserId(userId);
-
-    // Ensure userRecipes is an array before using find
-    if (!Array.isArray(userRecipes)) {
-      throw new Error('Error fetching recipes for user');
-    }
-    // Find the recipe object in the user's recipes array, where the input recipe ID matches the primary key recipe ID
-    const recipe = userRecipes.find(r => r.id === recipeId);
-    // Check if the recipe is found
-    if (!recipe) {
-      // If recipe is not found or does not belong to user, respond with error
+    // Check if the recipe belongs to the user
+    const isUsersRecipe = await isUserRecipe(userId, recipeId);
+    if (!isUsersRecipe) {
       return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
     }
-
     // Call the editRecipe function in recipe model to patch the recipe (patch)
     await editRecipe(recipeId, updates);
     // Respond with success message
@@ -433,22 +429,11 @@ const deleteRecipeByUser = async (req, res) => {
       return res.status(400).json({ message: 'Recipe ID must be provided' });
     }
 
-    // Ensure that the recipe belongs to the user
-    const userRecipes = await getRecipesByUserId(userId);
-
-    // Ensure userRecipes is an array before using find
-    if (!Array.isArray(userRecipes)) {
-      throw new Error('Error fetching recipes for user');
-    }
-
-    // Find the recipe object in the user's recipes array, where the input recipe ID matches the primary key recipe ID
-    const recipe = userRecipes.find(r => r.id === recipeId);
-
-    // Check if the recipe is found
-    if (!recipe) {
+    // Check if the recipe belongs to the user
+    const isUsersRecipe = await isUserRecipe(userId, recipeId);
+    if (!isUsersRecipe) {
       return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
     }
-
     // Call the deleteRecipe function
     await deleteRecipe(recipeId);
     // Respond with success message
@@ -496,6 +481,47 @@ const deleteRecipeByRecipeId = async (req, res) => {
   }
 };
 
+// Controller function to delete a recipe ingredient by recipe ID and ingredient ID
+const deleteRecipeIngredientByRecipeId = async (req, res) => {
+  try {
+    const userId = req.userid; // Extracted from JWT token
+    const recipeId = req.params.id; // Extracted from URL parameters
+    const ingredientId = req.body.ingredient_id; // Extracted from request body
+
+    // Log the request for debugging purposes
+    console.log('Request to delete ingredient with ID:', ingredientId, 'from recipe with ID:', recipeId);
+
+    // Check if recipe ID and ingredient ID are provided
+    if (!recipeId || !ingredientId) {
+      return res.status(400).json({ message: 'Recipe ID and ingredient ID must be provided' });
+    }
+    // Check if the recipe belongs to the user
+    const isUsersRecipe = await isUserRecipe(userId, recipeId);
+    if (!isUsersRecipe) {
+      return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
+    }
+    // Call the deleteRecipeIngredients function
+    await deleteRecipeIngredients(recipeId, ingredientId);
+    // Respond with success message
+    res.status(200).json({ message: 'Ingredient deleted successfully from recipe' });
+  } catch (error) {
+    // Log the error message
+    console.error('Error deleting recipe ingredient:', error.message);
+    // Respond with error message
+    res.status(500).json({ message: 'Error deleting ingredient from recipe', error: error.message });
+  }
+};
+
+// Function to check user ownership of a recipe
+async function isUserRecipe(userId, recipeId) {
+  const userRecipes = await getRecipesByUserId(userId);
+  if (!Array.isArray(userRecipes)) {
+    throw new Error('Error fetching recipes for user');
+  }
+
+  const recipe = userRecipes.find(r => r.id === recipeId);
+  return recipe !== undefined;
+}
 
 module.exports = {
   getRecipes,
@@ -510,5 +536,6 @@ module.exports = {
   patchRecipeByUser,
   patchRecipeByRecipeId,
   deleteRecipeByUser,
-  deleteRecipeByRecipeId
+  deleteRecipeByRecipeId,
+  deleteRecipeIngredientByRecipeId,
 };

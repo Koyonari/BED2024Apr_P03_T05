@@ -6,29 +6,42 @@ const validateRecipe = require('../../middleware/validateRecipe');
 const ROLES_LIST = require('../../config/roles_list');
 const verifyRoles = require('../../middleware/verifyRoles');
 
-// GET /api/fetchrecipes - Fetch all recipes
+// GET Routes
+// GET /api/fetch - Fetch recipes from spoonacular API and automatically insert them into database
 router.get('/fetch', verifyJWT, recipeController.getRecipes);
-router.get('/byuser', recipeController.getAllRecipesByUser);
-router.get('/fetchrecipes', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.getAllRecipes);
+// GET /api/fetchuserrecipes - Fetch all recipes by user ID from data base
+router.get('/fetchuserrecipes', recipeController.getAllRecipesByUser);
+// GET /api/fetchrecipesadmin - Fetch all recipes from data base, admin can fetch all recipes regardless of ownership
+router.get('/fetchrecipesadmin', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.getAllRecipes);
+// GET /api/fetchrecipe/:id - Fetch a recipe by recipe ID and obtain its ingredients
 router.get('/fetchingredients/:id', verifyJWT, recipeController.getRecipeIngredients);
 
-// POST /api/insertrecipe - Insert a new recipe and link to a user
+// POST Routes
+// POST /api/insertrecipe - Insert a recipe by user ID, uses spoonacular json object format
 router.post('/insertrecipe', recipeController.insertRecipeByUser);
+// POST /api/insertrecipeadmin - Insert recipe ingredients to a specific recipe, by recipe ID
 router.post('/insertrecipeingredients/:id', verifyJWT, recipeController.insertRecipeIngredientsByRecipeId);
-
 // POST /api/getfilteredrecipes - Get filtered recipes by user preferences
 router.post('/getfilteredrecipes', recipeController.getFilteredRecipesByUser);
 
-// PUT /api/updaterecipedetails/:id - Update recipe details with provided parameters [id in parameter is recipe id]
+// PUT Routes
+// PUT /api/updaterecipe/:id - Update a recipe with provided parameters [id in parameter is recipe id]
 router.put('/updaterecipedetails/:id', verifyJWT, validateRecipe, recipeController.updateRecipeByUser);
-router.put('/updaterecipe/:id', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.updateRecipeByRecipeId);
+// PUT /api/updaterecipeadmin/:id - Update a recipe with provided parameters [id in parameter is recipe id], admin can update any recipe
+router.put('/updaterecipeadmin/:id', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.updateRecipeByRecipeId);
 
-// PATCH /api/patchrecipe/:id - Update a recipe with provided parameters [id in parameter is recipe id]
+// PATCH Routes
+// PATCH /api/editrecipedetails/:id - Edit a recipe by user ID and recipe ID [id in parameter is recipe id]
 router.patch('/editrecipedetails/:id', verifyJWT, recipeController.patchRecipeByUser);
-router.patch('/editrecipebyid/:id', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.patchRecipeByRecipeId);
+// PATCH /api/editrecipeadmin/:id - Edit a recipe by recipe ID [id in parameter is recipe id], admin can edit any recipe
+router.patch('/editrecipeadmin/:id', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.patchRecipeByRecipeId);
 
+// DELETE Routes
 // DELETE /api/deleterecipebyuser/:id - Delete a recipe by user ID and recipe ID [id in parameter is recipe id]
 router.delete('/deleterecipe/:id', verifyJWT, recipeController.deleteRecipeByUser);
-router.delete('/deleterecipebyid/:id', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.deleteRecipeByRecipeId);
+// DELETE /api/deleterecipeadmin/:id - Delete a recipe by recipe ID [id in parameter is recipe id], admin can delete any recipe
+router.delete('/deleterecipeadmin/:id', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.deleteRecipeByRecipeId);
+// DELETE /api/deleterecipeingredients/:id - Delete recipe ingredients for a specific recipe by recipe ID [id in parameter is recipe id]
+router.delete('/deleterecipeingredients/:id', verifyJWT, recipeController.deleteRecipeIngredientByRecipeId);
 
 module.exports = router;
