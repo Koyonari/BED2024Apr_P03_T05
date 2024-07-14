@@ -26,3 +26,4 @@
 20240713	12:55:05	05016d78-f65e-4580-b6f7-26fa969422d2	Error: Not allowed by CORS
 20240713	13:00:43	7df4ff70-70d3-4dec-8f4c-5204b82dd0fe	Error: Not allowed by CORS
 
+20240714	15:18:22	0fc87e8a-6f97-4e3c-9636-cf8d969abbb3	SyntaxError: Unexpected token 'i', "[fish]" is not valid JSON
