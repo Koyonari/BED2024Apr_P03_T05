@@ -6,7 +6,8 @@ const validateRecipeSchema = Joi.object({
   imageurl: Joi.string().uri().optional(),
   servings: Joi.number().integer().optional(),
   readyInMinutes: Joi.number().integer().optional(),
-  pricePerServing: Joi.number().optional()
+  pricePerServing: Joi.number().optional(),
+  spoonacularId: Joi.string().optional()
 }).options({ abortEarly: false });
 
 // Middleware to validate recipe data

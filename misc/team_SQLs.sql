@@ -7,8 +7,8 @@ CREATE TABLE Users (
 -- Sample Data for Users Table // This is just a sample data
 INSERT INTO Users (user_id, username) VALUES 
 ('668105073662e3dda4c190e3', 'TestUser'),
-('668104e73662e3dda4c190e0', 'TestVolunteer');
-
+('668104e73662e3dda4c190e0', 'TestVolunteer'),
+('668104e73662e3dda4c190e2', 'TestAdmin');
 
 -- Create Pantry Table
 CREATE TABLE Pantry (
@@ -52,6 +52,7 @@ INSERT INTO PantryIngredient (pantry_id, ingredient_id, quantity) VALUES
 -- Create Recipes Table
 CREATE TABLE Recipes (
     id VARCHAR(255) PRIMARY KEY,
+    spoonacularId VARCHAR(255) NULL,
     title VARCHAR(255) NOT NULL,
     imageurl NVARCHAR(255) NOT NULL,
     servings INT NOT NULL,
@@ -77,31 +78,25 @@ CREATE TABLE UserRecipes (
     FOREIGN KEY (recipe_id) REFERENCES Recipes(id),
 );
 
+-- Create the requests table
+CREATE TABLE requests (
+    request_id VARCHAR(24) PRIMARY KEY,  
+    title NVARCHAR(255) NOT NULL,              
+    category NVARCHAR(100) NOT NULL,           
+    description NVARCHAR(MAX) NOT NULL,        
+    user_id VARCHAR(255) NOT NULL,                      
+    volunteer_id VARCHAR(255) NULL,                     
+    isCompleted BIT NOT NULL DEFAULT 0,        
+    admin_id VARCHAR(255) NULL,                         
+    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES Users(user_id),  
+    CONSTRAINT FK_Volunteer FOREIGN KEY (volunteer_id) REFERENCES Users(user_id),
+    CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES Users(user_id)
+);
+
 SELECT * FROM Users;
 SELECT * FROM Pantry;
 SELECT * FROM Ingredients;
 SELECT * FROM PantryIngredient;
 SELECT * FROM Recipes;
 SELECT * FROM RecipeIngredients;
-
--- Create the requests table
-CREATE TABLE requests (
-    request_id INT PRIMARY KEY IDENTITY(1,1),  
-    title NVARCHAR(255) NOT NULL,              
-    category NVARCHAR(100) NOT NULL,           
-    description NVARCHAR(MAX) NOT NULL,        
-    user_id INT NOT NULL,                      
-    volunteer_id INT NULL,                     
-    isCompleted BIT NOT NULL DEFAULT 0,        
-    admin_id INT NULL,                         
-    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES Users(user_id),  
-    CONSTRAINT FK_Volunteer FOREIGN KEY (volunteer_id) REFERENCES Users(user_id),
-    CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES admins Users(user_id)
-);
-
--- Insert data into the requests table
-INSERT INTO requests (title, category, description, user_id, volunteer_id, isCompleted, admin_id)
-VALUES 
-('Urgent food request', 'Urgent', 'Require immediate food, preferably meat', 1, 2, 1, 3),
-('Liquids Please', 'Low Priority', 'Require liquids like water, plus protein powder', 2, 2, 0, NULL),
-('Baked Goods', 'High Priority', 'I need some baked goods for meals', 3, NULL, 0, NULL);
+SELECT * FROM requests;

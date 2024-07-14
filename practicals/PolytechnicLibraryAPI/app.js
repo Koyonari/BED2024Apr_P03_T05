@@ -7,9 +7,10 @@ const bodyParser = require("body-parser"); //Import body-parser
 const validateBook = require("./middlewares/validateBook"); //Import validateBook middleware
 const validateUser = require("./middlewares/validateUser"); //Import validateBook middleware
 const verifyJWT = require("./middlewares/verifyJWT"); //Import verifyJWT middleware
-
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./models/swagger-output.json");
 const app = express();
-const port = process.env.PORT || 3000; // Use environment variable or default port
+const port = process.env.PORT || 3500; // Use environment variable or default port
 
 const staticMiddleware = express.static("public"); // Path to the public folder
 
@@ -20,14 +21,18 @@ app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 app.use(staticMiddleware); // Mount the static middleware
 app.post("/register", validateUser, usersController.registerUser);
 app.post("/login", validateUser, usersController.loginUser);
+
 //Routes for GET requests
 app.get("/books", booksController.getAllBooks);
 
 //Routes for POST requests
 app.post("/books", verifyJWT, validateBook, booksController.createBook);
+
 //Routes for PUT requests
 app.put("/books/:bookId/availability", verifyJWT,validateBook, booksController.updateBookAvailability);
 
+// Serve the Swagger UI at a specific route
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(port, async () => {
   try {

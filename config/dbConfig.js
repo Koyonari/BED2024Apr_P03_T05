@@ -11,7 +11,7 @@ const dbConfig = {
     options: {
       port: 1433, // Default SQL Server port
       connectionTimeout: 15000 // Connection timeout in milliseconds
-    },
+    }
 };
 
 // const { MongoClient } = require('mongodb');

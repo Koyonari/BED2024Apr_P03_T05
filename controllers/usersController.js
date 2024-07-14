@@ -11,19 +11,19 @@ const mongoose = require('mongoose');
 const getAllUsers = async (req, res) => {
     try {
         // Fetch all users from MongoDB
-        const users = await User.find().exec();
+        const users = await User.find().select('-password -refreshToken').exec();
         // If no users are found, return a 204 status code
         if (!users || users.length === 0) {
             return res.status(204).json({ message: 'No users found' });
         }
         // Filter out sensitive fields from each user object, password and refreshToken
-        const sanitizedUsers = users.map(user => {
-            // Deconstruct the user object and remove the password and refreshToken fields
-            const { password, refreshToken, ...sanitizedUser } = user.toObject();
-            return sanitizedUser; // Return the sanitized user object
-        });
+        // const sanitizedUsers = users.map(user => {
+        //     // Deconstruct the user object and remove the password and refreshToken fields
+        //     const { password, refreshToken, ...sanitizedUser } = user.toObject();
+        //     return sanitizedUser; // Return the sanitized user object
+        // });
         // Return the sanitized user objects
-        res.status(200).json(sanitizedUsers);
+        res.status(200).json(users);
     } catch (err) {
         // Handle specific MongoDB errors
         if (err.name === 'UnauthorizedError') {
@@ -279,15 +279,13 @@ const getUser = async (req, res) => {
             return res.status(400).json({ 'message': 'Invalid user ID format' });
         }
         // Find the user by ID
-        const user = await User.findOne({ _id: userId }).exec();
+        const user = await User.findOne({ _id: userId }).select('-password -refreshToken').exec();
         if (!user) {
             return res.status(404).json({ 'message': `User with ID ${userId} not found` });
         }
 
         console.log('Retrieved User:', user); // Log the retrieved user object
-        // Filter out sensitive fields from the user object
-        const { password, refreshToken, ...sanitizedUser } = user.toObject();
-        res.json(sanitizedUser);
+        res.json(user); // Return the user object
     } catch (err) {
         // Handle specific MongoDB errors
         if (err.name === 'CastError' && err.kind === 'ObjectId') {

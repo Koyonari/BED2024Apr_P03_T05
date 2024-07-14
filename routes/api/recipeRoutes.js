@@ -10,6 +10,7 @@ const verifyRoles = require('../../middleware/verifyRoles');
 router.get('/fetch', verifyJWT, recipeController.getRecipes);
 router.get('/byuser', recipeController.getAllRecipesByUser);
 router.get('/fetchrecipes', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.getAllRecipes);
+router.get('/recipes/fetchingredients/:id', verifyJWT, recipeController.getRecipeIngredients);
 
 // POST /api/insertrecipe - Insert a new recipe and link to a user
 router.post('/insertrecipe', recipeController.insertRecipeByUser);

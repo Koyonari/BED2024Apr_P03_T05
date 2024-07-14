@@ -38,16 +38,16 @@ app.use(express.json());  // Ensure this is before the routes
 //middleware for cookies
 app.use(cookieParser());
 
-// Import Controllers 
-const userController = require("./controllers/user_sqlController");
-const pantryController = require("./controllers/pantryController");
-
 // Body Parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 
-//serve static files
-app.use('/', express.static(path.join(__dirname, '/public')));
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Import Controllers 
+const userController = require("./controllers/user_sqlController");
+const pantryController = require("./controllers/pantryController");
 
 // Edric routes
 app.use('/', require('./routes/root'));
@@ -76,14 +76,16 @@ app.get("/req/accepted/:id", reqController.getAcceptedRequestById);
 app.patch("/req/completed/:id", reqController.updateCompletedRequest);
 app.get("/req/:id", reqController.getRequestById);
 app.patch("/req/approve/:id", validatePatchApproveRequest, reqController.updateApproveRequest);
-app.get("/accepted", reqController.getAcceptedRequest); 
+app.get("/accepted", reqController.getAcceptedRequest);
 app.delete("/req/:id", reqController.deleteRequest);
-
-// YongShyan User Routes
-app.get("/user/:id", reqController.getUserDetailsById);
 
 // Error handling middleware
 app.use(errorHandler);
+
+// Serve the frontend
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB');

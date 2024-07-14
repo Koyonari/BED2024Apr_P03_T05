@@ -93,6 +93,38 @@ const getAllRecipes = async (req, res) => {
   }
 };
 
+// Controller to handle getting recipe ingredients by recipe ID
+const getRecipeIngredients = async (req, res) => {
+  const userId = req.userid;
+  const { recipeId } = req.params.id;
+  try {
+    // Validate recipeId
+    if (!recipeId) {
+      return res.status(400).json({ error: 'Recipe ID is required' });
+    }
+
+     // Check if user ID is provided
+     if (!userId) {
+      return res.status(400).json({ message: 'User ID not provided' });
+    }
+
+    // Call the service function to get recipe ingredients
+    const ingredients = await getRecipeIngredientsById(recipeId);
+
+    // Check if ingredients were found
+    if (!ingredients) {
+      return res.status(404).json({ error: 'No ingredients found for the given recipe ID' });
+    }
+
+    // Send response with ingredients
+    return res.status(200).json(ingredients);
+  } catch (error) {
+    // Handle any errors that occurred during the request
+    console.error('Error in getRecipeIngredients controller:', error.message);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 // Controller function to get filtered recipes by user preferences
 const getFilteredRecipesByUser = async (req, res) => {
   try {
@@ -422,6 +454,7 @@ module.exports = {
   getAllRecipesByUser,
   getFilteredRecipesByUser,
   getAllRecipes,
+  getRecipeIngredients,
   insertRecipeByUser,
   updateRecipeByUser,
   updateRecipeByRecipeId,
