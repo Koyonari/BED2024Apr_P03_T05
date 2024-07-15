@@ -5,7 +5,7 @@ const validateUser = require('../middleware/validateUser');
 const { createSQLUser } = require('../models/usersql');
 
 const handleNewUser = async (req, res) => {
-    const { username, password, firstname, lastname, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles, dateofBirth } = req.body;
+    const { username, password, firstname, lastname, dietaryRestrictions, intolerances, excludedIngredients, address, email, contact, roles, dateOfBirth } = req.body;
 
     // Validate the required fields for user creation
     if (!username || !password || !email || !contact) {
@@ -40,7 +40,7 @@ const handleNewUser = async (req, res) => {
             address,
             email,
             contact,
-            dateofBirth,
+            dateOfBirth,
         };
 
         // Add dietaryRestrictions, intolerances, and excludedIngredients if the role is 'User' (2001)
