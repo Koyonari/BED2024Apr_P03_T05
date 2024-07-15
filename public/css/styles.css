@@ -24,6 +24,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
+  box-shadow: 0px 4px 6px rgba(250, 250, 250, 0.627);
+  margin-bottom: 1.25vh;
 }
 
 .navbar ul {
@@ -37,11 +39,6 @@ body {
   text-decoration: none;
 }
 
-.navbar {
-  box-shadow: 0px 4px 6px rgba(250, 250, 250, 0.627);
-  margin-bottom: 1.25vh;
-}
-
 .navbarname {
   font-size: 2.5rem;
   font-weight: 600;
@@ -52,7 +49,7 @@ body {
   margin-left: 1vw;
   width: 10vw;
   height: auto;
-  margin-right: 58vw;
+  margin-right: 53vw;
 }
 
 .navbar-nav .nav-link {
@@ -642,7 +639,7 @@ p a:hover {
   overflow: hidden;
 }
 
-.request-Title {
+.request-Num {
   font-weight: bolder;
   font-size: 25px;
   color: black;
@@ -651,8 +648,15 @@ p a:hover {
   text-overflow: ellipsis;
 }
 
+.request-Title {
+  font-size: 20px;
+  color: black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .request-Category {
-  font-weight: bold;
   font-size: 20px;
   color: black;
   white-space: nowrap;

@@ -2,69 +2,73 @@
 let list = document.querySelector(".list");
 let listvol = document.querySelector(".list-vol");
 
-// Requests data
-let requests = [
-    {
-        id: 1,
-        request_Title: "Request 1",
-        request_Category: "High Priority",
-        request_Status: "Pending",
-        request_Description: "I Need Food helppppppppppppppppppppppppppppppppppppppppp",
-    },
-    {
-        id: 2,
-        request_Title: "Request 2",
-        request_Category: "High Priority",
-        request_Status: "Accepted",
-        request_Description: "I Need Food ",
-    },
-    {
-        id: 3,
-        request_Title: "Request 3",
-        request_Category: "High Priority",
-        request_Status: "Accepted",
-        request_Description: "I Need Food ",
-    },
-    {
-        id: 4,
-        request_Title: "Request 4",
-        request_Category: "High Priority",
-        request_Status: "Accepted",
-        request_Description: "I Need Food ",
-    },
-];
+// Fetch user id and token
+const userId = localStorage.getItem('UserId');
+const accessToken = localStorage.getItem('AccessToken');
 
+// GET: getRequestByUserId
 // Initialize the app by populating the list with requests
-function initApp() {
-    requests.forEach((value, key) => {
+async function initApp() {
+    try {
+        const response = await fetch(`http://localhost:3500/req/user/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            const requests = await response.json();
+            console.log('Requests fetched:', requests);
+
+            // Display the fetched requests
+            displayRequests(requests, document.getElementById('request-list'));
+        } else {
+            const error = await response.json();
+            console.error('Error fetching requests:', error);
+            alert(`Error fetching requests: ${error.message}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while fetching the requests');
+    }
+}
+
+function displayRequests(requests, container) {
+    // Show recent request first
+    requests.reverse();
+
+    let num = 1;
+    container.innerHTML = '';
+    requests.forEach((request, key) => {
+        const { title, description, category, volunteer_id, isCompleted } = request;
+        let status = '';
+
+        if (isCompleted) {
+            status = 'Completed';
+        } else if (volunteer_id) {
+            status = 'Accepted';
+        } else {
+            status = 'Pending';
+        }
+
         let newDiv = document.createElement("div");
         newDiv.classList.add("item");
         newDiv.innerHTML = `
-            <div class="request-Title">${value.request_Title}</div>
-            <div class="request-Category">${value.request_Category}</div>
-            <div class="request-Status">${value.request_Status}</div>
-            <div class="request-Description">${value.request_Description}</div>
+            <div class="request-Num">Request ${num}</div>
+            <div class="request-Title">${title}</div>
+            <div class="request-Category">${category}</div>
+            <div class="request-Status">${status}</div>
+            <div class="request-Description">${description}</div>
             <button onclick="viewDetails(${key})">View Details</button>`;
-        list.appendChild(newDiv);
+        container.appendChild(newDiv);
+        num++;
     });
     applyStyles();
 }
 
-function initAppVol() {
-    requests.forEach((value, key) => {
-        let newDiv = document.createElement("div");
-        newDiv.classList.add("item");
-        newDiv.innerHTML = `
-            <div class="request-Title">${value.request_Title}</div>
-            <div class="request-Category">${value.request_Category}</div>
-            <div class="request-Status">${value.request_Status}</div>
-            <div class="request-Description">${value.request_Description}</div>
-            <button onclick="confirm()">Confirm</button>`;
-        listvol.appendChild(newDiv);
-    });
-    applyStyles();
-}
-
+//GET: getRequestById
 // Function to handle the "View Details" button click and show modal
 function viewDetails(key) {
     let request = requests[key];
@@ -111,7 +115,6 @@ function toggleModal() {
 
 // Initialize the app
 initApp();
-initAppVol();
 
 // Close the modal when clicking outside of it
 window.onclick = function(event) {
@@ -145,19 +148,17 @@ function togglepopup(popupid) {
     document.getElementById(popupid).classList.toggle("active");
 }
 
-// function closepopup(popupid) {
-//     document.getElementById(popupid).classList.toggle("none");
-// }
+function closepopup(popupid) {
+    document.getElementById(popupid).classList.toggle("none");
+    document.getElementById('ctitle').value = '';
+    document.getElementById('cmessage').value = '';
+}
 
 async function confirmInput() {
         // Capture input data
         const title = document.getElementById('ctitle').value;
         const category = document.getElementById('cat').value;
         const description = document.getElementById('cmessage').value;
-
-        // Fetch user ID and token from storage
-        const userId = localStorage.getItem('UserId'); //not working
-        const accessToken = localStorage.getItem('AccessToken');
 
         // Validate the data
         if (title.length < 3 || title.length > 70) {
@@ -195,8 +196,9 @@ async function confirmInput() {
             if (response.ok) {
                 const result = await response.json();
                 alert('Request created successfully');
-                // Clear the form
-                togglepopup('new-req');
+
+                // Close popup
+                closepopup('new-req');
             } else {
                 const error = await response.json();
                 alert(`Error creating request: ${error.message}`);
