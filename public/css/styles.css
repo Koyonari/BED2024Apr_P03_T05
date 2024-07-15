@@ -999,9 +999,15 @@ p a:hover {
   margin-left: 3vw;
 }
 
+/* User Home Page */
+
+#logOutBtn{
+  cursor: pointer;
+}
 
 
-/* PRODUCT PAGE START */
+
+/* Pantry PAGE START */
 .pantry-body {
   background-image: none;
   background-color: white;
@@ -1034,7 +1040,7 @@ p a:hover {
   margin-top: 50px;
 }
 .pantry-container .list .item {
-  /* Product Cards */
+  /* Ingredient Cards */
   border: 1px solid black;
   border-radius: 5px;
   text-align: center;
@@ -1079,4 +1085,4 @@ p a:hover {
 }
 
 
-/* PRODUCT PAGE END */
+/* Pantry PAGE END */
