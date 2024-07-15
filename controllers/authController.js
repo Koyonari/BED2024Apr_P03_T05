@@ -74,7 +74,7 @@ const handleLogin = async (req, res) => {
         await foundUser.save();
 
         // Set the refresh token as a cookie in the response [httpOnly should change to https allow?]
-        res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+        res.cookie('jwt', refreshToken, { httpOnly: true, same_site: 'None', maxAge: 24 * 60 * 60 * 1000 });
         
         // Send the access token in the response
         res.json({ accessToken });
