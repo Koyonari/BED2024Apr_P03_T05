@@ -18,7 +18,7 @@ body {
   color: white;
 }
 
-/* Nav Bar Styling */ 
+/* Nav Bar Styling */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -49,7 +49,7 @@ body {
   margin-left: 1vw;
   width: 10vw;
   height: auto;
-  margin-right: 53vw;
+  margin-right: 46vw;
 }
 
 .navbar-nav .nav-link {
@@ -522,7 +522,7 @@ p a:hover {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 50vh; 
+  height: 50vh;
   text-align: center;
 }
 
@@ -563,13 +563,13 @@ p a:hover {
   display: flex;
   text-decoration: none;
   margin-top: 20px;
-  margin-left:30px;
+  margin-left: 30px;
   margin-right: 30px;
   align-items: center;
   justify-content: space-between;
 }
 
-.back-btn h1{
+.back-btn h1 {
   text-align: center;
   margin: auto;
 }
@@ -592,6 +592,16 @@ p a:hover {
 .back-btn a:hover {
   color: white;
 }
+
+#profileInputHolder{
+  display: grid;
+  grid-template-columns: 2fr 50%;
+  gap: 10px;
+}
+
+/* #profile-input{
+  margin: 10px
+} */
 
 /* Request Styles */
 .request-container {
@@ -616,7 +626,7 @@ p a:hover {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px;
-  padding: 20px; 
+  padding: 20px;
   justify-content: center;
   align-items: center;
   background-color: lightgrey;
@@ -696,7 +706,7 @@ p a:hover {
 
 /* Popup */
 .popup .overlay {
-  position:fixed;
+  position: fixed;
   top: 0px;
   left: 0px;
   width: 100vw;
@@ -715,7 +725,7 @@ p a:hover {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%) scale(0);
+  transform: translate(-50%, -50%) scale(0);
   width: 75vw;
   height: 75vh;
   z-index: 2;
@@ -777,8 +787,8 @@ p a:hover {
 .category select,
 .content p,
 .content textarea {
-    font-size: 1.25rem;
-    margin: 10px;
+  font-size: 1.25rem;
+  margin: 10px;
 }
 
 .content .ctitle {
@@ -836,7 +846,13 @@ p a:hover {
   text-align: left;
 }
 
-.request-info, .ingredient-list {
+.request-Title, .request-Category, .request-Status, .request-Description {
+  margin: 5px 0;
+  text-align: left;
+}
+
+.request-info,
+.ingredient-list {
   width: 48%;
 }
 
@@ -864,7 +880,8 @@ p a:hover {
   color: white;
 }
 
-.btn-delete:hover, .btn-complete:hover {
+.btn-delete:hover,
+.btn-complete:hover {
   opacity: 0.9;
 }
 
@@ -877,8 +894,8 @@ p a:hover {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
   color: black;
 }
 
@@ -922,8 +939,8 @@ p a:hover {
 }
 
 .close-btn:hover {
-  color:#8d8d8d;
-  cursor:pointer;
+  color: #8d8d8d;
+  cursor: pointer;
 }
 
 .confirm-overlay {
@@ -970,7 +987,7 @@ p a:hover {
   text-align: center;
 }
 
-.home-container{
+.home-container {
   margin-top: 3vh;
   display: flex;
   width: 95vw;
@@ -1000,31 +1017,53 @@ p a:hover {
   margin-left: 3vw;
 }
 
+/* User Home Page */
 
+#logOutBtn {
+  cursor: pointer;
+}
 
-/* PRODUCT PAGE START */
+/* Pantry PAGE START */
 .pantry-body {
   background-image: none;
   background-color: white;
 }
+
 .pantry-container {
-  font-family: "Roboto Slab";
+  font-family: "Arial", sans-serif;
   width: 1000px;
   margin-top: 84px;
   transition: 0.5s;
   margin: 90px auto;
 }
 
+.pantry-container header {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  margin-top: 50px;
+}
 
 .pantry-container h1 {
-  padding-left: 60px;
+  margin-right: 50px;
   color: black;
   text-align: center;
+  margin-left: 350px;
 }
-.pantry-container header {
-  display: grid;
-  grid-template-columns: 1fr 50px;
-  margin-top: 50px;
+
+.pantry-container #add_ingredient_btn {
+  background-color: orange;
+  width: 150px;
+  height: 50px;
+  margin-right: 15px;
+  border-radius: 200px;
+}
+
+.pantry-container #recipe_btn {
+  background-color: orange;
+  width: 150px;
+  height: 50px;
+  border-radius: 200px;
 }
 
 .pantry-container .list {
@@ -1035,7 +1074,7 @@ p a:hover {
   margin-top: 50px;
 }
 .pantry-container .list .item {
-  /* Product Cards */
+  /* Ingredient Cards */
   border: 1px solid black;
   border-radius: 5px;
   text-align: center;
@@ -1043,6 +1082,13 @@ p a:hover {
   padding: 20px;
   box-shadow: 0 10px 10px #757676;
   letter-spacing: 1px;
+}
+
+.pantry-container .list .add_remove_holder {
+  display: grid;
+  grid-template-columns: 2fr 50%;
+  gap: 5px;
+  margin: 7px 0;
 }
 
 .pantry-container .list .item.selected {
@@ -1079,5 +1125,4 @@ p a:hover {
   background-color: goldenrod;
 }
 
-
-/* PRODUCT PAGE END */
+/* Pantry PAGE END */

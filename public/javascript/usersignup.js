@@ -1,14 +1,16 @@
-var dietaryRestrictions = null;
-var intolerances = null;
-var excludedIngredients = null;
+var dietaryRestrictions = null; // Variable to store dietary restrictions
+var intolerances = null; // Variable to store intolerances
+var excludedIngredients = null; // Variable to store excluded ingredients
 
-///////////////////////////////////////////////// Diet Restrictions Popup
+//Diet Restrictions Popup
+// Show the diet restrictions popup when the button is clicked
 document
   .getElementById("restrictions-btn")
   .addEventListener("click", function () {
     document.getElementById("restrictions-container").classList.add("active");
   });
 
+// Close the diet restrictions popup when the close button is clicked
 document
   .getElementById("restrictions-close-btn")
   .addEventListener("click", function () {
@@ -16,15 +18,16 @@ document
       .getElementById("restrictions-container")
       .classList.remove("active");
   });
-/////////////////////////////////////////////////
 
-///////////////////////////////////////////////// Intolerances Popup
+// Intolerances Popup
+// Show the intolerances popup when the button is clicked
 document
   .getElementById("intolerances-btn")
   .addEventListener("click", function () {
     document.getElementById("intolerances-container").classList.add("active");
   });
 
+// Close the intolerances popup when the close button is clicked
 document
   .getElementById("intolerances-close-btn")
   .addEventListener("click", function () {
@@ -32,9 +35,9 @@ document
       .getElementById("intolerances-container")
       .classList.remove("active");
   });
-/////////////////////////////////////////////////
 
-///////////////////////////////////////////////// Push Diet to dietaryRestrictions
+//Push Diet to dietaryRestrictions
+// Store the selected dietary restrictions in the dietaryRestrictions array
 document
   .getElementById("restrictions-btn")
   .addEventListener("click", function () {
@@ -45,11 +48,12 @@ document
         dietaryRestrictions.push(options[i].value);
       }
     }
-    // Display the selected restrictions in the popup or do whatever you want with them
+    // Display the selected restrictions in the popup
     alert("Selected Restrictions: " + dietaryRestrictions.join(", "));
   });
 
-///////////////////////////////////////////////// Push Intolerances to intolerances
+// Push Intolerances to intolerances array
+// Store the selected intolerances in the intolerances array
 document
   .getElementById("intolerances-btn")
   .addEventListener("click", function () {
@@ -60,12 +64,12 @@ document
         intolerances.push(options[i].value);
       }
     }
-    // Display the selected intolerances in the popup or do whatever you want with them
+    // Display the selected intolerances in the popup
     alert("Selected Intolerances: " + intolerances.join(", "));
   });
-/////////////////////////////////////////////////
 
-///////////////////////////////////////////////// Confirm Diet Restrictions
+// Confirms Diet Restrictions and stores in a array
+// Store the selected dietary restrictions in the dietaryRestrictions array
 document
   .getElementById("confirm-diet-btn")
   .addEventListener("click", function () {
@@ -84,9 +88,9 @@ document
       .getElementById("restrictions-container")
       .classList.remove("active");
   });
-/////////////////////////////////////////////////
 
-///////////////////////////////////////////////// Confirm Intolerances
+// Confirms Intolerances and stores in a array
+// Store the selected intolerances in the intolerances array
 document
   .getElementById("confirm-int-btn")
   .addEventListener("click", function () {
@@ -105,9 +109,9 @@ document
       .getElementById("intolerances-container")
       .classList.remove("active");
   });
-/////////////////////////////////////////////////
 
-///////////////////////////////////////////////// Create User
+// Create User
+// Handle form submission
 document.querySelector("form").addEventListener("submit", function (event) {
   event.preventDefault(); // Prevent form submission
 
@@ -121,11 +125,32 @@ document.querySelector("form").addEventListener("submit", function (event) {
   var email = document.getElementById("email-signup").value.trim();
   var contact = document.getElementById("contact").value.trim();
   var role = document.getElementById("role").value.trim();
-  var excludedIngredients = document.getElementById("excluded-ingredients").value.trim();
+  var excludedIngredients = document
+    .getElementById("excluded-ingredients")
+    .value.trim();
 
-  // Basic form validation
-  if (!username || !firstname || !lastname || !dob || !password || !address || !email || !contact || !role) {
+  // Check for Empty Fields
+  if (
+    !username ||
+    !firstname ||
+    !lastname ||
+    !dob ||
+    !password ||
+    !address ||
+    !email ||
+    !contact ||
+    !role
+  ) {
     alert("Please fill out all required fields.");
+    return;
+  }
+
+  // Password validation
+  var passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordPattern.test(password)) {
+    alert(
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    );
     return;
   }
 
@@ -141,9 +166,11 @@ document.querySelector("form").addEventListener("submit", function (event) {
 
   // Split excludedIngredients by comma and trim whitespace
   if (excludedIngredients && excludedIngredients.length > 0) {
-    excludedIngredients = excludedIngredients.split(',').map(function (ingredient) {
-      return ingredient.trim();
-    });
+    excludedIngredients = excludedIngredients
+      .split(",")
+      .map(function (ingredient) {
+        return ingredient.trim();
+      });
   } else {
     excludedIngredients = null;
   }
@@ -154,7 +181,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
     firstname: firstname,
     lastname: lastname,
     roles: {
-      "User": 2001
+      User: 2001,
     },
     password: password,
     address: address,
@@ -166,28 +193,28 @@ document.querySelector("form").addEventListener("submit", function (event) {
     dateOfBirth: dob,
   };
 
-  // Optionally, you can send this data to the server for processing
-  // For example, using fetch to send the data to a server endpoint
-  /* fetch('https://your-api-endpoint', {
-        method: 'POST',
-        body: JSON.stringify(user),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    }); */
-
-  // Reset form fields
-  document.querySelector("form").reset();
-
-  // Display success message or redirect to another page
-  console.log(user);
-  alert("User created successfully!");
+  // Send the data to the server for processing
+  fetch('http://localhost:3500/register', {
+    method: 'POST',
+    body: JSON.stringify(user),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json().then(data => ({status: response.status, body: data})))
+  .then(({status, body}) => {
+    if (status === 201) {
+      console.log('Success:', body);
+      alert("Register successful, you can now login via the login page.");
+      // Reset form fields
+      document.querySelector("form").reset();
+    } else {
+      console.error('Error:', body);
+      alert("There was an error creating the user: " + body.message);
+    }
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+    alert("There was an error creating the user.");
+  });
 });
-/////////////////////////////////////////////////

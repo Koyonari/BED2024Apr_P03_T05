@@ -84,8 +84,37 @@ const fetchRecipeDetails = async (recipeId) => {
   }
 };
 
+const fetchRecipeIngredient = async(ingredient_name) => {
+  try {
+    const spoonacularResponse = await axios.get(
+      `https://api.spoonacular.com/food/ingredients/search`,
+      {
+        params: {
+          query: ingredient_name,
+          apiKey: apiKey,
+        },
+      }
+    );
+
+    const ingredientData = spoonacularResponse.data.results[0];
+    if (!ingredientData) {
+      throw new Error("Ingredient not found");
+    }
+
+    return {
+      id: ingredientData.id,
+      name: ingredientData.name,
+      image: ingredientData.image
+    };
+  } catch (error) {
+    console.error('Error fetching ingredient from API:', error.message);
+    throw error; // Re-throw the error to be handled upstream
+  }
+};
+
 module.exports = {
   fetchRecipes,
   fetchFilteredRecipes,
-  fetchRecipeDetails
+  fetchRecipeDetails,
+  fetchRecipeIngredient
 };

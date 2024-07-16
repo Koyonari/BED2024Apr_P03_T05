@@ -1,4 +1,5 @@
-///////////////////////////////////////////////// Create User
+// Create User
+// Handle form submission
 document.querySelector("form").addEventListener("submit", function (event) {
   event.preventDefault(); // Prevent form submission
 
@@ -13,51 +14,71 @@ document.querySelector("form").addEventListener("submit", function (event) {
   var contact = document.getElementById("contact").value.trim();
   var role = document.getElementById("role").value.trim();
 
-  // Basic form validation
-  if (!username || !firstname || !lastname || !dob || !password || !address || !email || !contact || !role) {
+  // Check for Empty Fields
+  if (
+    !username ||
+    !firstname ||
+    !lastname ||
+    !dob ||
+    !password ||
+    !address ||
+    !email ||
+    !contact ||
+    !role
+  ) {
     alert("Please fill out all required fields.");
     return;
   }
-  // Create user object
-  var volunteer = {
+
+  // Password validation
+  var passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordPattern.test(password)) {
+    alert(
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    );
+    return;
+  }
+
+  // Create volunteer object
+  var user = {
     username: username,
-    fullname: fullname,
+    firstname: firstname,
     lastname: lastname,
     roles: {
-      "User": 2001,
+      Volunteer: 2002,
     },
     password: password,
     address: address,
-    dietaryRestrictions: null,
-    intolerances: null,
-    excludedIngredients: null,
     email: email,
     contact: contact,
     dateOfBirth: dob,
   };
 
-  // Optionally, you can send this data to the server for processing
-  // For example, using fetch to send the data to a server endpoint
-  /* fetch('https://your-api-endpoint', {
-        method: 'POST',
-        body: JSON.stringify(user),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
+  // Send the data to the server for processing
+  fetch("http://localhost:3500/register", {
+    method: "POST",
+    body: JSON.stringify(user),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) =>
+      response.json().then((data) => ({ status: response.status, body: data }))
+    )
+    .then(({ status, body }) => {
+      if (status === 201) {
+        console.log("Success:", body);
+        alert("Register successful, you can now login via the login page.");
+        // Reset form fields
+        document.querySelector("form").reset();
+      } else {
+        console.error("Error:", body);
+        alert("There was an error creating the user: " + body.message);
+      }
     })
     .catch((error) => {
-        console.error('Error:', error);
-    }); */
-
-  // Reset form fields
-  document.querySelector("form").reset();
-
-  // Display success message or redirect to another page
-  console.log(volunteer);
-  alert("User created successfully!");
+      console.error("Error:", error);
+      alert("There was an error creating the user.");
+    });
 });
-/////////////////////////////////////////////////
