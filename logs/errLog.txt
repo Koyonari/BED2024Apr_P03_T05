@@ -27,3 +27,9 @@
 20240713	13:00:43	7df4ff70-70d3-4dec-8f4c-5204b82dd0fe	Error: Not allowed by CORS
 
 20240714	15:18:22	0fc87e8a-6f97-4e3c-9636-cf8d969abbb3	SyntaxError: Unexpected token 'i', "[fish]" is not valid JSON
+20240715	13:36:53	0ab3e5d6-a318-4b7d-a33e-9095086a1eb0	Error: Not allowed by CORS
+20240715	13:38:50	121b4745-88b2-4fec-9d1f-08c9d31410cc	Error: Not allowed by CORS
+20240715	16:39:35	217fd5de-c8a7-4f57-811c-117b3dc7101f	Error: ENOENT: no such file or directory, stat 'C:\Users\zekke\Desktop\BED\BED Assignment\BED2024Apr_P03_T05\views\index.html'
+20240716	15:37:34	c6dff2d4-0315-4c60-926d-ee44f578f029	Error: Not allowed by CORS
+20240716	15:46:56	2079ad8f-faec-4d3d-ae99-41732b95329c	Error: Not allowed by CORS
+20240716	21:51:16	fe20d743-0f8d-4121-9ddc-d30f63319325	Error: Not allowed by CORS
