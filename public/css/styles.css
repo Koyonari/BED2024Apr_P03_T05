@@ -632,10 +632,10 @@ p a:hover {
   box-shadow: 0 10px 10px #757676;
   letter-spacing: 1px;
   width: 30vw;
-  height: 60vh;
+  height: 55vh;
+  max-height: 400px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   overflow: hidden;
 }
 
@@ -646,25 +646,13 @@ p a:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 7vh;
 }
 
-.request-Title {
-  font-size: 20px;
-  color: black;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.request-Category {
-  font-size: 20px;
-  color: black;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.request-Status {
+.request-Title,
+.request-Category,
+.request-Status,
+.request-Description {
   font-size: 20px;
   color: black;
   white-space: nowrap;
@@ -675,9 +663,12 @@ p a:hover {
 .request-Description {
   font-size: 20px;
   color: black;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
+  line-height: 1.5;
+  max-height: 3em;
+  white-space: normal;
 }
 
 .request-container .list-vol .item button,
@@ -840,6 +831,11 @@ p a:hover {
   color: black;
 }
 
+.request-Title, .request-Category, .request-Status, .request-Description {
+  margin: 5px 0;
+  text-align: left;
+}
+
 .request-info, .ingredient-list {
   width: 48%;
 }
@@ -903,6 +899,7 @@ p a:hover {
   height: 80%;
   border-radius: 10px;
   border: 2px solid black;
+  margin-top: 2vh;
 }
 
 .req-det1 > *,

@@ -6,6 +6,9 @@ let listvol = document.querySelector(".list-vol");
 const userId = localStorage.getItem('UserId');
 const accessToken = localStorage.getItem('AccessToken');
 
+// Global variable to store the requests array
+let globalRequests = [];
+
 // GET: getRequestByUserId
 // Initialize the app by populating the list with requests
 async function initApp() {
@@ -20,6 +23,7 @@ async function initApp() {
 
         if (response.ok) {
             const requests = await response.json();
+            globalRequests = requests;
             console.log('Requests fetched:', requests);
 
             // Display the fetched requests
@@ -57,30 +61,65 @@ function displayRequests(requests, container) {
         newDiv.classList.add("item");
         newDiv.innerHTML = `
             <div class="request-Num">Request ${num}</div>
-            <div class="request-Title">${title}</div>
-            <div class="request-Category">${category}</div>
-            <div class="request-Status">${status}</div>
-            <div class="request-Description">${description}</div>
+            <div class="request-Title">Title: ${title}</div>
+            <div class="request-Category">Category: ${category}</div>
+            <div class="request-Status">Status: ${status}</div>
+            <div class="request-Description">Description: ${description}</div>
             <button onclick="viewDetails(${key})">View Details</button>`;
         container.appendChild(newDiv);
+        newDiv.dataset.num = num;
         num++;
     });
     applyStyles();
 }
 
-//GET: getRequestById
-// Function to handle the "View Details" button click and show modal
-function viewDetails(key) {
-    let request = requests[key];
-    document.getElementById('modalTitle').innerText = request.request_Title;
-    document.getElementById('modalCategory').innerText = request.request_Category;
-    document.getElementById('modalStatus').innerText = request.request_Status;
-    document.getElementById('modalDescription').innerText = request.request_Description;
-    document.getElementById('modalTitle1').innerText = request.request_Title;
-    document.getElementById('modalCategory1').innerText = request.request_Category;
-    document.getElementById('modalStatus1').innerText = request.request_Status;
-    document.getElementById('modalDescription1').innerText = request.request_Description;
-    toggleModal();
+// GET: getRequestById
+// Function to handle "View Details" button click
+async function viewDetails(key) {
+    try {
+        // Get the request_id from the selected request
+        let requestId = globalRequests[key].request_id;
+        const response = await fetch(`http://localhost:3500/req/${requestId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            const request = await response.json();
+            console.log('Request details fetched:', request);
+
+            // Populate modal with request details
+            document.getElementById('modalNum').innerText = `Request ${document.querySelector(`.item:nth-child(${key + 1})`).dataset.num}`;
+            document.getElementById('modalTitle').innerText = `Title: ${request.title}`;
+            document.getElementById('modalCategory').innerText = `${request.category}`;
+            document.getElementById('modalStatus').innerText = `${getStatusText(request)}`;
+            document.getElementById('modalDescription').innerText = `${request.description}`;
+
+            // Show the modal
+            toggleModal();
+        } else {
+            const error = await response.json();
+            console.error('Error fetching request details:', error);
+            alert(`Error fetching request details: ${error.message}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while fetching request details');
+    }
+}
+
+// Helper function to determine status text
+function getStatusText(request) {
+    if (request.isCompleted) {
+        return 'Completed';
+    } else if (request.volunteer_id) {
+        return 'Accepted';
+    } else {
+        return 'Pending';
+    }
 }
 
 // Confirm dialog function
@@ -136,8 +175,8 @@ function applyStyles() {
     modalContent.style.height = "70%";
     modalContent.style.display = "flex";
     modalContent.style.flexDirection = "row";
-    modalContent.style.justifyContent = "center"; // Center children horizontally within the modal-content
-    modalContent.style.alignItems = "center"; // Center children vertically within the modal-content
+    modalContent.style.justifyContent = "center";
+    modalContent.style.alignItems = "center";
     modalContent.style.position = "fixed";
     modalContent.style.top = "25vh";
     modalContent.style.left = "50%";
@@ -152,6 +191,7 @@ function closepopup(popupid) {
     document.getElementById(popupid).classList.toggle("none");
     document.getElementById('ctitle').value = '';
     document.getElementById('cmessage').value = '';
+    window.location.reload();
 }
 
 async function confirmInput() {
