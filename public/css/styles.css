@@ -638,7 +638,7 @@ p a:hover {
   box-shadow: 0 10px 10px #757676;
   letter-spacing: 1px;
   width: 30vw;
-  height: 55vh;
+  height: 65vh;
   max-height: 400px;
   display: flex;
   flex-direction: column;
@@ -664,6 +664,7 @@ p a:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.5;
 }
 
 .request-Description {
@@ -671,10 +672,17 @@ p a:hover {
   color: black;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: block;
   line-height: 1.5;
   max-height: 3em;
-  white-space: normal;
+
+  @supports (-webkit-line-clamp: 2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: initial;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
 }
 
 .request-container .list-vol .item button,
@@ -913,11 +921,13 @@ p a:hover {
   border-radius: 10px;
   border: 2px solid black;
   margin-top: 2vh;
+  overflow-y: auto;
 }
 
 .req-det1 > *,
 .req-det2 > * {
-  padding: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 .req-details2 {

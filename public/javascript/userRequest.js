@@ -94,9 +94,13 @@ async function viewDetails(key) {
             // Populate modal with request details
             document.getElementById('modalNum').innerText = `Request ${document.querySelector(`.item:nth-child(${key + 1})`).dataset.num}`;
             document.getElementById('modalTitle').innerText = `Title: ${request.title}`;
-            document.getElementById('modalCategory').innerText = `${request.category}`;
-            document.getElementById('modalStatus').innerText = `${getStatusText(request)}`;
-            document.getElementById('modalDescription').innerText = `${request.description}`;
+            document.getElementById('modalCategory').innerText = `Category: ${request.category}`;
+            document.getElementById('modalStatus').innerText = `Status:  ${getStatusText(request)}`;
+            document.getElementById('modalDescription').innerText = `Description: ${request.description}`;
+
+            // Give margin bottom to modal num
+            let modalNumElement = document.getElementById('modalNum');
+            modalNumElement.style.marginBottom = '25px'; 
 
             // Show the modal
             toggleModal();
@@ -181,6 +185,7 @@ function applyStyles() {
     modalContent.style.top = "25vh";
     modalContent.style.left = "50%";
     modalContent.style.transform = "translate(-50%, -50%)";
+    modalContent.style.overflow = "auto";
 }
 
 function togglepopup(popupid) {
