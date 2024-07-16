@@ -593,15 +593,11 @@ p a:hover {
   color: white;
 }
 
-#profileInputHolder{
+#profileInputHolder {
   display: grid;
   grid-template-columns: 2fr 50%;
   gap: 10px;
 }
-
-/* #profile-input{
-  margin: 10px
-} */
 
 /* Request Styles */
 .request-container {
@@ -1025,8 +1021,7 @@ p a:hover {
 
 /* Pantry PAGE START */
 .pantry-body {
-  background-image: none;
-  background-color: white;
+  background-color: whitesmoke;
 }
 
 .pantry-container {
@@ -1091,11 +1086,33 @@ p a:hover {
   margin: 7px 0;
 }
 
-.pantry-container .list .item.selected {
-  background-color: #8af198; /* Adjusted color for selected item */
+.pantry-container .list .add_remove_holder {
+  display: grid;
+  grid-template-columns: 2fr 50%;
+  gap: 5px;
+  margin: 7px 0;
 }
+
+.pantry-container .list .add_remove_holder {
+  display: flex;
+  gap: 5px;
+  margin: 7px 0;
+}
+.add_remove_holder #ingredient_plus_icon {
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.add_remove_holder input {
+  border-radius: 5px;
+}
+.add_remove_holder #ingredient_minus_icon {
+  font-size: 30px;
+  cursor: pointer;
+}
+
 .pantry-container .list .item .selected {
-  background-color: #97c6df; /* Adjusted color for selected button */
+  background-color: white; /* Adjusted color for selected button */
 }
 
 .pantry-container .list .item img {
@@ -1105,8 +1122,8 @@ p a:hover {
   object-fit: cover;
 }
 .pantry-container .list .item .title {
-  font-weight: 600;
-  font-size: 35px;
+  font-weight: bold;
+  font-size: 20px;
 }
 .pantry-container .list .item .price {
   margin: 10px;
@@ -1122,7 +1139,30 @@ p a:hover {
 }
 
 .pantry-container .list .item button:hover {
-  background-color: goldenrod;
+  background-color: white;
+  color: black;
+}
+
+/* Add Ingredient Popup */
+#new_ingredient_popup .content {
+  border-radius: 25px;
+  height: 50%;
+  width: 50%;
+  display: grid;
+  justify-content: center;
+}
+#popup_IngredientName {
+  height: 50px;
+  font-size: 15px;
+}
+
+#popup_IngredientQuantity {
+  height: 50px;
+  font-size: 15px;
+}
+
+#confirm_ingredient_btn {
+  font-size: 15px;
 }
 
 /* Pantry PAGE END */
