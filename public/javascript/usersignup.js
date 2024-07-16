@@ -1,14 +1,16 @@
-var dietaryRestrictions = null;
-var intolerances = null;
-var excludedIngredients = null;
+var dietaryRestrictions = null; // Variable to store dietary restrictions
+var intolerances = null; // Variable to store intolerances
+var excludedIngredients = null; // Variable to store excluded ingredients
 
-///////////////////////////////////////////////// Diet Restrictions Popup
+//Diet Restrictions Popup
+// Show the diet restrictions popup when the button is clicked
 document
   .getElementById("restrictions-btn")
   .addEventListener("click", function () {
     document.getElementById("restrictions-container").classList.add("active");
   });
 
+// Close the diet restrictions popup when the close button is clicked
 document
   .getElementById("restrictions-close-btn")
   .addEventListener("click", function () {
@@ -17,13 +19,15 @@ document
       .classList.remove("active");
   });
 
-///////////////////////////////////////////////// Intolerances Popup
+// Intolerances Popup
+// Show the intolerances popup when the button is clicked
 document
   .getElementById("intolerances-btn")
   .addEventListener("click", function () {
     document.getElementById("intolerances-container").classList.add("active");
   });
 
+// Close the intolerances popup when the close button is clicked
 document
   .getElementById("intolerances-close-btn")
   .addEventListener("click", function () {
@@ -32,7 +36,8 @@ document
       .classList.remove("active");
   });
 
-///////////////////////////////////////////////// Push Diet to dietaryRestrictions
+//Push Diet to dietaryRestrictions
+// Store the selected dietary restrictions in the dietaryRestrictions array
 document
   .getElementById("restrictions-btn")
   .addEventListener("click", function () {
@@ -43,11 +48,12 @@ document
         dietaryRestrictions.push(options[i].value);
       }
     }
-    // Display the selected restrictions in the popup 
+    // Display the selected restrictions in the popup
     alert("Selected Restrictions: " + dietaryRestrictions.join(", "));
   });
 
-///////////////////////////////////////////////// Push Intolerances to intolerances
+// Push Intolerances to intolerances array
+// Store the selected intolerances in the intolerances array
 document
   .getElementById("intolerances-btn")
   .addEventListener("click", function () {
@@ -58,11 +64,12 @@ document
         intolerances.push(options[i].value);
       }
     }
-    // Display the selected intolerances in the popup 
+    // Display the selected intolerances in the popup
     alert("Selected Intolerances: " + intolerances.join(", "));
   });
 
-///////////////////////////////////////////////// Confirm Diet Restrictions
+// Confirms Diet Restrictions and stores in a array
+// Store the selected dietary restrictions in the dietaryRestrictions array
 document
   .getElementById("confirm-diet-btn")
   .addEventListener("click", function () {
@@ -82,7 +89,8 @@ document
       .classList.remove("active");
   });
 
-///////////////////////////////////////////////// Confirm Intolerances
+// Confirms Intolerances and stores in a array
+// Store the selected intolerances in the intolerances array
 document
   .getElementById("confirm-int-btn")
   .addEventListener("click", function () {
@@ -102,8 +110,8 @@ document
       .classList.remove("active");
   });
 
-
-///////////////////////////////////////////////// Create User
+// Create User
+// Handle form submission
 document.querySelector("form").addEventListener("submit", function (event) {
   event.preventDefault(); // Prevent form submission
 
@@ -121,7 +129,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
     .getElementById("excluded-ingredients")
     .value.trim();
 
-  // Basic form validation
+  // Check for Empty Fields
   if (
     !username ||
     !firstname ||
@@ -193,16 +201,20 @@ document.querySelector("form").addEventListener("submit", function (event) {
       'Content-Type': 'application/json'
     }
   })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Success:', data);
-    alert("Register successful, you can now login via the login page.");
+  .then(response => response.json().then(data => ({status: response.status, body: data})))
+  .then(({status, body}) => {
+    if (status === 201) {
+      console.log('Success:', body);
+      alert("Register successful, you can now login via the login page.");
+      // Reset form fields
+      document.querySelector("form").reset();
+    } else {
+      console.error('Error:', body);
+      alert("There was an error creating the user: " + body.message);
+    }
   })
   .catch((error) => {
     console.error('Error:', error);
     alert("There was an error creating the user.");
   });
-
-  // Reset form fields
-  document.querySelector("form").reset();
 });

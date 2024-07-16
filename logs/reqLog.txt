@@ -4160,3 +4160,5 @@
 20240715	19:33:41	6c364370-60df-465a-961a-a6cf3a1af63c	POST	undefined	/register
 20240715	19:33:58	5df9c837-fe6b-471a-b480-b52c8229b653	POST	undefined	/register
 20240715	19:35:37	38ddca64-7bea-4950-ad5a-480affeaddae	POST	undefined	/register
+20240716	00:27:39	00d07bab-caa4-4fd0-9abf-bb108afa14ea	POST	undefined	/register
+20240716	00:27:42	bfbb80d5-c0aa-4652-84f8-993a66050224	POST	undefined	/auth
