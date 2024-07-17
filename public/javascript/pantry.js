@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const selectedIngredients = [];
 
   // Base URL for ingredient images
-  const imageUrlBase = "https://img.spoonacular.com/ingredients_250x250/";
+  const imageUrlBase = "https://img.spoonacular.com/ingredients_500x500/";
 
   // Fetch ingredients from the server
   function fetchIngredients() {
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
       newDiv.innerHTML = `
-          <img src="${imageUrlBase + value.ingredient_image}">
+          <img id="product_img" src="${imageUrlBase + value.ingredient_image}">
           <div class="title">${value.ingredient_name}</div>
           <div class="quantity">Quantity: ${value.quantity.toLocaleString()}</div>
           <div class="add_remove_holder">
