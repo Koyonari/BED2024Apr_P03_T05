@@ -50,6 +50,7 @@ async function handleLogin() {
       // If user has role 2001 or 2002, create pantry
       const userId = decodedAccessToken.UserInfo.userid;
       const userRole = decodedAccessToken.UserInfo.roles[0];
+      localStorage.setItem("UserId", userId);
 
       if (userRole === 2001 || userRole === 2002) {
           const pantryResponse = await fetch(`http://localhost:3500/pantry/${userId}`, {

@@ -5,8 +5,8 @@ const routes = ["../app.js"];
 
 const doc = {
   info: {
-    title: "Polytechnic Library",
-    description: "Have a wide variety and genres of books for everyone, young and old to enjoy!",
+    title: "NutriAID",
+    description: "NutriAid is a web application designed to bridge the gap between underprivileged individuals and volunteers willing to provide food aid.",
   },
   host: "localhost:3500",
 };
