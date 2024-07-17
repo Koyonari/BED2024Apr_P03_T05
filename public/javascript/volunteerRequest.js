@@ -185,7 +185,7 @@ function acceptRequest() {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}` // Assuming you have the access token available
+            'Authorization': `Bearer ${accessToken}`
         },
         body: JSON.stringify({ volunteer_id: volunteerId })
     })
