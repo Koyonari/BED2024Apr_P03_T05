@@ -1031,7 +1031,7 @@ p a:hover {
 
 /* Pantry PAGE START */
 .pantry-body {
-  background-color: whitesmoke;
+  background-color: black;
 }
 
 .pantry-container {
@@ -1039,7 +1039,7 @@ p a:hover {
   width: 1000px;
   margin-top: 84px;
   transition: 0.5s;
-  margin: 90px auto;
+  margin: 10px auto;
 }
 
 .pantry-container header {
@@ -1051,7 +1051,7 @@ p a:hover {
 
 .pantry-container h1 {
   margin-right: 50px;
-  color: black;
+  color: white;
   text-align: center;
   margin-left: 350px;
 }
@@ -1081,12 +1081,18 @@ p a:hover {
 .pantry-container .list .item {
   /* Ingredient Cards */
   border: 1px solid black;
-  border-radius: 5px;
+  border-radius: 25px;
   text-align: center;
-  background-color: #da8c43;
+  background-color: white;
   padding: 20px;
-  box-shadow: 0 10px 10px #757676;
   letter-spacing: 1px;
+}
+
+.pantry-container .list .item #product_img {
+  border-radius: 15px;
+  height: 200px;
+  object-fit: cover; 
+  object-position: center; 
 }
 
 .pantry-container .list .add_remove_holder {
@@ -1110,6 +1116,7 @@ p a:hover {
 }
 .add_remove_holder #ingredient_plus_icon {
   font-size: 30px;
+  color: black;
   cursor: pointer;
 }
 
@@ -1118,11 +1125,13 @@ p a:hover {
 }
 .add_remove_holder #ingredient_minus_icon {
   font-size: 30px;
+  color: black;
   cursor: pointer;
 }
 
 .pantry-container .list .item .selected {
   background-color: white; /* Adjusted color for selected button */
+  color: black;
 }
 
 .pantry-container .list .item img {
