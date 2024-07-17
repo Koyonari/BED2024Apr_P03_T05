@@ -9,11 +9,11 @@ const accessToken = localStorage.getItem('AccessToken');
 // Global variable to store the requests array
 let globalRequests = [];
 
-// GET: getAvailableRequest
+// GET: getAcceptedRequestById
 // Initialize the app by populating the list with requests
 async function initApp() {
     try {
-        const response = await fetch(`http://localhost:3500/available`, {
+        const response = await fetch(`http://localhost:3500/req/accepted/${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -26,7 +26,6 @@ async function initApp() {
             globalRequests = requests;
             console.log('Requests fetched:', requests);
 
-            // Display the fetched requests
             displayRequests(requests, document.getElementById('request-list'));
         } else {
             const error = await response.json();
@@ -162,44 +161,4 @@ function applyStyles() {
     modalContent.style.left = "50%";
     modalContent.style.transform = "translate(-50%, -50%)";
     modalContent.style.overflow = "auto";
-}
-
-function togglepopup(popupid) {
-    document.getElementById(popupid).classList.toggle("active");
-}
-
-function closepopup(popupid) {
-    document.getElementById(popupid).classList.toggle("none");
-    document.getElementById('ctitle').value = '';
-    document.getElementById('cmessage').value = '';
-    window.location.reload();
-}
-
-// PATCH: updateAcceptedRequest
-function acceptRequest() {
-    let key = document.getElementById('modal').dataset.key;
-    let requestId = globalRequests[key].request_id;
-    const volunteerId = userId;
-
-    fetch(`http://localhost:3500/req/accepted/update/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}` // Assuming you have the access token available
-        },
-        body: JSON.stringify({ volunteer_id: volunteerId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(`Error: ${data.message}`);
-        } else {
-            alert('Request accepted successfully');
-            window.location.reload();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while accepting the request');
-    });
 }

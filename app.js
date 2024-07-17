@@ -60,9 +60,9 @@ app.get("/users/:user_id", userController.getUserByUID);
 // YongShyan Request Routes
 app.get("/req/user/:id", reqController.getRequestByUserId); // fed done
 app.post('/req', validateRequest, reqController.createRequest); //fed done
-app.get("/available", reqController.getAvailableRequest);
-app.patch("/req/accepted/update/:id", validatePatchAcceptedRequest, reqController.updateAcceptedRequest);
-app.get("/req/accepted/:id", reqController.getAcceptedRequestById);
+app.get("/available", reqController.getAvailableRequest); // fed done
+app.patch("/req/accepted/update/:id", validatePatchAcceptedRequest, reqController.updateAcceptedRequest); // fed done
+app.get("/req/accepted/:id", reqController.getAcceptedRequestById); //fed done
 app.patch("/req/completed/:id", reqController.updateCompletedRequest);
 app.get("/req/:id", reqController.getRequestById); //fed done, need add ingredient whatever
 app.patch("/req/approve/:id", validatePatchApproveRequest, reqController.updateApproveRequest);

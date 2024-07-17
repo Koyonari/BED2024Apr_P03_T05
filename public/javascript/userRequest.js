@@ -73,6 +73,9 @@ function displayRequests(requests, container) {
     applyStyles();
 }
 
+// Initialize the app
+initApp();
+
 // GET: getRequestById
 // Function to handle "View Details" button click
 async function viewDetails(key) {
@@ -127,38 +130,10 @@ function getStatusText(request) {
     }
 }
 
-// Confirm dialog function
-function confirm() {
-    let confirmOverlay = document.createElement("div");
-    confirmOverlay.className = "confirm-overlay";
-
-    let confirmDialog = document.createElement("div");
-    confirmDialog.className = "confirm-dialog";
-    confirmDialog.innerHTML = `
-        <button class="confirm-btn">Confirm</button>
-        <button class="cancel-btn">Cancel</button>
-    `;
-
-    confirmOverlay.appendChild(confirmDialog);
-    document.body.appendChild(confirmOverlay);
-
-    confirmDialog.querySelector(".confirm-btn").addEventListener("click", () => {
-        alert("Confirmed!");
-        document.body.removeChild(confirmOverlay);
-    });
-
-    confirmDialog.querySelector(".cancel-btn").addEventListener("click", () => {
-        document.body.removeChild(confirmOverlay);
-    });
-}
-
 function toggleModal() {
     let modal = document.getElementById('modal');
     modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
 }
-
-// Initialize the app
-initApp();
 
 // Close the modal when clicking outside of it
 window.onclick = function(event) {

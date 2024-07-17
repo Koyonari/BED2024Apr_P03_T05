@@ -909,6 +909,11 @@ p a:hover {
   height: 100%;
 }
 
+.req-details2 {
+  width: 60%;
+  height: 100%;
+}
+
 .req-details1 button:hover,
 .req-details2 button:hover {
   background-color: #ff8127;
@@ -928,11 +933,6 @@ p a:hover {
 .req-det2 > * {
   padding-right: 15px;
   padding-left: 15px;
-}
-
-.req-details2 {
-  width: 60%;
-  height: 100%;
 }
 
 .close-btn {
@@ -985,6 +985,30 @@ p a:hover {
 .confirm-dialog .cancel-btn {
   background-color: red;
   color: white;
+}
+
+.requests {
+  flex-direction: row;
+}
+
+.req-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.accept-btn{
+  width: 100%;
+  height: 5vh;
+  color: white;
+  text-align: center;
+  margin-top: 3vh;
+  background-color: #ff964b;
+  border: 2px solid black;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Admin Home page */
