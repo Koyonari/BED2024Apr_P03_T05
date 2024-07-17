@@ -100,6 +100,7 @@ async function viewDetails(key) {
 
             // Give margin bottom to modal num
             let modalNumElement = document.getElementById('modalNum');
+            modalNumElement.style.marginBottom = '10px'; 
             modalNumElement.style.marginBottom = '25px'; 
 
             // Show the modal
@@ -199,6 +200,7 @@ function closepopup(popupid) {
     window.location.reload();
 }
 
+// POST: createRequest
 async function confirmInput() {
         // Capture input data
         const title = document.getElementById('ctitle').value;

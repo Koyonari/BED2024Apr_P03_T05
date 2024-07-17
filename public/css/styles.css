@@ -996,7 +996,7 @@ p a:hover {
 .home-container {
   margin-top: 3vh;
   display: flex;
-  width: 95vw;
+  width: 100vw;
   flex-wrap: wrap;
   justify-content: center;
 }
