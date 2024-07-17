@@ -33,3 +33,4 @@
 20240716	15:37:34	c6dff2d4-0315-4c60-926d-ee44f578f029	Error: Not allowed by CORS
 20240716	15:46:56	2079ad8f-faec-4d3d-ae99-41732b95329c	Error: Not allowed by CORS
 20240716	21:51:16	fe20d743-0f8d-4121-9ddc-d30f63319325	Error: Not allowed by CORS
+20240717	17:00:10	70d87a3d-a7eb-4d1d-bb25-450d3fba6b23	Error: ENOENT: no such file or directory, stat 'C:\Users\zekke\Desktop\BED\BED Assignment\BED2024Apr_P03_T05\views\index.html'
