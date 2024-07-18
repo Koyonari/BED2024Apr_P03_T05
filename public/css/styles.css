@@ -1065,21 +1065,21 @@ p a:hover {
   border-radius: 200px;
 }
 
-.pantry-container #recipe_btn {
+.pantry-container #recipes_btn {
   background-color: orange;
   width: 150px;
   height: 50px;
   border-radius: 200px;
 }
 
-.pantry-container .list {
+.pantry-container .ingredient_list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   column-gap: 20px;
   row-gap: 20px;
   margin-top: 50px;
 }
-.pantry-container .list .item {
+.pantry-container .ingredient_list .item {
   /* Ingredient Cards */
   border: 1px solid black;
   border-radius: 25px;
@@ -1089,28 +1089,28 @@ p a:hover {
   letter-spacing: 1px;
 }
 
-.pantry-container .list .item #product_img {
+.pantry-container .ingredient_list .item #product_img {
   border-radius: 15px;
   height: 200px;
   object-fit: cover; 
   object-position: center; 
 }
 
-.pantry-container .list .add_remove_holder {
+.pantry-container .ingredient_list .add_remove_holder {
   display: grid;
   grid-template-columns: 2fr 50%;
   gap: 5px;
   margin: 7px 0;
 }
 
-.pantry-container .list .add_remove_holder {
+.pantry-container .ingredient_list .add_remove_holder {
   display: grid;
   grid-template-columns: 2fr 50%;
   gap: 5px;
   margin: 7px 0;
 }
 
-.pantry-container .list .add_remove_holder {
+.pantry-container .ingredient_list .add_remove_holder {
   display: flex;
   gap: 5px;
   margin: 7px 0;
@@ -1121,14 +1121,14 @@ p a:hover {
   cursor: pointer;
 }
 
-.pantry-container .list .add_remove_holder {
+.pantry-container .ingredient_list .add_remove_holder {
   display: grid;
   grid-template-columns: 2fr 50%;
   gap: 5px;
   margin: 7px 0;
 }
 
-.pantry-container .list .add_remove_holder {
+.pantry-container .ingredient_list .add_remove_holder {
   display: flex;
   gap: 5px;
   margin: 7px 0;
@@ -1148,25 +1148,25 @@ p a:hover {
   cursor: pointer;
 }
 
-.pantry-container .list .item .selected {
+.pantry-container .ingredient_list .item .selected {
   background-color: white; /* Adjusted color for selected button */
   color: black;
 }
 
-.pantry-container .list .item img {
+.pantry-container .ingredient_list .item img {
   background-color: white;
   width: 80%;
   height: 250px;
   object-fit: cover;
 }
-.pantry-container .list .item .title {
+.pantry-container .ingredient_list .item .title {
   font-weight: bold;
   font-size: 20px;
 }
-.pantry-container .list .item .price {
+.pantry-container .ingredient_list .item .price {
   margin: 10px;
 }
-.pantry-container .list .item button {
+.pantry-container .ingredient_list .item button {
   background-color: #1c1f25;
   border-radius: 20px;
   color: #fff;
@@ -1176,7 +1176,7 @@ p a:hover {
   transition: 0.5s;
 }
 
-.pantry-container .list .item button:hover {
+.pantry-container .ingredient_list .item button:hover {
   background-color: white;
   color: black;
 }
