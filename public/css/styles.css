@@ -1089,10 +1089,11 @@ p a:hover {
   height: 50px;
   border-radius: 200px;
   margin-left: 9px;
+  font-weight: bold;
 }
 
 .pantry-container #add_ingredient_btn:hover,
-.pantry-container #recipe_btn:hover {
+.pantry-container #recipes_btn:hover {
   background-color: #ff8127;
 }
 
@@ -1122,23 +1123,11 @@ p a:hover {
 }
 
 .pantry-container .ingredient_list .add_remove_holder {
-  display: grid;
-  grid-template-columns: 2fr 50%;
-  gap: 5px;
-  margin: 7px 0;
-}
-
-.pantry-container .ingredient_list .add_remove_holder {
-  display: grid;
-  grid-template-columns: 2fr 50%;
-  gap: 5px;
-  margin: 7px 0;
-}
-
-.pantry-container .ingredient_list .add_remove_holder {
   display: flex;
+  grid-template-columns: 2fr 50%;
   gap: 5px;
   margin: 7px 0;
+  justify-content: center;
 }
 
 .add_remove_holder #ingredient_plus_icon {
