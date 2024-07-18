@@ -71,7 +71,7 @@
       <a href="user_homepage.html"><i class="bx bx-chevron-left"></i></a>
     </div>
 
-    <!-- Popup for new Ingredient -->
+    <!-- New Ingredient Popup -->
     <div class="popup" id="new_ingredient_popup">
       <div class="overlay"></div>
       <div class="content">
@@ -91,6 +91,16 @@
         <button id="confirm_Ingredient_btn" onclick="addIngredient()"><b>Confirm</b></button>
       </div>
     </div>
+    
+    <!-- Recipe Popup -->
+    <div class="popup" id="recipe_popup">
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="close-btn" onclick="togglepopup('recipe_popup')">&times;</div>
+        <p>Generated Recipes</p>
+        <div class="recipe_list"></div>
+      </div>
+    </div>
 
     <!-- Pantry START -->
     <div class="pantry-container">
@@ -99,10 +109,12 @@
         <button id="add_ingredient_btn" onclick="togglepopup('new_ingredient_popup')">
           Add Ingredient
         </button>
-        <button id="recipe_btn">Get Recipes</button>
+        <button id="recipes_btn" onclick="togglepopup('recipe_popup')">
+          Get Recipes
+        </button>
       </header>
 
-      <div class="list"></div>
+      <div class="ingredient_list"></div>
     </div>
     <!-- Pantry End -->
 
