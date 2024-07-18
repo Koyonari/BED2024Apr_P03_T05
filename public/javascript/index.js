@@ -156,7 +156,7 @@ function redirectToHomepage(userRole) {
   } else if (userRole === 2002) {
     window.location.href = "../html/volunteer_homepage.html";
   } else if (userRole === 2003) {
-    window.location.href = "../html/admin_homepage1.html";
+    window.location.href = "../html/admin_homepage.html";
   } else {
     alert("Unknown user role. Redirecting to login page.");
     window.location.href = "../index.html";
