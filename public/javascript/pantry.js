@@ -231,6 +231,6 @@ function hideRecipeButton() {
   const userInfo = JSON.parse(localStorage.getItem("UserInfo"));
   const roles = userInfo.roles;
   if (roles.includes(2002)) {
-    document.getElementById("recipe_btn").style.display = "none";
+    document.getElementById("recipes_btn").style.display = "none";
   }
 }
