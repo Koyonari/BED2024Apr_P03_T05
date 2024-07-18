@@ -774,6 +774,7 @@ describe('Recipe Controller Tests', () => {
                 status: jest.fn().mockReturnThis(),
                 json: jest.fn(),
             };
+            jest.clearAllMocks();
         });
 
         afterEach(() => {
@@ -830,34 +831,37 @@ describe('Recipe Controller Tests', () => {
             expect(insertRecipeIngredient).toHaveBeenCalledTimes(2);
         });
 
-        it('should handle internal server errors', async () => {
+        // Test case for handling database errors, status 500, unable to test
+        it('should handle database errors during ingredient insertion', async () => {
             jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(true); // Mock isUserRecipe
             jest.spyOn(recipe, 'getRecipesByUserId').mockResolvedValueOnce([{ id: 'recipe456' }]);
-        
-            // Mock fetchRecipeIngredient to simulate a database error
-            const error = new Error('Database error');
-            jest.spyOn(recipeService, 'fetchRecipeIngredient').mockRejectedValueOnce(error);
-        
+            jest.spyOn(recipeService, 'fetchRecipeIngredient').mockResolvedValueOnce({ id: '123', name: 'Ingredient 1', image: 'image_url_1' });
+            
+             // Mock insertRecipeIngredient to throw an error
+            jest.spyOn(recipe, 'insertRecipeIngredient').mockRejectedValueOnce(new Error('Database connection error'));
+
             await insertRecipeIngredientsByRecipeId(req, res);
         
             expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Error fetching and storing recipes', error: 'Database error' });
-            expect(insertRecipeIngredient).not.toHaveBeenCalled(); // Ensure no insertion is attempted
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error fetching and storing recipes', error: 'Database connection error' });
         });
 
+        // Test case for handling API key expiration error, status 402, unable to test
         it('should handle 402 if API key expired or payment required', async () => {
             jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(true); // Mock isUserRecipe
             jest.spyOn(recipe, 'getRecipesByUserId').mockResolvedValueOnce([{ id: 'recipe456' }]);
         
             // Create an error object with response status 402
             const error = new Error('API key expired');
-            error.response = { status: 402 }; // Set the response status
+            error.response = { status: 402 }; // Set the response status to 402
         
-            // Mock fetchRecipeIngredient to simulate an API key expiration error
+            // Mock fetchRecipeIngredient to simulate the API key expiration error
             jest.spyOn(recipeService, 'fetchRecipeIngredient').mockRejectedValueOnce(error);
         
+            // Call the controller function
             await insertRecipeIngredientsByRecipeId(req, res);
         
+            // Check if the response was handled correctly
             expect(res.status).toHaveBeenCalledWith(402);
             expect(res.json).toHaveBeenCalledWith({ message: 'API key expired or payment required', error: 'API key expired' });
             expect(insertRecipeIngredient).not.toHaveBeenCalled(); // Ensure no insertion is attempted

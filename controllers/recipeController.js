@@ -4,6 +4,7 @@ const recipeService = require('../services/recipeService');
 const { getRecipeById, getRecipesByUserId, getAllStoredRecipes, getRecipeIngredientsById, insertRecipe,
   insertRecipeIngredient, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe, deleteRecipeIngredients } = require('../models/recipe');
 const { de } = require('date-fns/locale');
+const e = require('cors');
 
 // Controller function to fetch recipes based on pantry ingredients, stores them in SQL Database
 const getRecipes = async (req, res) => {
@@ -248,6 +249,13 @@ const insertRecipeIngredientsByRecipeId = async (req, res) => {
         console.log('Fetched ingredient data:', ingredientData);
       } catch (error) {
         console.error('Error fetching ingredient from API:', error.message);
+
+        // Handle specific 402 errors
+        if (error.response && error.response.status === 402) {
+          return res.status(402).json({ message: 'API key expired or payment required', error: error.message });
+        }
+
+        // Handle other errors related to ingredient fetching
         return res.status(404).json({ message: `Ingredient with name ${ingredient.name} not found` });
       }
 
@@ -260,8 +268,13 @@ const insertRecipeIngredientsByRecipeId = async (req, res) => {
         unit: ingredient.unit || null,
       };
 
-      // Insert ingredient
-      await insertRecipeIngredient(formattedIngredient, recipeId);
+      try {
+        // Insert ingredient into the database
+        await insertRecipeIngredient(formattedIngredient, recipeId);
+      } catch (error) {
+        console.error('Error inserting recipe ingredients:', error.message);
+        throw new Error('Database connection error'); // Propagate the error to the outer catch block
+      }
     }
 
     // Respond with success message
@@ -270,11 +283,13 @@ const insertRecipeIngredientsByRecipeId = async (req, res) => {
   } catch (error) {
     console.error('Error fetching and storing ingredients:', error);
 
+    // Handle API key expiration errors
     if (error.response && error.response.status === 402) {
-      res.status(402).json({ message: 'API key expired or payment required', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Error fetching and storing recipes', error: error.message });
+      return res.status(402).json({ message: 'API key expired or payment required', error: error.message });
     }
+
+    // Handle other internal server errors
+    res.status(500).json({ message: 'Error fetching and storing recipes', error: error.message });
   }
 };
 
@@ -391,7 +406,7 @@ const patchRecipeByUser = async (req, res) => {
     console.log('Request body:', updates);
 
     // Check for missing parameters
-    if (!userId || !recipeId ) {
+    if (!userId || !recipeId) {
       // Respond with error if any required parameters are missing
       return res.status(400).json({ message: 'User ID and Recipe ID must be provided' });
     }
