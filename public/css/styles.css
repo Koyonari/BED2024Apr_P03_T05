@@ -997,7 +997,9 @@ p a:hover {
   flex-direction: row;
 }
 
-.accept-btn{
+.accept-btn,
+.approve-btn,
+.delete-btn {
   width: 100%;
   height: 5vh;
   color: white;

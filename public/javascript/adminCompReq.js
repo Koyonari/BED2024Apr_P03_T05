@@ -9,11 +9,11 @@ const accessToken = localStorage.getItem('AccessToken');
 // Global variable to store the requests array
 let globalRequests = [];
 
-// GET: getAvailableRequest
+// GET: getCompletedRequest
 // Initialize the app by populating the list with requests
 async function initApp() {
     try {
-        const response = await fetch(`http://localhost:3500/available`, {
+        const response = await fetch(`http://localhost:3500/completed`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -164,31 +164,31 @@ function applyStyles() {
     modalContent.style.overflow = "auto";
 }
 
-// PATCH: updateAcceptedRequest
-function acceptRequest() {
+// PATCH: updateApprovedRequest
+function approveRequest() {
     let key = document.getElementById('modal').dataset.key;
     let requestId = globalRequests[key].request_id;
-    const volunteerId = userId;
+    const adminId = userId;
 
-    fetch(`http://localhost:3500/req/accepted/update/${requestId}`, {
+    fetch(`http://localhost:3500/req/approve/${requestId}`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
         },
-        body: JSON.stringify({ volunteer_id: volunteerId })
+        body: JSON.stringify({ admin_id: adminId })
     })
     .then(response => response.json())
     .then(data => {
         if (data.message) {
             alert(`Error: ${data.message}`);
         } else {
-            alert('Request accepted successfully');
+            alert('Request approved successfully');
             window.location.reload();
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred while accepting the request');
+        alert('An error occurred while approving the request');
     });
 }

@@ -163,32 +163,3 @@ function applyStyles() {
     modalContent.style.transform = "translate(-50%, -50%)";
     modalContent.style.overflow = "auto";
 }
-
-// PATCH: updateAcceptedRequest
-function acceptRequest() {
-    let key = document.getElementById('modal').dataset.key;
-    let requestId = globalRequests[key].request_id;
-    const volunteerId = userId;
-
-    fetch(`http://localhost:3500/req/accepted/update/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({ volunteer_id: volunteerId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(`Error: ${data.message}`);
-        } else {
-            alert('Request accepted successfully');
-            window.location.reload();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while accepting the request');
-    });
-}
