@@ -1,8 +1,11 @@
-var dietaryRestrictions = null; // Variable to store dietary restrictions
-var intolerances = null; // Variable to store intolerances
-var excludedIngredients = null; // Variable to store excluded ingredients
+// Yeo Jin Rong
 
-//Diet Restrictions Popup
+// Create Global Variables
+var dietaryRestrictions = null; 
+var intolerances = null; 
+var excludedIngredients = null; 
+
+// Diet Restrictions Popup
 // Show the diet restrictions popup when the button is clicked
 document
   .getElementById("restrictions-btn")
@@ -175,7 +178,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
     excludedIngredients = null;
   }
 
-  // Create user object
+  // Create user object to match MongoDB Schema
   var user = {
     username: username,
     firstname: firstname,

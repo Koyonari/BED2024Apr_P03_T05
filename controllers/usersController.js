@@ -137,7 +137,7 @@ const updateUser = async (req, res) => {
             intolerances: intolerances || [],  // Default to empty array
             excludedIngredients: excludedIngredients || [] // Default to empty array
         };
-
+        
         // Validate user input using middleware or function (assuming validateUser is defined)
         validateUser(req, res, async () => {
             try {
@@ -181,19 +181,21 @@ const editUser = async (req, res) => {
         // Store the original user document for comparison
         const originalUser = user.toObject();
 
-        // Validate and apply updates
-        Object.keys(updates).forEach(key => {
+        // Validate and apply updates // Validate and apply updates
+        for (const key of Object.keys(updates)) {
             // Skip updates for certain fields if not provided
-            if (key === 'email' && !updates[key]) return;
-            if (key === 'contact' && !updates[key]) return;
+            if (key === 'email' && !updates[key]) continue;
+            if (key === 'contact' && !updates[key]) continue;
 
             // Handle special cases or validations (e.g., dateOfBirth)
             if (key === 'dateOfBirth') {
                 user[key] = new Date(updates[key]); // Ensure date is correctly parsed
+            } else if (key === 'password') {
+                user[key] = await bcrypt.hash(updates[key], 10);
             } else {
                 user[key] = updates[key];
             }
-        });
+        }
 
         // Validate the user object
         const validationResult = user.validateSync();
@@ -212,7 +214,9 @@ const editUser = async (req, res) => {
         // Find the differences between the original and updated user
         const editedFields = {};
         Object.keys(updates).forEach(key => {
-            if (originalUser[key] !== result[key]) {
+            if (key === 'password') {
+                editedFields[key] = 'Password changed';
+            } else if (originalUser[key] !== result[key]) {
                 editedFields[key] = result[key];
             }
         });
