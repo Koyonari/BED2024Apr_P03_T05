@@ -73,6 +73,9 @@ function displayRequests(requests, container) {
     applyStyles();
 }
 
+// Initialize the app
+initApp();
+
 // GET: getRequestById
 // Function to handle "View Details" button click
 async function viewDetails(key) {
@@ -92,6 +95,7 @@ async function viewDetails(key) {
             console.log('Request details fetched:', request);
 
             // Populate modal with request details
+            document.getElementById('modal').dataset.key = key;
             document.getElementById('modalNum').innerText = `Request ${document.querySelector(`.item:nth-child(${key + 1})`).dataset.num}`;
             document.getElementById('modalTitle').innerText = `Title: ${request.title}`;
             document.getElementById('modalCategory').innerText = `Category: ${request.category}`;
@@ -127,38 +131,10 @@ function getStatusText(request) {
     }
 }
 
-// Confirm dialog function
-function confirm() {
-    let confirmOverlay = document.createElement("div");
-    confirmOverlay.className = "confirm-overlay";
-
-    let confirmDialog = document.createElement("div");
-    confirmDialog.className = "confirm-dialog";
-    confirmDialog.innerHTML = `
-        <button class="confirm-btn">Confirm</button>
-        <button class="cancel-btn">Cancel</button>
-    `;
-
-    confirmOverlay.appendChild(confirmDialog);
-    document.body.appendChild(confirmOverlay);
-
-    confirmDialog.querySelector(".confirm-btn").addEventListener("click", () => {
-        alert("Confirmed!");
-        document.body.removeChild(confirmOverlay);
-    });
-
-    confirmDialog.querySelector(".cancel-btn").addEventListener("click", () => {
-        document.body.removeChild(confirmOverlay);
-    });
-}
-
 function toggleModal() {
     let modal = document.getElementById('modal');
     modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
 }
-
-// Initialize the app
-initApp();
 
 // Close the modal when clicking outside of it
 window.onclick = function(event) {
@@ -202,56 +178,88 @@ function closepopup(popupid) {
 
 // POST: createRequest
 async function confirmInput() {
-        // Capture input data
-        const title = document.getElementById('ctitle').value;
-        const category = document.getElementById('cat').value;
-        const description = document.getElementById('cmessage').value;
+    // Capture input data
+    const title = document.getElementById('ctitle').value;
+    const category = document.getElementById('cat').value;
+    const description = document.getElementById('cmessage').value;
 
-        // Validate the data
-        if (title.length < 3 || title.length > 70) {
-            alert('Title must be between 3 and 70 characters');
-            return;
+    // Validate the data
+    if (title.length < 3 || title.length > 70) {
+        alert('Title must be between 3 and 70 characters');
+        return;
+    }
+    if (category.length > 50) {
+        alert('Category must be 50 characters or less');
+        return;
+    }
+    if (description.length > 150) {
+        alert('Description must be 150 characters or less');
+        return;
+    }
+
+    // Prepare the request body
+    const requestBody = {
+        title,
+        category,
+        description,
+        user_id: userId
+    };
+
+    // Send data to the server
+    try {
+        const response = await fetch('http://localhost:3500/req', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert('Request created successfully');
+
+            // Close popup
+            closepopup('new-req');
+        } else {
+            const error = await response.json();
+            alert(`Error creating request: ${error.message}`);
         }
-        if (category.length > 50) {
-            alert('Category must be 50 characters or less');
-            return;
-        }
-        if (description.length > 150) {
-            alert('Description must be 150 characters or less');
-            return;
-        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while creating the request');
+    }
+}
 
-        // Prepare the request body
-        const requestBody = {
-            title,
-            category,
-            description,
-            user_id: userId
-        };
-
-        // Send data to the server
-        try {
-            const response = await fetch('http://localhost:3500/req', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                alert('Request created successfully');
-
-                // Close popup
-                closepopup('new-req');
-            } else {
-                const error = await response.json();
-                alert(`Error creating request: ${error.message}`);
+async function markAsCompleted() {
+    let key = document.getElementById('modal').dataset.key;
+    let requestId = globalRequests[key].request_id;
+    try {
+        const response = await fetch(`http://localhost:3500/req/completed/${requestId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while creating the request');
+        });
+
+        if (response.ok) {
+            const updatedRequest = await response.json();
+            console.log('Request marked as completed:', updatedRequest);
+
+            const index = globalRequests.findIndex(req => req.request_id === requestId);
+            globalRequests[index] = updatedRequest;
+
+            displayRequests(globalRequests, document.getElementById('request-list'));
+            window.location.reload();
+        } else {
+            const error = await response.json();
+            console.error('Error marking request as completed:', error);
+            alert(`Error marking request as completed: ${error.message}`);
         }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while marking the request as completed');
+    }
 }
