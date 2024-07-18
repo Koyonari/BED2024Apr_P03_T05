@@ -5,3 +5,15 @@ Cleaned log as of 18/07/2024 20240718	20:55:46	3ae073f6-76ac-4b30-b67c-bdf2bb3cd
 20240719	01:33:05	d05d4625-eb77-49a1-982a-77ec891fa092	PATCH	undefined	/users/668105073662e3dda4c190e3
 20240719	01:34:52	fd1fc23c-8bbc-4688-a3c2-f3a234f3de03	PATCH	undefined	/users/668105073662e3dda4c190e3
 20240719	01:34:55	caf7f350-326f-4239-80b6-b7f25bf0c409	PATCH	undefined	/users/668105073662e3dda4c190e3
+20240719	02:33:16	79001588-005e-41f0-addf-57912948c966	POST	undefined	/recipes/insertrecipeingredients/dc073705-8c4b-42c9-9f45-7bb34d98d7d7
+20240719	02:33:18	2c4c2a37-9ef6-4525-b5ff-1d09286f9e38	POST	undefined	/auth
+20240719	02:33:25	fd91420c-b7ac-485f-bd6d-95d73a9ce2be	POST	undefined	/recipes/insertrecipeingredients/dc073705-8c4b-42c9-9f45-7bb34d98d7d7
+20240719	02:33:28	0c5887e1-d43a-4ae4-9d2d-94b807b05991	POST	undefined	/recipes/insertrecipeingredients/dc073705-8c4b-42c9-9f45-7bb34d98d7d7
+20240719	02:34:20	34cfc844-d3ab-4e93-ad1b-06d043ae482b	GET	undefined	/recipes/fetch
+20240719	02:34:31	2728853e-b2c9-4d0b-9db2-b580cbd816c4	GET	undefined	/recipes/fetchuserrecipes
+20240719	02:34:38	5041b13a-fade-4fbf-9dd3-4d78d24dd47b	POST	undefined	/recipes/insertrecipeingredients/47d49c6c-dc61-4048-b05a-6dcc8490bf95
+20240719	02:37:28	59d89a0d-3cbe-44fc-aa83-7670d283e8ea	POST	undefined	/recipes/insertrecipeingredients/47d49c6c-dc61-4048-b05a-6dcc8490bf95
+20240719	02:39:35	8e048be4-4682-4cdd-8af7-18b2e23181af	POST	undefined	/recipes/insertrecipeingredients/47d49c6c-dc61-4048-b05a-6dcc8490bf95
+20240719	02:39:55	efa62073-4a2e-4929-8fb7-b41b185a29f6	POST	undefined	/recipes/insertrecipeingredients/47d49c6c-dc61-4048-b05a-6dcc8490bf95
+20240719	03:29:46	9706ab4d-e3ba-4eb3-b7f4-28261d226bae	POST	undefined	/auth
+20240719	03:29:51	2ee01a27-7435-4299-946f-ab44d1451914	DELETE	undefined	/recipes/deleterecipe/e01de703-996c-4553-8c30-eb85af6d7850

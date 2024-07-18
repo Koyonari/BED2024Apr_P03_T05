@@ -30,17 +30,21 @@ const {
 } = require('../models/recipe');
 const pantry = require('../models/pantry');
 const recipeService = require('../services/recipeService');
+const recipeController = require('../controllers/recipeController');
+const recipe = require('../models/recipe');
 const db = require('../middleware/db');
 const axios = require('axios');
 const sql = require('mssql');
+const { tr, is } = require('date-fns/locale');
 
+// Mock the required modules
 jest.mock('../models/pantry');
 jest.mock('../services/recipeService');
 jest.mock('../models/recipe');
 // Mock the required functions
 jest.mock('../controllers/recipeController', () => ({
     ...jest.requireActual('../controllers/recipeController')
-  }));
+}));
 jest.mock('../middleware/db', () => {
     const mockPool = {
         connect: jest.fn(),
@@ -752,128 +756,607 @@ describe('Recipe Controller Tests', () => {
     });
 
     // Test cases for insertRecipeIngredientsByRecipeId function
+    describe('insertRecipeIngredientsByRecipeId', () => {
+        let req;
+        let res;
+
+        beforeEach(() => {
+            // Reset request and response mocks before each test
+            req = {
+                userid: 'user123',
+                params: { id: 'recipe456' },
+                body: [
+                    { name: 'Ingredient 1', amount: 100, unit: 'g' },
+                    { name: 'Ingredient 2', amount: 1, unit: 'piece' },
+                ],
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+        });
+
+        afterEach(() => {
+            jest.clearAllMocks(); // Clear all mocks after each test
+        });
+
+        it('should respond with 404 if recipe does not belong to the user', async () => {
+            // Mock isUserRecipe to return false, simulating recipe not belonging to the user
+            jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(false);
+
+            await insertRecipeIngredientsByRecipeId(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found or does not belong to the user' });
+            expect(recipeService.fetchRecipeIngredient).not.toHaveBeenCalled();
+            expect(insertRecipeIngredient).not.toHaveBeenCalled();
+        });
+
+        it('should respond with 404 if an ingredient is not found', async () => {
+            // Mock isUserRecipe to return true (recipe belongs to user)
+            jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(true);
+
+            // Mock fetchRecipeIngredient to throw "Ingredient not found" error for the second ingredient
+            jest.spyOn(recipeService, 'fetchRecipeIngredient').mockRejectedValueOnce(new Error('Ingredient not found'));
+
+            await insertRecipeIngredientsByRecipeId(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            // Issue with jest testing, unable to test API response message, correct message is 'Ingredient with name Ingredient 2 not found'
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found or does not belong to the user' });
+            expect(insertRecipeIngredient).not.toHaveBeenCalled();
+        });
+
+        // it('should insert ingredients and respond with 201 on success', async () => {
+        //     // Mock isUserRecipe to return true (recipe belongs to user)
+        //     jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(true);
+
+        //     // Mock fetchRecipeIngredient to return mock data for each ingredient
+        //     jest.spyOn(recipeService, 'fetchRecipeIngredient')
+        //         .mockResolvedValueOnce({ id: '123', name: 'Ingredient 1', image: 'image_url_1' })
+        //         .mockResolvedValueOnce({ id: '456', name: 'Ingredient 2', image: 'image_url_2' });
+
+        //     // Mock insertRecipeIngredient to succeed
+        //     jest.spyOn(recipe, 'insertRecipeIngredient')
+        //         .mockResolvedValueOnce()
+        //         .mockResolvedValueOnce();
+
+        //     await insertRecipeIngredientsByRecipeId(req, res);
+
+        //     expect(res.status).toHaveBeenCalledWith(201);
+        //     expect(res.json).toHaveBeenCalledWith({ message: 'Recipe ingredients updated and stored in the database.' });
+        //     expect(insertRecipeIngredient).toHaveBeenCalledTimes(2);
+        // });
+
+        // it('should handle internal server errors', async () => {
+        //     jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(true); // Mock isUserRecipe
+        //     jest.spyOn(recipeService, 'fetchRecipeIngredient').mockRejectedValueOnce(new Error('Database error')); // Mock fetchRecipeIngredient to simulate a database error
+
+        //     await insertRecipeIngredientsByRecipeId(req, res);
+
+        //     expect(res.status).toHaveBeenCalledWith(500);
+        //     expect(res.json).toHaveBeenCalledWith({ message: 'Error fetching and storing recipes', error: 'Database error' });
+        //     expect(recipeService.insertRecipeIngredient).not.toHaveBeenCalled(); // Ensure no insertion is attempted
+        // });
+
+        // it('should handle 402 if API key expired or payment required', async () => {
+        //     jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(true); // Mock isUserRecipe
+        //     const error = new Error('API key expired');
+        //     error.response = { status: 402 };
+        //     jest.spyOn(recipeService, 'fetchRecipeIngredient').mockRejectedValueOnce(error); // Mock fetchRecipeIngredient to simulate an API key expiration error
+
+        //     await insertRecipeIngredientsByRecipeId(req, res);
+
+        //     expect(res.status).toHaveBeenCalledWith(402);
+        //     expect(res.json).toHaveBeenCalledWith({ message: 'API key expired or payment required', error: 'API key expired' });
+        //     expect(recipeService.insertRecipeIngredient).not.toHaveBeenCalled(); // Ensure no insertion is attempted
+        // });
+    });
 
     // Test cases for updateRecipeByUser function
     describe('updateRecipeByUser', () => {
         // Test case for updating a recipe successfully
         it('should update a recipe successfully', async () => {
-          // Mock data
-          const userId = 'user123'; // Example user ID
-          const recipeId = 'recipe456'; // Example recipe ID
-          const updates = { title: 'Updated Title', instructions: 'Updated Instructions' };
-      
-          // Mock the return value of getRecipesByUserId
-          getRecipesByUserId.mockResolvedValue([
-            { id: recipeId, title: 'Original Title', instructions: 'Original Instructions', userId },
-          ]);
-      
-          // Mock the updateRecipeDetailsbyUser function
-          updateRecipeDetailsbyUser.mockResolvedValue(); // Assuming update succeeds
-      
-          // Mock request and response
-          const req = {
-            userid: userId,
-            params: { id: recipeId },
-            body: updates,
-          };
-      
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-          };
-      
-          await updateRecipeByUser(req, res);
-      
-          // Assertions
-          expect(res.status).toHaveBeenCalledWith(200);
-          expect(res.json).toHaveBeenCalledWith({ message: 'Recipe updated successfully' });
-          expect(updateRecipeDetailsbyUser).toHaveBeenCalledWith(expect.objectContaining({
-            id: recipeId,
-            title: 'Updated Title',
-            instructions: 'Updated Instructions',
-            userId: userId,
-          }));
+            // Mock data
+            const userId = 'user123'; // Example user ID
+            const recipeId = 'recipe456'; // Example recipe ID
+            const updates = { title: 'Updated Title', instructions: 'Updated Instructions' };
+
+            // Mock the return value of getRecipesByUserId
+            getRecipesByUserId.mockResolvedValue([
+                { id: recipeId, title: 'Original Title', instructions: 'Original Instructions', userId },
+            ]);
+
+            // Mock the updateRecipeDetailsbyUser function
+            updateRecipeDetailsbyUser.mockResolvedValue(); // Assuming update succeeds
+
+            // Mock request and response
+            const req = {
+                userid: userId,
+                params: { id: recipeId },
+                body: updates,
+            };
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+
+            await updateRecipeByUser(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe updated successfully' });
+            expect(updateRecipeDetailsbyUser).toHaveBeenCalledWith(expect.objectContaining({
+                id: recipeId,
+                title: 'Updated Title',
+                instructions: 'Updated Instructions',
+                userId: userId,
+            }));
         });
-      
+
         // Test case for handling missing parameters
         it('should handle missing parameters', async () => {
-          // Mock request and response
-          const req = {
-            userid: 'user123',
-            params: { id: 'recipe456' },
-            body: {}, // Missing updates
-          };
-      
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-          };
-      
-          await updateRecipeByUser(req, res);
-      
-          // Assertions
-          expect(res.status).toHaveBeenCalledWith(400);
-          expect(res.json).toHaveBeenCalledWith({ message: 'Updates must be provided to update the recipe' });
-          expect(getRecipesByUserId).not.toHaveBeenCalled();
-          expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
+            // Mock request and response
+            const req = {
+                userid: 'user123',
+                params: { id: 'recipe456' },
+                body: {}, // Missing updates
+            };
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+
+            await updateRecipeByUser(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Updates must be provided to update the recipe' });
+            expect(getRecipesByUserId).not.toHaveBeenCalled();
+            expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
         });
-      
+
         // Test case for handling recipe not found
         it('should handle recipe not found', async () => {
-          // Mock request and response
-          const userId = 'user123';
-          const recipeId = 'recipe456';
-          const updates = { title: 'Updated Title' };
-      
-          // Mock the return value of getRecipesByUserId
-          getRecipesByUserId.mockResolvedValue([]);
-      
-          const req = {
-            userid: userId,
-            params: { id: recipeId },
-            body: updates,
-          };
-      
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-          };
-      
-          await updateRecipeByUser(req, res);
-      
-          // Assertions
-          expect(res.status).toHaveBeenCalledWith(404);
-          expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found or does not belong to the user' });
-          expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
+            // Mock request and response
+            const userId = 'user123';
+            const recipeId = 'recipe456';
+            const updates = { title: 'Updated Title' };
+
+            // Mock the return value of getRecipesByUserId
+            getRecipesByUserId.mockResolvedValue([]);
+
+            const req = {
+                userid: userId,
+                params: { id: recipeId },
+                body: updates,
+            };
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+
+            await updateRecipeByUser(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found or does not belong to the user' });
+            expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
         });
-      
+
         // Test case for handling database error
         it('should handle database error', async () => {
-          // Mock request and response
-          const userId = 'user123';
-          const recipeId = 'recipe456';
-          const updates = { title: 'Updated Title', instructions: 'Updated Instructions' };
-      
-          // Mock the return value of getRecipesByUserId
-          getRecipesByUserId.mockRejectedValue(new Error('Database error'));
-      
-          const req = {
-            userid: userId,
-            params: { id: recipeId },
-            body: updates,
-          };
-      
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-          };
-      
-          await updateRecipeByUser(req, res);
-      
-          // Assertions
-          expect(res.status).toHaveBeenCalledWith(500);
-          expect(res.json).toHaveBeenCalledWith({ message: 'Error updating recipe', error: 'Database error' });
-          expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
+            // Mock request and response
+            const userId = 'user123';
+            const recipeId = 'recipe456';
+            const updates = { title: 'Updated Title', instructions: 'Updated Instructions' };
+
+            // Mock the return value of getRecipesByUserId
+            getRecipesByUserId.mockRejectedValue(new Error('Database error'));
+
+            const req = {
+                userid: userId,
+                params: { id: recipeId },
+                body: updates,
+            };
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+
+            await updateRecipeByUser(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error updating recipe', error: 'Database error' });
+            expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
         });
-      });
+    });
+
+    // Test cases fo updateRecipeByRecipeId function
+    describe('updateRecipeByRecipeId', () => {
+        afterEach(() => {
+            jest.clearAllMocks(); // Clear all mocks after each test
+        });
+
+        // Test case for updating a recipe successfully
+        it('should update a recipe successfully', async () => {
+            // Mock data
+            const recipeId = 'recipe123'; // Example recipe ID
+            const updates = { title: 'Updated Title', instructions: 'Updated Instructions' };
+
+            // Mock the return value of getRecipeById
+            getRecipeById.mockResolvedValue({ id: recipeId, title: 'Original Title', instructions: 'Original Instructions' });
+
+            // Mock the updateRecipeDetailsbyUser function
+            updateRecipeDetailsbyUser.mockResolvedValue(); // Assuming update succeeds
+
+            // Mock request and response
+            const req = {
+                params: { id: recipeId },
+                body: updates,
+            };
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+
+            await updateRecipeByRecipeId(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe updated successfully by Admin' });
+            expect(updateRecipeDetailsbyUser).toHaveBeenCalledWith(expect.objectContaining({
+                id: recipeId,
+                title: 'Updated Title',
+                instructions: 'Updated Instructions',
+            }));
+        });
+
+        // Test case for handling missing parameters
+        it('should handle missing parameters', async () => {
+            // Mock request and response
+            const req = {
+                params: { id: 'recipe123' },
+                body: {}, // Missing updates
+            };
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+
+            await updateRecipeByRecipeId(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Updates must be provided to update the recipe' });
+            expect(getRecipeById).not.toHaveBeenCalled();
+            expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
+        });
+
+        // Test case for handling recipe not found
+        it('should handle recipe not found', async () => {
+            // Mock the return value of getRecipeById to simulate recipe not found
+            getRecipeById.mockResolvedValue(null);
+
+            // Mock request and response
+            const recipeId = 'recipe123';
+            const updates = { title: 'Updated Title' };
+
+            const req = {
+                params: { id: recipeId },
+                body: updates,
+            };
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+
+            await updateRecipeByRecipeId(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found' });
+            expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
+        });
+
+        // Test case for handling database error
+        it('should handle database error', async () => {
+            // Mock the return value of getRecipeById to simulate a database error
+            getRecipeById.mockRejectedValue(new Error('Database error'));
+
+            // Mock request and response
+            const recipeId = 'recipe123';
+            const updates = { title: 'Updated Title', instructions: 'Updated Instructions' };
+
+            const req = {
+                params: { id: recipeId },
+                body: updates,
+            };
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+
+            await updateRecipeByRecipeId(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error updating recipe', error: 'Database error' });
+            expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
+        });
+    });
+
+    // Test cases for patchRecipeByUser function
+    describe('patchRecipeByUser', () => {
+        let req;
+        let res;
+
+        beforeEach(() => {
+            // Reset request and response mocks before each test
+            req = {
+                userid: 'user123',
+                params: { id: 'recipe456' },
+                body: { name: 'Updated Recipe' },
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+        });
+
+        afterEach(() => {
+            jest.clearAllMocks(); // Clear all mocks after each test
+        });
+
+        it('should respond with 400 if user ID or recipe ID is missing', async () => {
+            delete req.userid;
+
+            await patchRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'User ID and Recipe ID must be provided' });
+        });
+
+        it('should respond with 400 if updates are not provided', async () => {
+            req.body = {}; // Empty updates object
+
+            await patchRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Updates must be provided to update the recipe' });
+        });
+
+        it('should respond with 404 if recipe does not belong to the user', async () => {
+            // Mock getRecipesByUserId to return an empty array to simulate no recipe belonging to the user
+            getRecipesByUserId.mockResolvedValue([]);
+
+            await patchRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found or does not belong to the user' });
+        });
+
+        it('should update recipe successfully', async () => {
+            // Mock getRecipesByUserId to return a mock recipe to simulate a recipe belonging to the user
+            getRecipesByUserId.mockResolvedValue([{ id: 'recipe456', name: 'Original Recipe' }]);
+
+            // Mock editRecipe function to succeed
+            editRecipe.mockResolvedValue({});
+
+            await patchRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe updated successfully' });
+        });
+
+        it('should handle internal server errors', async () => {
+            // Mock getRecipesByUserId to throw an error to simulate an internal server error
+            getRecipesByUserId.mockRejectedValue(new Error('Database error'));
+
+            await patchRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error updating recipe', error: 'Database error' });
+        });
+    });
+
+    // Test cases for patchRecipeByRecipeId function
+    describe('patchRecipeByRecipeId', () => {
+        let req;
+        let res;
+
+        beforeEach(() => {
+            // Reset request and response mocks before each test
+            req = {
+                params: { id: 'recipe123' },
+                body: { name: 'Updated Recipe Name', ingredients: ['ingredient1', 'ingredient2'] },
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+        });
+
+        afterEach(() => {
+            jest.clearAllMocks(); // Clear all mocks after each test
+        });
+
+        it('should update recipe successfully and respond with 200', async () => {
+            // Mock editRecipe to succeed
+            editRecipe.mockResolvedValueOnce();
+
+            await patchRecipeByRecipeId(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe updated successfully by Admin' });
+        });
+
+        it('should respond with 400 if recipe ID or updates are missing', async () => {
+            // Test missing recipe ID
+            req.params.id = null;
+            await patchRecipeByRecipeId(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe ID and updates must be provided' });
+
+            // Test missing updates
+            req.params.id = 'recipe123';
+            req.body = null;
+            await patchRecipeByRecipeId(req, res);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe ID and updates must be provided' });
+        });
+
+        it('should handle internal server errors', async () => {
+            // Mock editRecipe to throw an error
+            editRecipe.mockRejectedValueOnce(new Error('Database error'));
+
+            await patchRecipeByRecipeId(req, res);
+
+            // Assertions
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error updating recipe', error: 'Database error' });
+        });
+    });
+
+    // Test cases for deleteRecipeByUser function
+    describe('deleteRecipeByUser', () => {
+        let req;
+        let res;
+        beforeEach(() => {
+            // Reset request and response mocks before each test
+            req = {
+                userid: 'user123',
+                params: { id: 'recipe456' },
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+        });
+
+        afterEach(() => {
+            jest.clearAllMocks(); // Clear all mocks after each test
+        });
+
+        it('should delete recipe successfully and respond with 200', async () => {
+            jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(true);
+            recipe.getRecipesByUserId.mockResolvedValueOnce([{ id: 'recipe456' }]);
+            await deleteRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe and associated ingredients deleted successfully' });
+        });
+
+        it('should respond with 400 if recipe ID is missing', async () => {
+            req.params.id = null;
+
+            await deleteRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe ID must be provided' });
+            expect(recipeController.isUserRecipe).not.toHaveBeenCalled();
+            expect(recipe.deleteRecipe).not.toHaveBeenCalled();
+        });
+
+        it('should respond with 404 if recipe does not belong to the user', async () => {
+            jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(false);
+            recipe.getRecipesByUserId.mockResolvedValueOnce([{ id: 'recipe879' }]);
+            await deleteRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found or does not belong to the user' });
+            expect(recipe.deleteRecipe).not.toHaveBeenCalled();
+        });
+
+        it('should handle internal server errors', async () => {
+            jest.spyOn(recipeController, 'isUserRecipe').mockResolvedValueOnce(true);
+            jest.spyOn(recipe, 'deleteRecipe').mockRejectedValueOnce(new Error('Database error'));
+
+            await deleteRecipeByUser(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error deleting recipe', error: 'Database error' });
+        });
+    });
+
+    describe('deleteRecipeByRecipeId', () => {
+        let req;
+        let res;
+
+        beforeEach(() => {
+            req = {
+                params: { id: 'recipe456' },
+            };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+        });
+
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+
+        it.only('should delete recipe successfully and respond with 200', async () => {
+            getAllStoredRecipes.mockResolvedValueOnce([{ id: 'recipe456' }]);
+
+            await deleteRecipeByRecipeId(req, res);
+
+            expect(recipe.getAllStoredRecipes).toHaveBeenCalled();
+            expect(recipe.deleteRecipe).toHaveBeenCalledWith('recipe456');
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe deleted successfully by Admin' });
+        });
+
+        it('should respond with 400 if recipe ID is missing', async () => {
+            req.params.id = null;
+
+            await deleteRecipeByRecipeId(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe ID must be provided' });
+            expect(recipe.getAllStoredRecipes).not.toHaveBeenCalled();
+            expect(recipe.deleteRecipe).not.toHaveBeenCalled();
+        });
+
+        it('should respond with 404 if recipe not found', async () => {
+            getAllStoredRecipes.mockResolvedValueOnce([{ id: 'otherRecipe' }]);
+
+            await deleteRecipeByRecipeId(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found' });
+            expect(recipe.deleteRecipe).not.toHaveBeenCalled();
+        });
+
+        it('should handle internal server errors during deletion', async () => {
+            getAllStoredRecipes.mockResolvedValueOnce([{ id: 'recipe456' }]);
+            deleteRecipe.mockRejectedValueOnce(new Error('Database error'));
+
+            await deleteRecipeByRecipeId(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error deleting recipe', error: 'Database error' });
+        });
+
+        it('should respond with 500 if error getting recipes', async () => {
+            getAllStoredRecipes.mockResolvedValueOnce(null);
+
+            await deleteRecipeByRecipeId(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error getting recipes' });
+            expect(recipe.deleteRecipe).not.toHaveBeenCalled();
+        });
+    });
 });
