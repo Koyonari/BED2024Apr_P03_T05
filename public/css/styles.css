@@ -1130,7 +1130,7 @@ p a:hover {
   justify-content: center;
 }
 
-.add_remove_holder #ingredient_plus_icon {
+.pantry-container #ingredient_plus_icon {
   font-size: 30px;
   color: black;
   cursor: pointer;
@@ -1139,7 +1139,7 @@ p a:hover {
 .add_remove_holder input {
   border-radius: 5px;
 }
-.add_remove_holder #ingredient_minus_icon {
+.pantry-container #ingredient_minus_icon {
   font-size: 30px;
   color: black;
   cursor: pointer;
