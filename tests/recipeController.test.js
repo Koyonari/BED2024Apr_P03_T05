@@ -37,6 +37,10 @@ const sql = require('mssql');
 jest.mock('../models/pantry');
 jest.mock('../services/recipeService');
 jest.mock('../models/recipe');
+// Mock the required functions
+jest.mock('../controllers/recipeController', () => ({
+    ...jest.requireActual('../controllers/recipeController')
+  }));
 jest.mock('../middleware/db', () => {
     const mockPool = {
         connect: jest.fn(),
@@ -748,174 +752,128 @@ describe('Recipe Controller Tests', () => {
     });
 
     // Test cases for insertRecipeIngredientsByRecipeId function
-    describe('insertRecipeIngredientsByRecipeId Controller Test', () => {
-        afterEach(() => {
-          jest.clearAllMocks();
-        });
+
+    // Test cases for updateRecipeByUser function
+    describe('updateRecipeByUser', () => {
+        // Test case for updating a recipe successfully
+        it('should update a recipe successfully', async () => {
+          // Mock data
+          const userId = 'user123'; // Example user ID
+          const recipeId = 'recipe456'; // Example recipe ID
+          const updates = { title: 'Updated Title', instructions: 'Updated Instructions' };
       
-        it('should insert ingredients for a user\'s recipe', async () => {
-          const mockUserId = 'user123';
-          const mockRecipeId = 'recipe123';
-          const mockIngredients = [
-            { name: 'Ingredient 1', amount: 2, unit: 'cups' },
-            { name: 'Ingredient 2', amount: 1, unit: 'tbsp' }
-          ];
+          // Mock the return value of getRecipesByUserId
+          getRecipesByUserId.mockResolvedValue([
+            { id: recipeId, title: 'Original Title', instructions: 'Original Instructions', userId },
+          ]);
       
-          const mockIngredientData = [
-            { id: 'ing1', name: 'Ingredient 1', image: 'image1.jpg' },
-            { id: 'ing2', name: 'Ingredient 2', image: 'image2.jpg' }
-          ];
+          // Mock the updateRecipeDetailsbyUser function
+          updateRecipeDetailsbyUser.mockResolvedValue(); // Assuming update succeeds
       
-          const req = { userid: mockUserId, params: { id: mockRecipeId }, body: mockIngredients };
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn()
+          // Mock request and response
+          const req = {
+            userid: userId,
+            params: { id: recipeId },
+            body: updates,
           };
       
-          // Mocking isUserRecipe to resolve with true
-          isUserRecipe.mockResolvedValue(true);
-      
-          // Mocking recipeService.fetchRecipeIngredient to resolve with mockIngredientData
-          recipeService.fetchRecipeIngredient
-            .mockResolvedValueOnce(mockIngredientData[0])
-            .mockResolvedValueOnce(mockIngredientData[1]);
-      
-          // Mocking insertRecipeIngredient to resolve successfully
-          insertRecipeIngredient.mockResolvedValue();
-      
-          // Call the controller function
-          await insertRecipeIngredientsByRecipeId(req, res);
-      
-          // Assertions
-          expect(isUserRecipe).toHaveBeenCalledWith(mockUserId, mockRecipeId);
-          expect(recipeService.fetchRecipeIngredient).toHaveBeenCalledTimes(mockIngredients.length);
-          expect(insertRecipeIngredient).toHaveBeenCalledTimes(mockIngredients.length);
-          expect(res.status).toHaveBeenCalledWith(201);
-          expect(res.json).toHaveBeenCalledWith({ message: 'Recipe ingredients updated and stored in the database.' });
-        });
-      
-        it('should return 404 if recipe does not belong to the user', async () => {
-          const mockUserId = 'user123';
-          const mockRecipeId = 'recipe123';
-          const mockIngredients = [
-            { name: 'Ingredient 1', amount: 2, unit: 'cups' },
-            { name: 'Ingredient 2', amount: 1, unit: 'tbsp' }
-          ];
-      
-          const req = { userid: mockUserId, params: { id: mockRecipeId }, body: mockIngredients };
           const res = {
             status: jest.fn().mockReturnThis(),
-            json: jest.fn()
+            json: jest.fn(),
           };
       
-          // Mocking isUserRecipe to resolve with false
-          isUserRecipe.mockResolvedValue(false);
-      
-          // Call the controller function
-          await insertRecipeIngredientsByRecipeId(req, res);
+          await updateRecipeByUser(req, res);
       
           // Assertions
-          expect(isUserRecipe).toHaveBeenCalledWith(mockUserId, mockRecipeId);
+          expect(res.status).toHaveBeenCalledWith(200);
+          expect(res.json).toHaveBeenCalledWith({ message: 'Recipe updated successfully' });
+          expect(updateRecipeDetailsbyUser).toHaveBeenCalledWith(expect.objectContaining({
+            id: recipeId,
+            title: 'Updated Title',
+            instructions: 'Updated Instructions',
+            userId: userId,
+          }));
+        });
+      
+        // Test case for handling missing parameters
+        it('should handle missing parameters', async () => {
+          // Mock request and response
+          const req = {
+            userid: 'user123',
+            params: { id: 'recipe456' },
+            body: {}, // Missing updates
+          };
+      
+          const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+          };
+      
+          await updateRecipeByUser(req, res);
+      
+          // Assertions
+          expect(res.status).toHaveBeenCalledWith(400);
+          expect(res.json).toHaveBeenCalledWith({ message: 'Updates must be provided to update the recipe' });
+          expect(getRecipesByUserId).not.toHaveBeenCalled();
+          expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
+        });
+      
+        // Test case for handling recipe not found
+        it('should handle recipe not found', async () => {
+          // Mock request and response
+          const userId = 'user123';
+          const recipeId = 'recipe456';
+          const updates = { title: 'Updated Title' };
+      
+          // Mock the return value of getRecipesByUserId
+          getRecipesByUserId.mockResolvedValue([]);
+      
+          const req = {
+            userid: userId,
+            params: { id: recipeId },
+            body: updates,
+          };
+      
+          const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+          };
+      
+          await updateRecipeByUser(req, res);
+      
+          // Assertions
           expect(res.status).toHaveBeenCalledWith(404);
           expect(res.json).toHaveBeenCalledWith({ message: 'Recipe not found or does not belong to the user' });
-          expect(recipeService.fetchRecipeIngredient).not.toHaveBeenCalled();
-          expect(insertRecipeIngredient).not.toHaveBeenCalled();
+          expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
         });
       
-        it('should return 404 if ingredient is not found', async () => {
-          const mockUserId = 'user123';
-          const mockRecipeId = 'recipe123';
-          const mockIngredients = [
-            { name: 'NonExistentIngredient', amount: 2, unit: 'cups' }
-          ];
+        // Test case for handling database error
+        it('should handle database error', async () => {
+          // Mock request and response
+          const userId = 'user123';
+          const recipeId = 'recipe456';
+          const updates = { title: 'Updated Title', instructions: 'Updated Instructions' };
       
-          const req = { userid: mockUserId, params: { id: mockRecipeId }, body: mockIngredients };
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn()
+          // Mock the return value of getRecipesByUserId
+          getRecipesByUserId.mockRejectedValue(new Error('Database error'));
+      
+          const req = {
+            userid: userId,
+            params: { id: recipeId },
+            body: updates,
           };
       
-          // Mocking isUserRecipe to resolve with true
-          isUserRecipe.mockResolvedValue(true);
-      
-          // Mocking recipeService.fetchRecipeIngredient to resolve with undefined (ingredient not found)
-          recipeService.fetchRecipeIngredient.mockResolvedValue(undefined);
-      
-          // Call the controller function
-          await insertRecipeIngredientsByRecipeId(req, res);
-      
-          // Assertions
-          expect(isUserRecipe).toHaveBeenCalledWith(mockUserId, mockRecipeId);
-          expect(recipeService.fetchRecipeIngredient).toHaveBeenCalledTimes(mockIngredients.length);
-          expect(res.status).toHaveBeenCalledWith(404);
-          expect(res.json).toHaveBeenCalledWith({ message: `Ingredient with name ${mockIngredients[0].name} not found` });
-          expect(insertRecipeIngredient).not.toHaveBeenCalled();
-        });
-      
-        it('should handle API key expired or payment required error', async () => {
-          const mockUserId = 'user123';
-          const mockRecipeId = 'recipe123';
-          const mockIngredients = [
-            { name: 'Ingredient 1', amount: 2, unit: 'cups' }
-          ];
-      
-          const req = { userid: mockUserId, params: { id: mockRecipeId }, body: mockIngredients };
           const res = {
             status: jest.fn().mockReturnThis(),
-            json: jest.fn()
+            json: jest.fn(),
           };
       
-          // Mocking isUserRecipe to resolve with true
-          isUserRecipe.mockResolvedValue(true);
-      
-          // Mocking recipeService.fetchRecipeIngredient to reject with 402 error
-          const error = { response: { status: 402 }, message: 'API key expired or payment required' };
-          recipeService.fetchRecipeIngredient.mockRejectedValue(error);
-      
-          // Call the controller function
-          await insertRecipeIngredientsByRecipeId(req, res);
+          await updateRecipeByUser(req, res);
       
           // Assertions
-          expect(isUserRecipe).toHaveBeenCalledWith(mockUserId, mockRecipeId);
-          expect(recipeService.fetchRecipeIngredient).toHaveBeenCalledTimes(mockIngredients.length);
-          expect(res.status).toHaveBeenCalledWith(402);
-          expect(res.json).toHaveBeenCalledWith({ message: 'API key expired or payment required', error: error.message });
-          expect(insertRecipeIngredient).not.toHaveBeenCalled();
-        });
-      
-        it('should handle generic error during ingredient insertion', async () => {
-          const mockUserId = 'user123';
-          const mockRecipeId = 'recipe123';
-          const mockIngredients = [
-            { name: 'Ingredient 1', amount: 2, unit: 'cups' }
-          ];
-      
-          const req = { userid: mockUserId, params: { id: mockRecipeId }, body: mockIngredients };
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn()
-          };
-      
-          // Mocking isUserRecipe to resolve with true
-          isUserRecipe.mockResolvedValue(true);
-      
-          // Mocking recipeService.fetchRecipeIngredient to resolve with valid data
-          const ingredientData = { id: 'ing1', name: 'Ingredient 1', image: 'image1.jpg' };
-          recipeService.fetchRecipeIngredient.mockResolvedValue(ingredientData);
-      
-          // Mocking insertRecipeIngredient to throw an error
-          const error = new Error('Database insertion error');
-          insertRecipeIngredient.mockRejectedValue(error);
-      
-          // Call the controller function
-          await insertRecipeIngredientsByRecipeId(req, res);
-      
-          // Assertions
-          expect(isUserRecipe).toHaveBeenCalledWith(mockUserId, mockRecipeId);
-          expect(recipeService.fetchRecipeIngredient).toHaveBeenCalledTimes(mockIngredients.length);
-          expect(insertRecipeIngredient).toHaveBeenCalledTimes(mockIngredients.length);
           expect(res.status).toHaveBeenCalledWith(500);
-          expect(res.json).toHaveBeenCalledWith({ message: 'Error fetching and storing recipes', error: error.message });
+          expect(res.json).toHaveBeenCalledWith({ message: 'Error updating recipe', error: 'Database error' });
+          expect(updateRecipeDetailsbyUser).not.toHaveBeenCalled();
         });
       });
 });

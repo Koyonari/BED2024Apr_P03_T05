@@ -284,10 +284,13 @@ const updateRecipeByUser = async (req, res) => {
     console.log('Request body (updates):', updates);
 
     // Check for missing parameters
-    if (!userId || !recipeId || !updates) {
-      return res.status(400).json({ message: 'User ID, Recipe ID, and updates must be provided' });
+    if (!userId || !recipeId) {
+      return res.status(400).json({ message: 'User ID and Recipe ID must be provided' });
     }
-
+    // Check if updates exist and are not empty
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: 'Updates must be provided to update the recipe' });
+    }
     // Ensure that the recipe belongs to the user
     const userRecipes = await getRecipesByUserId(userId);
 
