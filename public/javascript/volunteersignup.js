@@ -1,4 +1,5 @@
-// Create User
+// Yeo Jing Rong
+
 // Handle form submission
 document.querySelector("form").addEventListener("submit", function (event) {
   event.preventDefault(); // Prevent form submission

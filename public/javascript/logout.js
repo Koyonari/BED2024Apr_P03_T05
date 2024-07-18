@@ -1,4 +1,6 @@
-// Get Logout Element
+// Yeo Jin Rong
+
+// Gets Exit Button ID
 const logoutBtn = document.getElementById("logOutBtn");
 
 // Log Out Function
@@ -6,7 +8,7 @@ logoutBtn.addEventListener("click", async () => {
   try {
     const response = await fetch("http://localhost:3500/logout", {
       method: "GET", 
-      credentials: 'include' // Ensure cookies are sent with the request
+      credentials: 'include' // Allows cookies to be sent in request
     });
 
     if (!response.ok) {

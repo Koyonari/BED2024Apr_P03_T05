@@ -388,7 +388,8 @@ p a:hover {
 }
 
 #confirm-diet-btn,
-#confirm-int-btn {
+#confirm-int-btn,
+#confirm-changes-btn {
   width: 100%;
   margin-bottom: 20px;
   background-color: #ff964b;
@@ -1100,6 +1101,24 @@ p a:hover {
   grid-template-columns: 2fr 50%;
   gap: 5px;
   margin: 7px 0;
+}
+
+.pantry-container .list .add_remove_holder {
+  display: grid;
+  grid-template-columns: 2fr 50%;
+  gap: 5px;
+  margin: 7px 0;
+}
+
+.pantry-container .list .add_remove_holder {
+  display: flex;
+  gap: 5px;
+  margin: 7px 0;
+}
+.add_remove_holder #ingredient_plus_icon {
+  font-size: 30px;
+  color: black;
+  cursor: pointer;
 }
 
 .pantry-container .list .add_remove_holder {

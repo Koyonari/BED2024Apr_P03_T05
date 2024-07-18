@@ -91,26 +91,16 @@
             <input type="text" id="lastName" name="lastName" required />
           </div>
           <div id="profile-input">
-            <label for="email-signup">Email:</label>
-            <input
-              type="email"
-              id="email-signup"
-              name="email-signup"
-              required
-            />
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required />
           </div>
           <div id="profile-input">
             <label for="contact">Contact:</label>
             <input type="text" id="contact" name="contact" required />
           </div>
           <div id="profile-input">
-            <label for="password-signup">Password:</label>
-            <input
-              type="password"
-              id="password-signup"
-              name="password-signup"
-              required
-            />
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required />
           </div>
           <div id="profile-input">
             <label for="address">Address:</label>
@@ -127,7 +117,7 @@
 
         <!-- Ingredients to Exclude -->
         <label id="excluded-ingredients-label" for="excluded-ingredients"
-          >Exclude Ingredients:</label
+          >Exclude Ingredients(put a comma per ingredient):</label
         >
         <input
           type="text"
@@ -135,7 +125,7 @@
           name="excluded-ingredients"
         />
 
-        <button type="submit">Confirm Changes</button>
+        <button type="button" id="confirm-changes-btn">Confirm Changes</button>
       </form>
     </div>
 
