@@ -35,12 +35,11 @@ class Request {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
-            await connection.connect();
             const sqlQuery = `SELECT * FROM requests WHERE user_id = @userId`;
             const request = connection.request();
             request.input('userId', sql.VarChar(24), userId);
             const result = await request.query(sqlQuery);
-            return result.recordset[0];
+            return result.recordset;
         } catch (error) {
             console.error("Error retrieving requests by user ID:", error);
             throw error;

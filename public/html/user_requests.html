@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NutriAID</title>
+    <title>NutriAID - User Requests</title>
     <link rel="stylesheet" href="../css/normalize.css" />
     <link rel="stylesheet" href="../css/styles.css" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
@@ -34,6 +34,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="../html/credits.html">Credits</a>
                     </li>
+                    <li id="logOutBtn" class="nav-item">
+                        <a class="nav-link">Exit</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -49,9 +52,9 @@
             <div class = "category">
                 <label for="cat">Category</label>
                 <select name="cat" id="cat">
-                    <option value="low">Low Priority</option>
-                    <option value="high">High Priority</option>
-                    <option value = "urgent">Urgent</option>
+                    <option value="Low Priority">Low Priority</option>
+                    <option value="High Priority">High Priority</option>
+                    <option value = "Urgent">Urgent</option>
                 </select>
                 <br>
             </div>
@@ -59,7 +62,7 @@
             <textarea class = "ctitle" id = "ctitle" type="text" placeholder="Enter your title"></textarea>
             <p>Message</p>
             <textarea class = "cmessage" id = "cmessage" type="text" placeholder="Enter your message"></textarea>
-            <button onclick = "confirmInput()"><b>Confirm</b></button>
+            <button id = "confirm-btn" onclick = "confirmInput()"><b>Confirm</b></button>
         </div>
     </div>
 
@@ -71,7 +74,7 @@
 
     <!-- Requests START -->
     <div class="request-container">
-        <div class="list"></div>
+        <div id = "request-list" class="list"></div>
     </div>
     <!-- Requests END -->
 
@@ -82,7 +85,10 @@
             <div class = "req-details1">
                 <div class = "req-det1">
                     <div>
-                        <h1 id="modalTitle"></h1>
+                        <h1 id="modalNum"></h1>
+                    </div>
+                    <div>
+                        <p id="modalTitle"></p>
                     </div>
                     <div>
                         <p id = "modalCategory"></p>
@@ -117,6 +123,7 @@
     </div>
 
     <!-- JavaScript -->
+    <script src="../javascript/logout.js"></script>
     <script src="../javascript/userRequest.js"></script>
 </body>
 </html>

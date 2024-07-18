@@ -1058,7 +1058,7 @@ p a:hover {
 }
 
 .pantry-container #add_ingredient_btn {
-  background-color: #da8c43;
+  background-color: orange;
   width: 150px;
   height: 50px;
   margin-right: 15px;
@@ -1066,7 +1066,7 @@ p a:hover {
 }
 
 .pantry-container #recipe_btn {
-  background-color: #da8c43;
+  background-color: orange;
   width: 150px;
   height: 50px;
   border-radius: 200px;
@@ -1094,6 +1094,20 @@ p a:hover {
   height: 200px;
   object-fit: cover; 
   object-position: center; 
+}
+
+.pantry-container .list .add_remove_holder {
+  display: grid;
+  grid-template-columns: 2fr 50%;
+  gap: 5px;
+  margin: 7px 0;
+}
+
+.pantry-container .list .add_remove_holder {
+  display: grid;
+  grid-template-columns: 2fr 50%;
+  gap: 5px;
+  margin: 7px 0;
 }
 
 .pantry-container .list .add_remove_holder {

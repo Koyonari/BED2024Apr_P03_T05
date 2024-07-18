@@ -100,7 +100,7 @@ async function getRequestById(req, res) {
     } catch (error) {
       res.status(500).send("Error retrieving request");
     }
-  }
+}
 
 // Get user details by id
 async function getUserDetailsById(req, res) {
