@@ -240,17 +240,14 @@ const insertRecipeIngredientsByRecipeId = async (req, res) => {
 
     // Process each ingredient
     for (const ingredient of ingredientsArray) {
-      console.log('Fetching ingredient:', ingredient.name);
       let ingredientData;
       try {
+        // Fetch ingredient data from the API
+        console.log('Fetching ingredient:', ingredient.name);
         ingredientData = await recipeService.fetchRecipeIngredient(ingredient.name);
+        console.log('Fetched ingredient data:', ingredientData);
       } catch (error) {
         console.error('Error fetching ingredient from API:', error.message);
-        return res.status(404).json({ message: `Ingredient with name ${ingredient.name} not found` });
-      }
-
-      // Validate ingredient data
-      if (!ingredientData || !ingredientData.id) {
         return res.status(404).json({ message: `Ingredient with name ${ingredient.name} not found` });
       }
 
@@ -264,7 +261,7 @@ const insertRecipeIngredientsByRecipeId = async (req, res) => {
       };
 
       // Insert ingredient
-      await recipeService.insertRecipeIngredient(formattedIngredient, recipeId);
+      await insertRecipeIngredient(formattedIngredient, recipeId);
     }
 
     // Respond with success message
@@ -491,18 +488,15 @@ const deleteRecipeByRecipeId = async (req, res) => {
     }
     // Fetch all recipes to validate if the recipe exists
     const allRecipes = await getAllStoredRecipes();
-    
     // Check if there was an error fetching recipes
     if (!allRecipes) {
       return res.status(500).json({ message: 'Error getting recipes' });
     }
-
     // Check if the recipe ID exists in the fetched recipes
     const recipeToDelete = allRecipes.find(recipe => recipe.id === recipeId);
     if (!recipeToDelete) {
       return res.status(404).json({ message: 'Recipe not found' });
     }
-    
     // Call the deleteRecipe function
     await deleteRecipe(recipeId);
     // Respond with success message
@@ -518,34 +512,31 @@ const deleteRecipeByRecipeId = async (req, res) => {
 // Controller function to delete a recipe ingredient by recipe ID and ingredient ID
 const deleteRecipeIngredientByRecipeId = async (req, res) => {
   try {
-    const userId = req.userid; // Extracted from JWT token
-    const recipeId = req.params.id; // Extracted from URL parameters
-    const ingredientId = req.body.ingredient_id; // Extracted from request body
+    const userId = req.userid;
+    const recipeId = req.params.id;
+    const ingredientId = req.body.ingredient_id;
 
-    // Log the request for debugging purposes
     console.log('Request to delete ingredient with ID:', ingredientId, 'from recipe with ID:', recipeId);
 
-    // Check if recipe ID and ingredient ID are provided
     if (!recipeId || !ingredientId) {
       return res.status(400).json({ message: 'Recipe ID and ingredient ID must be provided' });
     }
-    // Check if the recipe belongs to the user
+
     const isUsersRecipe = await isUserRecipe(userId, recipeId);
+    console.log('isUsersRecipe:', isUsersRecipe);
+
     if (!isUsersRecipe) {
+      console.log('Recipe not found or does not belong to the user');
       return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
     }
-    // Call the deleteRecipeIngredients function
+
     await deleteRecipeIngredients(recipeId, ingredientId);
-    // Respond with success message
     res.status(200).json({ message: 'Ingredient deleted successfully from recipe' });
   } catch (error) {
-    // Log the error message
     console.error('Error deleting recipe ingredient:', error.message);
-    // Respond with error message
     res.status(500).json({ message: 'Error deleting ingredient from recipe', error: error.message });
   }
 };
-
 // Function to check user ownership of a recipe
 async function isUserRecipe(userId, recipeId) {
   const userRecipes = await getRecipesByUserId(userId);
