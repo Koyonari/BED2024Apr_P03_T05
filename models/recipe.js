@@ -5,13 +5,14 @@ const { v4: uuid4 } = require('uuid');
 
 // Class for Recipe
 class Recipe {
-  constructor(id, title, imageurl, servings, readyInMinutes, pricePerServing, userId) {
+  constructor(id, title, imageurl, servings, readyInMinutes, pricePerServing, spoonacularId, userId) {
     this.id = id;
     this.title = title;
     this.imageurl = imageurl;
     this.servings = servings;
     this.readyInMinutes = readyInMinutes;
     this.pricePerServing = pricePerServing;
+    this.spoonacularId = spoonacularId;
     this.userId = userId;
   }
 }

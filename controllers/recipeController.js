@@ -186,6 +186,7 @@ const insertRecipeByUser = async (req, res) => {
   try {
     const userId = req.userid; // Obtain from JWT token
     const recipes = req.body;
+    const errors = []; // To accumulate errors for recipes with missing details
     // Check if user ID and recipes are provided 
     if (!userId || !Array.isArray(recipes) || recipes.length === 0) {
       return res.status(400).json({ message: 'User ID and recipes array must be provided' });
@@ -196,11 +197,21 @@ const insertRecipeByUser = async (req, res) => {
       const recipeDetails = await recipeService.fetchRecipeDetails(recipe.id);
       // Check if the recipe details are found
       if (!recipeDetails) {
-        return res.status(404).json({ message: `Recipe with ID ${recipe.id} not found` });
+        errors.push(`Recipe with ID ${recipe.id} not found`);
+      } else {
+        try {
+          // Call the insertRecipe function in recipe model to insert the recipe into the database (create)
+          await insertRecipe(recipeDetails, userId);
+        } catch (insertError) {
+          // Handle insertion errors
+          console.error(`Error inserting recipe ${recipe.id}:`, insertError.message);
+          errors.push(`Error inserting recipe ${recipe.id}: ${insertError.message}`);
+        }
       }
-
-      // Call the insertRecipe function in recipe model to insert the recipe into the database (create)
-      await insertRecipe(recipeDetails, userId);
+    }
+    // After processing all recipes, check if there were any errors
+    if (errors.length > 0) {
+      return res.status(404).json({ message: 'Some recipes could not be found', errors });
     }
 
     res.status(201).json({ message: 'Recipes inserted and linked to user successfully' });
@@ -538,4 +549,5 @@ module.exports = {
   deleteRecipeByUser,
   deleteRecipeByRecipeId,
   deleteRecipeIngredientByRecipeId,
+  isUserRecipe
 };
