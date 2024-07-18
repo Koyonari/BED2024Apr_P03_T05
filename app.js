@@ -60,13 +60,16 @@ app.get("/users/:user_id", userController.getUserByUID);
 // YongShyan Request Routes
 app.get("/req/user/:id", reqController.getRequestByUserId); // fed done
 app.post('/req', validateRequest, reqController.createRequest); //fed done
-app.get("/available", reqController.getAvailableRequest);
-app.patch("/req/accepted/update/:id", validatePatchAcceptedRequest, reqController.updateAcceptedRequest);
-app.get("/req/accepted/:id", reqController.getAcceptedRequestById);
-app.patch("/req/completed/:id", reqController.updateCompletedRequest);
-app.get("/req/:id", reqController.getRequestById); //fed done, need add ingredient whatever
+app.get("/available", reqController.getAvailableRequest); // fed done
+app.patch("/req/accepted/update/:id", validatePatchAcceptedRequest, reqController.updateAcceptedRequest); // fed done
+app.get("/req/accepted/:id", reqController.getAcceptedRequestById); //fed done
+app.patch("/req/completed/:id", reqController.updateCompletedRequest); //fed done
+app.get("/req/:id", reqController.getRequestById); //fed done, need add ingredient list + volunteer id, name, contact, email in charge
+//Admin view available, approved , accepted, completed
 app.patch("/req/approve/:id", validatePatchApproveRequest, reqController.updateApproveRequest);
 app.get("/accepted", reqController.getAcceptedRequest);
+app.get("/completed", reqController.getCompletedRequest);
+app.get("/approved", reqController.getApprovedRequest);
 app.delete("/req/:id", reqController.deleteRequest);
 
 // Error handling middleware
