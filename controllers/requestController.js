@@ -100,7 +100,7 @@ async function getRequestById(req, res) {
     } catch (error) {
       res.status(500).send("Error retrieving request");
     }
-  }
+}
 
 // Get user details by id
 async function getUserDetailsById(req, res) {
@@ -148,6 +148,34 @@ async function getAcceptedRequest(req, res) {
     }
 }
 
+// View Completed Requests
+async function getCompletedRequest(req, res) {
+    try {
+        const requests = await Request.getCompletedRequest();
+        if (!requests) {
+            return res.status(404).send("No completed requests found");
+        }
+        res.json(requests);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error retrieving completed requests");
+    }
+}
+
+// View Approved Requests
+async function getApprovedRequest(req, res) {
+    try {
+        const requests = await Request.getApprovedRequest();
+        if (!requests) {
+            return res.status(404).send("No approved requests found");
+        }
+        res.json(requests);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error retrieving approved requests");
+    }
+}
+
 // Delete a request
 async function deleteRequest(req, res) {
     const requestId = req.params.id;
@@ -176,5 +204,7 @@ module.exports = {
     getUserDetailsById,
     updateApproveRequest,
     getAcceptedRequest,
+    getCompletedRequest,
+    getApprovedRequest,
     deleteRequest
 };

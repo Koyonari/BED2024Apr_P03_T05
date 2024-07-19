@@ -35,12 +35,11 @@ class Request {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
-            await connection.connect();
             const sqlQuery = `SELECT * FROM requests WHERE user_id = @userId`;
             const request = connection.request();
             request.input('userId', sql.VarChar(24), userId);
             const result = await request.query(sqlQuery);
-            return result.recordset[0];
+            return result.recordset;
         } catch (error) {
             console.error("Error retrieving requests by user ID:", error);
             throw error;
@@ -225,13 +224,61 @@ class Request {
             connection.close();
         }
     
-        return this.getRequestById(requestId); // returning the updated request data
+        return this.getRequestById(requestId);
     }
 
     // GET: Package 9.3.1 - Admin view accepted request
     static async getAcceptedRequest() {
         const connection = await sql.connect(dbConfig);
-        const sqlQuery = `SELECT * FROM requests WHERE volunteer_id IS NOT NULL`;
+        const sqlQuery = `SELECT * FROM requests WHERE volunteer_id IS NOT NULL AND isCompleted = 0`;
+        const req = connection.request();
+        const result = await req.query(sqlQuery);
+        connection.close();
+
+        if (result.recordset.length > 0) {
+            return result.recordset.map(record => new Request(
+                record.request_id,
+                record.title,
+                record.category,
+                record.description,
+                record.user_id,
+                record.volunteer_id,
+                record.isCompleted,
+                record.admin_id
+            ));
+        } else {
+            return [];
+        }
+    }
+
+    // GET: Package ____ - Admin view completed request
+    static async getCompletedRequest() {
+        const connection = await sql.connect(dbConfig);
+        const sqlQuery = `SELECT * FROM requests WHERE isCompleted = 1 AND admin_id IS NULL`;
+        const req = connection.request();
+        const result = await req.query(sqlQuery);
+        connection.close();
+
+        if (result.recordset.length > 0) {
+            return result.recordset.map(record => new Request(
+                record.request_id,
+                record.title,
+                record.category,
+                record.description,
+                record.user_id,
+                record.volunteer_id,
+                record.isCompleted,
+                record.admin_id
+            ));
+        } else {
+            return [];
+        }
+    }
+
+    // GET: Package ____ - Admin view approved request
+    static async getApprovedRequest() {
+        const connection = await sql.connect(dbConfig);
+        const sqlQuery = `SELECT * FROM requests WHERE admin_id IS NOT NULL`;
         const req = connection.request();
         const result = await req.query(sqlQuery);
         connection.close();

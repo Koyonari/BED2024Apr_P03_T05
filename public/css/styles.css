@@ -910,6 +910,11 @@ p a:hover {
   height: 100%;
 }
 
+.req-details2 {
+  width: 60%;
+  height: 100%;
+}
+
 .req-details1 button:hover,
 .req-details2 button:hover {
   background-color: #ff8127;
@@ -929,11 +934,6 @@ p a:hover {
 .req-det2 > * {
   padding-right: 15px;
   padding-left: 15px;
-}
-
-.req-details2 {
-  width: 60%;
-  height: 100%;
 }
 
 .close-btn {
@@ -988,6 +988,32 @@ p a:hover {
   color: white;
 }
 
+.requests {
+  flex-direction: row;
+}
+
+.req-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.accept-btn,
+.approve-btn,
+.delete-btn {
+  width: 100%;
+  height: 5vh;
+  color: white;
+  text-align: center;
+  margin-top: 3vh;
+  background-color: #ff964b;
+  border: 2px solid black;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Admin Home page */
 .home {
   padding-top: 3vh;
@@ -1031,95 +1057,82 @@ p a:hover {
 }
 
 /* Pantry PAGE START */
-.pantry-body {
-  background-color: black;
-}
-
 .pantry-container {
-  font-family: "Arial", sans-serif;
-  width: 1000px;
-  margin-top: 84px;
+  padding-left: 5vw;
+  padding-right: 5vw;
   transition: 0.5s;
-  margin: 10px auto;
+  color: black;
 }
 
 .pantry-container header {
   justify-content: center;
   align-items: center;
   display: flex;
-  margin-top: 50px;
+  margin-top: 5vh;
 }
 
-.pantry-container h1 {
-  margin-right: 50px;
+.pantry-head {
   color: white;
+  padding-top: 3vh;
   text-align: center;
-  margin-left: 350px;
 }
 
 .pantry-container #add_ingredient_btn {
-  background-color: #da8c43;
+  background-color: #ff964b;
   width: 150px;
   height: 50px;
-  margin-right: 15px;
+  margin-right: 9px;
   border-radius: 200px;
 }
 
-.pantry-container #recipe_btn {
-  background-color: #da8c43;
+.pantry-container #recipes_btn {
+  background-color: #ff964b;
   width: 150px;
   height: 50px;
   border-radius: 200px;
+  margin-left: 9px;
+  font-weight: bold;
 }
 
-.pantry-container .list {
+.pantry-container #add_ingredient_btn:hover,
+.pantry-container #recipes_btn:hover {
+  background-color: #ff8127;
+}
+
+.pantry-container .ingredient_list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   column-gap: 20px;
   row-gap: 20px;
   margin-top: 50px;
 }
-.pantry-container .list .item {
+.pantry-container .ingredient_list .item {
   /* Ingredient Cards */
-  border: 1px solid black;
-  border-radius: 25px;
+  border: 3px solid black;
+  border-radius: 20px;
   text-align: center;
   background-color: white;
   padding: 20px;
   letter-spacing: 1px;
+  width: 25vw;
 }
 
-.pantry-container .list .item #product_img {
+.pantry-container .ingredient_list .item #product_img {
   border-radius: 15px;
   height: 200px;
-  object-fit: cover; 
+  object-fit: contain; 
   object-position: center; 
 }
 
-.pantry-container .list .add_remove_holder {
+.pantry-container .ingredient_list .add_remove_holder {
   display: flex;
-  gap: 5px;
-  margin: 7px 0;
-}
-.add_remove_holder #ingredient_plus_icon {
-  font-size: 30px;
-  color: black;
-  cursor: pointer;
-}
-
-.pantry-container .list .add_remove_holder {
-  display: grid;
   grid-template-columns: 2fr 50%;
   gap: 5px;
   margin: 7px 0;
+  justify-content: center;
 }
 
-.pantry-container .list .add_remove_holder {
-  display: flex;
-  gap: 5px;
-  margin: 7px 0;
-}
-.add_remove_holder #ingredient_plus_icon {
+.pantry-container #ingredient_plus_icon {
   font-size: 30px;
   color: black;
   cursor: pointer;
@@ -1128,43 +1141,43 @@ p a:hover {
 .add_remove_holder input {
   border-radius: 5px;
 }
-.add_remove_holder #ingredient_minus_icon {
+.pantry-container #ingredient_minus_icon {
   font-size: 30px;
   color: black;
   cursor: pointer;
 }
 
-.pantry-container .list .item .selected {
+.pantry-container .ingredient_list .item .selected {
   background-color: white; /* Adjusted color for selected button */
   color: black;
 }
 
-.pantry-container .list .item img {
+.pantry-container .ingredient_list .item img {
   background-color: white;
   width: 80%;
   height: 250px;
   object-fit: cover;
 }
-.pantry-container .list .item .title {
+.pantry-container .ingredient_list .item .title {
   font-weight: bold;
   font-size: 20px;
 }
-.pantry-container .list .item .price {
+.pantry-container .ingredient_list .item .price {
   margin: 10px;
 }
-.pantry-container .list .item button {
-  background-color: #1c1f25;
+.pantry-container .ingredient_list .item button {
+  font-weight: bold;
+  background-color: #ff964b;
   border-radius: 20px;
-  color: #fff;
+  color: black;
   width: 100%;
   padding: 10px;
   cursor: pointer;
   transition: 0.5s;
 }
 
-.pantry-container .list .item button:hover {
-  background-color: white;
-  color: black;
+.pantry-container .ingredient_list .item button:hover {
+  background-color: #ff8127;
 }
 
 /* Add Ingredient Popup */

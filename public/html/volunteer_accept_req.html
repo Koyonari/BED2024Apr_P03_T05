@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NutriAID - User Requests</title>
+    <title>NutriAID - Accepted Requests</title>
     <link rel="stylesheet" href="../css/normalize.css" />
     <link rel="stylesheet" href="../css/styles.css" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
@@ -23,16 +23,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="../index.html">Home</a>
+                        <a class="nav-link" href="./volunteer_homepage.html" style="color: white">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../html/about.html">About</a>
+                        <a class="nav-link" href="./about.html">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../html/contact.html">Contact</a>
+                        <a class="nav-link" href="./contact.html">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../html/credits.html">Credits</a>
+                        <a class="nav-link" href="./credits.html">Credits</a>
                     </li>
                     <li id="logOutBtn" class="nav-item">
                         <a class="nav-link">Exit</a>
@@ -43,33 +43,10 @@
     </nav>
     <!-- Navbar End -->
 
-    <!-- Popup for new requests -->
-    <div class = "popup" id = "new-req">
-        <div class = "overlay"></div>
-        <div class = "content">
-            <div class = "close-btn" onclick = "togglepopup('new-req')">&times;</div>
-            <h1>New Request</h1>
-            <div class = "category">
-                <label for="cat">Category</label>
-                <select name="cat" id="cat">
-                    <option value="Low Priority">Low Priority</option>
-                    <option value="High Priority">High Priority</option>
-                    <option value = "Urgent">Urgent</option>
-                </select>
-                <br>
-            </div>
-            <p>Title</p>
-            <textarea class = "ctitle" id = "ctitle" type="text" placeholder="Enter your title"></textarea>
-            <p>Message</p>
-            <textarea class = "cmessage" id = "cmessage" type="text" placeholder="Enter your message"></textarea>
-            <button id = "confirm-btn" onclick = "confirmInput()"><b>Confirm</b></button>
-        </div>
-    </div>
-
     <!-- Title -->
     <div class="back-btn">
-        <a href="user_homepage.html"><i class="bx bx-chevron-left"></i></a>
-        <h1><b>Requests</b><button onclick = "togglepopup('new-req')" class="plus">&#43;</button></h1>
+        <a href="volunteer_homepage.html"><i class="bx bx-chevron-left"></i></a>
+        <h1><b>Accepted Requests</b></h1>
     </div>
 
     <!-- Requests START -->
@@ -100,7 +77,6 @@
                         <p id="modalDescription"></p>
                     </div>
                 </div>
-                <button>Delete</button>
             </div>
             <div class = "req-details2">
                 <div class = "req-det2">
@@ -117,13 +93,12 @@
                         <p id="modalDescription1"></p>
                     </div>
                 </div>
-                <button onclick = "markAsCompleted()">Completed</button>
             </div>
         </div>
     </div>
 
     <!-- JavaScript -->
     <script src="../javascript/logout.js"></script>
-    <script src="../javascript/userRequest.js"></script>
+    <script src="../javascript/volunteerAccReq.js"></script>
 </body>
 </html>

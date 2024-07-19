@@ -1,10 +1,17 @@
+// Ng Kai Huat Jason
+
+// On Page Load
 document.addEventListener("DOMContentLoaded", function () {
-  let list = document.querySelector(".list");
+  
+  hideRecipeButton();
+
+  // Create Global Variables
+  let ingredient_list = document.querySelector(".ingredient_list");
   const accessToken = localStorage.getItem("AccessToken");
   const pantryId = localStorage.getItem("PantryID");
   const selectedIngredients = [];
 
-  // Base URL for ingredient images
+  // Base URL for ingredient images from Spoonacular API
   const imageUrlBase = "https://img.spoonacular.com/ingredients_500x500/";
 
   // Fetch ingredients from the server
@@ -23,9 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => console.error("Error fetching ingredients:", error));
   }
 
-  // Generate HTML for each ingredient
+  fetchIngredients();
+
+  // Generates a HTML Card for each ingredient retrieved from the server
   function generateIngredients(products) {
-    list.innerHTML = ""; // Clear the list before adding new items
+    ingredient_list.innerHTML = ""; // Clear the list before adding new items
     products.forEach((value) => {
       let newDiv = document.createElement("div");
       newDiv.classList.add("item");
@@ -36,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         (item) => item.ingredient_id === value.ingredient_id
       );
 
+      // The Ingredient Card will store the Ingredient ID, Ingredient Name, Quantity, Image
       newDiv.innerHTML = `
           <img id="product_img" src="${imageUrlBase + value.ingredient_image}">
           <div class="title">${value.ingredient_name}</div>
@@ -56,20 +66,23 @@ document.addEventListener("DOMContentLoaded", function () {
       }', this)" ${isSelected ? 'class="selected"' : ""}>${
         isSelected ? "Selected" : "Select Ingredient"
       }</button>`;
-      list.appendChild(newDiv);
+      ingredient_list.appendChild(newDiv);
     });
   }
 
   // Function to add ingredient
   function addToCard(ingredientId) {
+    // Gets quantity value from input field of respective ingredient
     const quantityInput = document.getElementById(`quantity-${ingredientId}`);
     const quantity = parseInt(quantityInput.value, 10);
 
+    // Checks if quantity entered is more then 0
     if (isNaN(quantity) || quantity <= 0) {
       alert("Please enter a valid quantity to add.");
       return;
     }
 
+    // Calls POST /addIngredients to Server
     fetch(`http://localhost:3500/pantry/${pantryId}/addingredients`, {
       method: "POST",
       headers: {
@@ -81,40 +94,45 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((response) => response.json())
       .then((data) => {
         console.log("Ingredient added:", data);
-        // Optionally, refresh the list or update the UI to reflect the change
-        fetchIngredients(); // Refresh the ingredients list
+
+        // Calls fetchIngredients to refresh the UI
+        fetchIngredients();
       })
       .catch((error) => console.error("Error adding ingredient:", error));
   }
 
-  // Function to remove ingredient
+  // Function to deduct Ingredient Quantity
   function removeFromCard(ingredientId) {
+    // Gets quantity value from input field of respective ingredient
     const quantityInput = document.getElementById(`quantity-${ingredientId}`);
     const quantity = parseInt(quantityInput.value, 10);
 
+    // Checks if quantity entered is more then 0
     if (isNaN(quantity) || quantity <= 0) {
       alert("Please enter a valid quantity to remove.");
       return;
     }
 
+    // Calls DELETE /pantry/:pantryId/ingredients to Server
     fetch(`http://localhost:3500/pantry/${pantryId}/ingredients`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ ingredient_id: ingredientId, quantity }), // Use the input quantity
+      body: JSON.stringify({ ingredient_id: ingredientId, quantity }),
     })
       .then((response) => response.json())
       .then((data) => {
         console.log("Ingredient removed:", data);
-        // Optionally, refresh the list or update the UI to reflect the change
-        fetchIngredients(); // Refresh the ingredients list
+
+        // Calls fetchIngredients to refresh the UI
+        fetchIngredients();
       })
       .catch((error) => console.error("Error removing ingredient:", error));
   }
 
-  // Function to toggle ingredient selection
+  // Function to select ingredient and store their ID in a array of selectedIngredients
   function toggleSelect(ingredientId, ingredientName, button) {
     const isSelected = selectedIngredients.some(
       (item) => item.ingredient_id === ingredientId
@@ -140,20 +158,24 @@ document.addEventListener("DOMContentLoaded", function () {
       button.textContent = "Selected";
     }
 
+    // Logs Ingredients for debugging
     console.log("Selected ingredients:", selectedIngredients);
   }
 
   // Function to Add a New Ingredient
   function addIngredient() {
+    // Gets the Fields of the Add Ingredient Popup
     const ingredient_name = document.getElementById(
       "popup_IngredientName"
     ).value;
     const quantity = document.getElementById("popup_IngredientQuantity").value;
 
+    // Checks for Empty Inputs and Alerts User
     if (ingredient_name === "" || quantity === "") {
       alert("Please fill in all fields");
       return;
     } else {
+      // Calls POST /pantry/:pantryId/ingredients
       fetch(`http://localhost:3500/pantry/${pantryId}/ingredients`, {
         method: "POST",
         headers: {
@@ -174,24 +196,25 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log("Ingredient added:", data);
           // Get Ingredients and Make UI Changes
           fetchIngredients();
+
+          // Clears popup fields and alerts user
           document.getElementById("popup_IngredientName").value = "";
           document.getElementById("popup_IngredientQuantity").value = "";
           alert("Ingredient Added Successfully");
         })
         .catch((error) => {
+          // Alert of Error for debugging
           console.error("Error adding ingredient:", error);
           alert(`Error adding ingredient: ${error.message}`);
         });
     }
   }
 
-  // Function to toggle Add Ingredient Popup
+  // Function to toggle Popup
   function togglepopup(popupid) {
     document.getElementById(popupid).classList.toggle("active");
   }
-
-  // Fetch ingredients on page load
-  fetchIngredients();
+  
 
   // Expose functions to global scope
   window.addToCard = addToCard;
@@ -200,3 +223,14 @@ document.addEventListener("DOMContentLoaded", function () {
   window.togglepopup = togglepopup;
   window.addIngredient = addIngredient;
 });
+
+
+
+// function to hide recipe button if user is a volunteer
+function hideRecipeButton() {
+  const userInfo = JSON.parse(localStorage.getItem("UserInfo"));
+  const roles = userInfo.roles;
+  if (roles.includes(2002)) {
+    document.getElementById("recipes_btn").style.display = "none";
+  }
+}

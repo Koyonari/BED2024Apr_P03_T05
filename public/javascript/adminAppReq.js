@@ -9,11 +9,11 @@ const accessToken = localStorage.getItem('AccessToken');
 // Global variable to store the requests array
 let globalRequests = [];
 
-// GET: getRequestByUserId
+// GET: getApprovedRequest
 // Initialize the app by populating the list with requests
 async function initApp() {
     try {
-        const response = await fetch(`http://localhost:3500/req/user/${userId}`, {
+        const response = await fetch(`http://localhost:3500/approved`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,7 +73,6 @@ function displayRequests(requests, container) {
     applyStyles();
 }
 
-// Initialize the app
 initApp();
 
 // GET: getRequestById
@@ -165,101 +164,31 @@ function applyStyles() {
     modalContent.style.overflow = "auto";
 }
 
-function togglepopup(popupid) {
-    document.getElementById(popupid).classList.toggle("active");
-}
-
-function closepopup(popupid) {
-    document.getElementById(popupid).classList.toggle("none");
-    document.getElementById('ctitle').value = '';
-    document.getElementById('cmessage').value = '';
-    window.location.reload();
-}
-
-// POST: createRequest
-async function confirmInput() {
-    // Capture input data
-    const title = document.getElementById('ctitle').value;
-    const category = document.getElementById('cat').value;
-    const description = document.getElementById('cmessage').value;
-
-    // Validate the data
-    if (title.length < 3 || title.length > 70) {
-        alert('Title must be between 3 and 70 characters');
-        return;
-    }
-    if (category.length > 50) {
-        alert('Category must be 50 characters or less');
-        return;
-    }
-    if (description.length > 150) {
-        alert('Description must be 150 characters or less');
-        return;
-    }
-
-    // Prepare the request body
-    const requestBody = {
-        title,
-        category,
-        description,
-        user_id: userId
-    };
-
-    // Send data to the server
+// DELETE: deleteRequest
+async function deleteRequest() {
     try {
-        const response = await fetch('http://localhost:3500/req', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            },
-            body: JSON.stringify(requestBody)
-        });
+        let key = document.getElementById('modal').dataset.key;
+        let requestId = globalRequests[key].request_id;
 
-        if (response.ok) {
-            const result = await response.json();
-            alert('Request created successfully');
-
-            // Close popup
-            closepopup('new-req');
-        } else {
-            const error = await response.json();
-            alert(`Error creating request: ${error.message}`);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while creating the request');
-    }
-}
-
-async function markAsCompleted() {
-    let key = document.getElementById('modal').dataset.key;
-    let requestId = globalRequests[key].request_id;
-    try {
-        const response = await fetch(`http://localhost:3500/req/completed/${requestId}`, {
-            method: 'PATCH',
+        const response = await fetch(`http://localhost:3500/req/${requestId}`, {
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${accessToken}`
             }
+            
         });
 
         if (response.ok) {
-            const updatedRequest = await response.json();
-            console.log('Request marked as completed:', updatedRequest);
-
-            const index = globalRequests.findIndex(req => req.request_id === requestId);
-            globalRequests[index] = updatedRequest;
-
-            displayRequests(globalRequests, document.getElementById('request-list'));
+            alert('Request deleted successfully');
             window.location.reload();
         } else {
             const error = await response.json();
-            console.error('Error marking request as completed:', error);
-            alert(`Error marking request as completed: ${error.message}`);
+            console.error('Error deleting request:', error);
+            alert(`Error deleting request: ${error.message}`);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while marking the request as completed');
+        alert('An error occurred while fetching request details');
     }
 }
