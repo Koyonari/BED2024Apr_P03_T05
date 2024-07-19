@@ -61,4 +61,7 @@ const userSchema = new Schema({
     }
 })
 
-module.exports = mongoose.model('User', userSchema);
+// Use mongoose.models to avoid redefining the model
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+module.exports = User;
