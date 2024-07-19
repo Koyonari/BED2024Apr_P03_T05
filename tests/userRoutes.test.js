@@ -10,6 +10,7 @@ const db = require('../middleware/db');
 const app = express();
 app.use(express.json());
 app.use('/users', userRoutes);
+
 // Mock the database connection
 jest.mock('../middleware/db', () => ({
     connect: jest.fn().mockResolvedValue(true),
@@ -40,12 +41,17 @@ jest.mock('../models/usersql', () => ({
     createSQLUser: jest.fn()
 }));
 
+jest.mock('../middleware/checkUserExists', () => (req, res, next) => {
+    next();
+});
+
 describe('User Controller Tests', () => {
     beforeEach(async () => {
         await User.deleteMany({});
         mockingoose.resetAll();
     });
 
+    // Test case for getting all users
     describe('GET /users', () => {
         it('should return all users', async () => {
             const users = [
@@ -87,6 +93,7 @@ describe('User Controller Tests', () => {
         });
     });
 
+    // Test case for creating a new user, by admin
     describe('POST /users', () => {
         it('should create a new user', async () => {
             // Define mock user ID
@@ -152,6 +159,199 @@ describe('User Controller Tests', () => {
             expect(res.body.message).toBe('Cannot create an admin user through this operation');
         });
     });
+    describe('PUT /users/:id', () => {
+        it.skip('should update an existing user', async () => {
+            const mockUserId = mongoose.Types.ObjectId().toHexString(); // Generate valid ObjectId
+            const updatedUser = {
+                username: 'UpdatedUser',
+                password: 'UpdatedPassword123!',
+                email: 'updated.email@example.com',
+                contact: '87654321',
+                roles: { User: 2001 },
+                firstname: 'Updated',
+                lastname: 'User',
+                address: '456 Another St',
+                dietaryRestrictions: ['Vegan'],
+                intolerances: ['Nuts'],
+                excludedIngredients: ['soy'],
+                dateOfBirth: '1990-01-01'
+            };
+    
+            mockingoose(User).toReturn({
+                _id: mockUserId,
+                ...updatedUser,
+                dateCreated: new Date().toISOString()
+            }, 'findByIdAndUpdate');
+    
+            // Send a PUT request to update the user
+            const res = await request(app).put(`/users/${mockUserId}`).send(updatedUser);
+    
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+    
+            // Assertions
+            expect(res.status).toBe(200);
+            expect(res.body.message).toBe(`User ${updatedUser.username} updated successfully`);
+        });
 
-    // Add more tests for updateUser, editUser, deleteUser, getUser as needed
+        it('should return 400 if required fields are missing', async () => {
+            const mockUserId = '60c72b2f9b1d8b3a3c8d1e35';
+            const updatePayload = { email: 'new.email@example.com' };
+
+            const res = await request(app).put(`/users/${mockUserId}`).send(updatePayload);
+
+            expect(res.status).toBe(400);
+            expect(res.body.message).toBe('Username, password, email, and contact are required.');
+        });
+
+        it('should return 403 if attempting to assign Admin role', async () => {
+            const mockUserId = '60c72b2f9b1d8b3a3c8d1e35';
+            const updatePayload = {
+                username: 'NewAdmin',
+                password: 'AdminPass123!',
+                email: 'admin@example.com',
+                contact: '12345678',
+                roles: { Admin: 3001 }
+            };
+
+            const res = await request(app).put(`/users/${mockUserId}`).send(updatePayload);
+
+            expect(res.status).toBe(403);
+            expect(res.body.message).toBe('Cannot assign Admin role through this operation');
+        });
+    });
+    describe('PATCH /users/:id', () => {
+        it('should update the firstname of an existing user', async () => {
+            const mockUserId = new mongoose.Types.ObjectId().toHexString();
+            const updates = { firstname: 'ChangedName' };
+            /* Mock the existing user, have to include parameters that are 'required' in the schema
+            Actual can take multiple fields*/
+            const existingUser = {
+                _id: mockUserId,
+                firstname: 'OriginalName',
+                contact: '1234567890',  // Assuming these fields are required by your model
+                email: 'test@example.com',
+                password: 'oldpassword',
+                username: 'oldusername',
+                save: jest.fn().mockResolvedValue({
+                    _id: mockUserId,
+                    firstname: 'ChangedName',
+                    contact: '1234567890',
+                    email: 'test@example.com',
+                    password: 'newpassword',
+                    username: 'oldusername'
+                }),
+                validateSync: jest.fn().mockReturnValue(null), // Simulate successful validation
+                toObject: () => ({
+                    _id: mockUserId,
+                    firstname: 'OriginalName',
+                    contact: '1234567890',
+                    email: 'test@example.com',
+                    password: 'oldpassword',
+                    username: 'oldusername'
+                })
+            };
+        
+            // Mock `findOne` to return the existing user
+            mockingoose(User).toReturn(existingUser, 'findOne');
+        
+            const res = await request(app).patch(`/users/${mockUserId}`).send(updates);
+        
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+        
+            // Assertions
+            expect(res.status).toBe(200);
+            expect(res.body.message).toBe('User updated successfully');
+            expect(res.body.editedFields).toEqual(updates);
+        });
+
+        it('should return 404 if the user is not found', async () => {
+            const mockUserId = new mongoose.Types.ObjectId().toHexString(); // Use `new` here
+            const updates = {
+                firstname: 'ChangedName'
+            };
+    
+            // Mocking the User model to return null for findOne
+            mockingoose(User).toReturn(null, 'findOne');
+    
+            // Send a PATCH request to update the user
+            const res = await request(app).patch(`/users/${mockUserId}`).send(updates);
+    
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+    
+            // Assertions
+            expect(res.status).toBe(404);
+            expect(res.body.message).toBe(`User with ID ${mockUserId} not found`);
+        });
+    
+        it('should return 400 if no updates are provided', async () => {
+            const mockUserId = new mongoose.Types.ObjectId().toHexString(); // Use `new` here
+    
+            // Send a PATCH request with no update data
+            const res = await request(app).patch(`/users/${mockUserId}`).send({});
+    
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+    
+            // Assertions
+            expect(res.status).toBe(400);
+            expect(res.body.message).toBe('Updates must be provided to update the user');
+        });
+    
+        it('should handle validation errors', async () => {
+            const mockUserId = new mongoose.Types.ObjectId().toHexString(); // Use `new` here
+            const updates = {
+                firstname: 'ChangedName'
+            };
+    
+            // Mocking the User model
+            mockingoose(User).toReturn({
+                _id: mockUserId,
+                firstname: updates.firstname
+            }, 'findOne');
+            
+            const validationResult = {
+                errors: {
+                    firstname: {
+                        message: 'Invalid firstname'
+                    }
+                }
+            };
+            mockingoose(User).toReturn(validationResult, 'validateSync');
+    
+            // Send a PATCH request with invalid update data
+            const res = await request(app).patch(`/users/${mockUserId}`).send(updates);
+    
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+    
+            // Assertions
+            expect(res.status).toBe(400);
+            expect(res.body.errors).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    field: 'contact',
+                    message: 'Path `contact` is required.'
+                }),
+                expect.objectContaining({
+                    field: 'email',
+                    message: 'Path `email` is required.'
+                }),
+                expect.objectContaining({
+                    field: 'password',
+                    message: 'Path `password` is required.'
+                }),
+                expect.objectContaining({
+                    field: 'username',
+                    message: 'Path `username` is required.'
+                })
+            ]));
+        });
+    });
 });

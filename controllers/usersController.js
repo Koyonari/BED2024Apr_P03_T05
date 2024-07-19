@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const sql = require('mssql');
-const { createSQLUser } = require('../models/usersql');
+const { createSQLUser, updateSQLUsername, deleteSQLUser } = require('../models/usersql');
 const { dbConfig } = require('../config/dbConfig');
 const bcrypt = require('bcrypt');
 const validateUser = require('../middleware/validateUser');
@@ -149,6 +149,10 @@ const updateUser = async (req, res) => {
                 }
                 // Update the user
                 await User.findByIdAndUpdate(userId, updatedUser, { new: true });
+                  // Update the username in SQL if it was changed
+                  if (username !== existingUser.username) {
+                    await updateSQLUsername(userId, username);
+                }
                 // Return success response
                 res.status(200).json({ message: `User ${username} updated successfully` });
             } catch (err) {
@@ -214,6 +218,10 @@ const editUser = async (req, res) => {
 
         // Save the updated user object
         const result = await user.save();
+        // Update the user in SQL if username is provided
+        if (updates.username) {
+            await updateSQLUsername(id, updates.username);
+        }
 
         // Find the differences between the original and updated user
         const editedFields = {};
@@ -257,7 +265,8 @@ const deleteUser = async (req, res) => {
 
         // Delete the user
         await user.deleteOne();
-
+        // Delete the user from SQL
+        await deleteSQLUser(userId);
         res.json({ message: `User with ID ${userId} deleted successfully` });
     } catch (error) {
         console.error("Error deleting user:", error);

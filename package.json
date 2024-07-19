@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node app",
     "dev": "nodemon app",
-    "test": "jest"
+    "test": "jest",
+    "test:recipes": "jest ./tests/recipeController.test.js",
+    "test:users": "jest ./tests/userRoutes.test.js"
   },
   "author": "BackEndDev_Assignment_T03_Group5",
   "license": "ISC",
