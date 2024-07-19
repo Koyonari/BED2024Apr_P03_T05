@@ -262,3 +262,32 @@ async function markAsCompleted() {
         alert('An error occurred while marking the request as completed');
     }
 }
+
+// DELETE: deleteRequest
+async function deleteRequest() {
+    try {
+        let key = document.getElementById('modal').dataset.key;
+        let requestId = globalRequests[key].request_id;
+
+        const response = await fetch(`http://localhost:3500/req/${requestId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+            
+        });
+
+        if (response.ok) {
+            alert('Request deleted successfully');
+            window.location.reload();
+        } else {
+            const error = await response.json();
+            console.error('Error deleting request:', error);
+            alert(`Error deleting request: ${error.message}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while deleting request');
+    }
+}
