@@ -7,6 +7,7 @@ class Pantry {
     this.pantry_id = pantry_id;
     this.user_id = user_id;
   }
+
   static async createPantry(user_id) {
     let connection;
     try {
@@ -40,40 +41,7 @@ class Pantry {
     }
   }
 
-  // Function to get all ingredients in the pantry from the database given a user ID - Jin Rong
-  static async getIngredients(userId) {
-    let connection;
-    try {
-      const query = `
-        SELECT Ingredients.ingredient_id, Ingredients.ingredient_name, Ingredients.ingredient_image
-        FROM Pantry 
-        JOIN PantryIngredient ON Pantry.pantry_id = PantryIngredient.pantry_id 
-        JOIN Ingredients ON PantryIngredient.ingredient_id = Ingredients.ingredient_id 
-        WHERE Pantry.user_id = @userId
-      `;
-
-      connection = await sql.connect(dbConfig);
-
-      const request = connection.request();
-      request.input("userId", sql.VarChar, userId);
-
-      const result = await request.query(query);
-
-      return result.recordset.map((row) => ({
-        ingredient_id: row.ingredient_id,
-        ingredient_name: row.ingredient_name,
-        ingredient_image: row.ingredient_image,
-      }));
-    } catch (error) {
-      console.error("Error fetching ingredients:", error);
-      throw error;
-    } finally {
-      if (connection) {
-        await connection.close();
-      }
-    }
-  }
-
+  // Gets Pantry ID by User ID
   static async getPantryIDByUserID(user_id) {
     let connection;
     try {
@@ -103,6 +71,7 @@ class Pantry {
     }
   }
 
+  // Adds an ingredient to the pantry
   static async addIngredientToPantry(pantry_id, ingredient_name, quantity) {
     let connection;
     try {
@@ -181,6 +150,7 @@ class Pantry {
     }
   }
 
+  // Check if the ingredient already exists in the Ingredients table
   static async checkIngredientQuery(
     ingredient_id,
     ingredient_name,
@@ -214,6 +184,7 @@ class Pantry {
     }
   }
 
+  // Get all ingredients from the pantry
   static async getIngredientFromPantry(pantry_id, ingredient_id) {
     let connection;
     try {
@@ -304,8 +275,42 @@ class Pantry {
       }
     }
   }
+  // Add quantity of ingredient to pantry
+  static async addIngredientQuantity(pantry_id, ingredient_id, quantity) {
+    let connection;
+    try {
+      connection = await sql.connect(dbConfig);
 
-  static async removeIngredientFromPantry(pantry_id, ingredient_id, quantity) {
+      const sqlQuery = `
+          UPDATE PantryIngredient 
+          SET quantity = quantity + @quantity
+          WHERE pantry_id = @pantry_id AND ingredient_id = @ingredient_id;
+        `;
+
+      const request = connection.request();
+      request.input("pantry_id", pantry_id);
+      request.input("ingredient_id", ingredient_id);
+      request.input("quantity", parseInt(quantity)); // Ensure quantity is an integer
+
+      const result = await request.query(sqlQuery);
+
+      if (result.rowsAffected[0] === 0) {
+        throw new Error("Ingredient not found in pantry");
+      }
+
+      return { pantry_id, ingredient_id, quantity: parseInt(quantity) };
+    } catch (error) {
+      console.error("Error adding ingredient quantity:", error);
+      throw error;
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
+    }
+  }
+
+  // Deducts quantity of ingredient from pantry
+  static async deductIngredientQuantity(pantry_id, ingredient_id, quantity) {
     let connection;
     try {
       connection = await sql.connect(dbConfig);
@@ -348,6 +353,7 @@ class Pantry {
     }
   }
 
+  // Deletes an ingredient from the pantry
   static async deleteIngredientFromPantry(pantry_id, ingredient_id) {
     let connection;
     try {
@@ -379,31 +385,32 @@ class Pantry {
     }
   }
 
-  static async addIngredientQuantity(pantry_id, ingredient_id, quantity) {
+  // Function to get all ingredients in the pantry from the database given a user ID - Jin Rong
+  static async getIngredients(userId) {
     let connection;
     try {
+      const query = `
+          SELECT Ingredients.ingredient_id, Ingredients.ingredient_name, Ingredients.ingredient_image
+          FROM Pantry 
+          JOIN PantryIngredient ON Pantry.pantry_id = PantryIngredient.pantry_id 
+          JOIN Ingredients ON PantryIngredient.ingredient_id = Ingredients.ingredient_id 
+          WHERE Pantry.user_id = @userId
+        `;
+
       connection = await sql.connect(dbConfig);
 
-      const sqlQuery = `
-        UPDATE PantryIngredient 
-        SET quantity = quantity + @quantity
-        WHERE pantry_id = @pantry_id AND ingredient_id = @ingredient_id;
-      `;
-
       const request = connection.request();
-      request.input("pantry_id", pantry_id);
-      request.input("ingredient_id", ingredient_id);
-      request.input("quantity", parseInt(quantity)); // Ensure quantity is an integer
+      request.input("userId", sql.VarChar, userId);
 
-      const result = await request.query(sqlQuery);
+      const result = await request.query(query);
 
-      if (result.rowsAffected[0] === 0) {
-        throw new Error("Ingredient not found in pantry");
-      }
-
-      return { pantry_id, ingredient_id, quantity: parseInt(quantity) };
+      return result.recordset.map((row) => ({
+        ingredient_id: row.ingredient_id,
+        ingredient_name: row.ingredient_name,
+        ingredient_image: row.ingredient_image,
+      }));
     } catch (error) {
-      console.error("Error adding ingredient quantity:", error);
+      console.error("Error fetching ingredients:", error);
       throw error;
     } finally {
       if (connection) {
@@ -411,7 +418,6 @@ class Pantry {
       }
     }
   }
-
 }
 
 function generate5CharacterGene() {
