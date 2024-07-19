@@ -52,10 +52,10 @@ app.use('/users', require('./routes/api/users'));
 app.use('/pantry', require('./routes/api/pantryRoutes'));
 app.use('/recipes', require('./routes/api/recipeRoutes'));
 
-// Jason SQL User Routes (were used for internal testing before merging with group) - main functions are /pantry routes
-app.post("/users", userController.createUser); 
-app.get("/users", userController.getAllUsers); 
-app.get("/users/:user_id", userController.getUserByUID); 
+// // Jason SQL User Routes (were used for internal testing before merging with group) - main functions are /pantry routes
+// app.post("/users", userController.createUser); 
+// app.get("/users", userController.getAllUsers); 
+// app.get("/users/:user_id", userController.getUserByUID); 
 
 // YongShyan Request Routes
 app.get("/req/user/:id", reqController.getRequestByUserId);
