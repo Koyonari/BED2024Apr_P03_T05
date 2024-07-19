@@ -17,14 +17,6 @@
       integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
       crossorigin="anonymous"
     ></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-      integrity="sha512-dlKK6L06UcEoH0TEkvDsiRpENMKC/J5lI5xflU0XyHYgiWCe4/5ezeh0Q6LvXstHHVXJwvsc2r4tOrnZwR1WVQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    
   </head>
 
   <body class = "webpage">
@@ -110,8 +102,13 @@
         <button id="add_ingredient_btn" onclick="togglepopup('new_ingredient_popup')">
           <b>Add Ingredient</b>
         </button>
-        <button id="recipes_btn" onclick="togglepopup('recipe_popup')">
-          Get Recipes
+
+        <button id="recipes_btn" onclick="getRecipes()">
+          Generate Recipes Automatically
+        </button>
+
+        <button id="recipes_btn" onclick="getFilteredRecipes('recipe_popup')">
+          Choose your own recipes
         </button>
       </header>
 
