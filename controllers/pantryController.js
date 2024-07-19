@@ -146,6 +146,18 @@ async function updateIngredientInPantry(req, res) {
   }
 }
 
+// Delete a ingredient from pantry
+async function deleteIngredientFromPantry(req, res) {
+  try {
+    const { pantry_id } = req.params;
+    const { ingredient_id } = req.body;
+    const result = await Pantry.deleteIngredientFromPantry(pantry_id, ingredient_id);
+
+    res.status(200).json({ message: "Ingredient removed from pantry", result });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
 
 
@@ -159,4 +171,5 @@ module.exports = {
   updateIngredientInPantry,
   deductIngredientQuantity,
   addIngredientQuantity,
+  deleteIngredientFromPantry,
 };

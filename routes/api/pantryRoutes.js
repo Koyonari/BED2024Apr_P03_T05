@@ -15,8 +15,10 @@ router.get('/:pantry_id/ingredients', pantryController.getIngredientsByPantryID)
 
 router.put('/:pantry_id/ingredients', pantryController.updateIngredientInPantry); // Update an ingredient in a pantry // works
 
-router.patch('/:pantry_id/deductIngredientQuantity', pantryController.deductIngredientQuantity); // Deduct quantity of ingredient // works
+router.put('/:pantry_id/deductIngredientQuantity', pantryController.deductIngredientQuantity); // Deduct quantity of ingredient // works
 // ^ also deletes ingredient from pantry automatically if quantity is 0 by calling the DELETE in Controller
-router.patch('/:pantry_id/addIngredientQuantity',pantryController.addIngredientQuantity); // Add quantity of ingredient // works
+router.put('/:pantry_id/addIngredientQuantity',pantryController.addIngredientQuantity); // Add quantity of ingredient // works
+
+router.delete('/:pantry_id/deleteIngredient', pantryController.deleteIngredientFromPantry); // Delete an ingredient from a pantry // works
 
 module.exports = router;
