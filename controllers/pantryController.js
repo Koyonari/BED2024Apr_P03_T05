@@ -100,38 +100,7 @@ async function getIngredientsByPantryID(req, res) {
   }
 }
 
-// Update an ingredient in a pantry
-async function updateIngredientInPantry(req, res) {
-  try {
-    const { pantry_id } = req.params;
-    const { ingredient_id, quantity } = req.body;
-    const result = await Pantry.updateIngredientInPantry(pantry_id, ingredient_id, quantity);
-
-    res.status(200).json({ message: "Ingredient updated in pantry", result });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-}
-
-// Remove an ingredient from a pantry
-async function removeIngredientFromPantry(req, res) {
-  try {
-    const { pantry_id } = req.params;
-    const { ingredient_id, quantity } = req.body;
-    const result = await Pantry.removeIngredientFromPantry(pantry_id, ingredient_id, quantity);
-
-    if (result.quantity === 0) {
-      await Pantry.deleteIngredientFromPantry(pantry_id, ingredient_id);
-      res.status(200).json({ message: "Ingredient removed from pantry" });
-    } else {
-      res.status(200).json({ message: "Ingredient quantity updated in pantry", result });
-    }
-  } catch (error) {
-    console.error("Error removing ingredient from pantry:", error);
-    res.status(500).json({ error: error.message });
-  }
-}
-
+// Add Ingredient Quantity
 async function addIngredientQuantity(req, res) {
   try {
     const { pantry_id } = req.params;
@@ -145,6 +114,42 @@ async function addIngredientQuantity(req, res) {
   }
 }
 
+// Deduct Ingredient Quantity and calls delete if quantity is 0
+async function deductIngredientQuantity(req, res) {
+  try {
+    const { pantry_id } = req.params;
+    const { ingredient_id, quantity } = req.body;
+    const result = await Pantry.deductIngredientQuantity(pantry_id, ingredient_id, quantity);
+
+    if (result.quantity === 0) {
+      await Pantry.deleteIngredientFromPantry(pantry_id, ingredient_id);
+      res.status(200).json({ message: "Ingredient removed from pantry" });
+    } else {
+      res.status(200).json({ message: "Ingredient quantity updated in pantry", result });
+    }
+  } catch (error) {
+    console.error("Error removing ingredient from pantry:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
+// Update an ingredient in a pantry
+async function updateIngredientInPantry(req, res) {
+  try {
+    const { pantry_id } = req.params;
+    const { ingredient_id, quantity } = req.body;
+    const result = await Pantry.updateIngredientInPantry(pantry_id, ingredient_id, quantity);
+
+    res.status(200).json({ message: "Ingredient updated in pantry", result });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+
+
+
+
 module.exports = {
   getPantryIngredients,
   createPantry,
@@ -152,6 +157,6 @@ module.exports = {
   addIngredientToPantry,
   getIngredientsByPantryID,
   updateIngredientInPantry,
-  removeIngredientFromPantry,
+  deductIngredientQuantity,
   addIngredientQuantity,
 };
