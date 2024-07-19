@@ -48,7 +48,7 @@ app.use('/logout', require('./routes/logout'));
 
 // JWT protected routes
 app.use(verifyJWT);
-app.use('/users', require('./routes/api/users'));
+app.use('/users', require('./routes/api/userRoutes'));
 app.use('/pantry', require('./routes/api/pantryRoutes'));
 app.use('/recipes', require('./routes/api/recipeRoutes'));
 
@@ -83,3 +83,5 @@ mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB');
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
+
+module.exports = app;
