@@ -1,8 +1,8 @@
-// Ng Kai Huat Jason
+// Ng Kai Huat Jason - Pantry & Ingredients Functions
+// Yeo Jin Rong - Recipes Functions
 
 // On Page Load
 document.addEventListener("DOMContentLoaded", function () {
-  
   hideRecipeButton();
 
   // Create Global Variables
@@ -23,11 +23,25 @@ document.addEventListener("DOMContentLoaded", function () {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-      .then((response) => response.json())
-      .then((data) => {
-        generateIngredients(data);
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((error) => {
+            throw new Error(error.message || "Unknown error occurred");
+          });
+        }
+        return response.json();
       })
-      .catch((error) => console.error("Error fetching ingredients:", error));
+      .then((data) => {
+        if (data.length === 0) {
+          alert("No ingredients found.");
+        } else {
+          generateIngredients(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching ingredients:", error);
+        alert(`Error fetching ingredients: ${error.message}`);
+      });
   }
 
   fetchIngredients();
@@ -82,23 +96,33 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Calls POST /addIngredients to Server
-    fetch(`http://localhost:3500/pantry/${pantryId}/addingredients`, {
-      method: "POST",
+    // CALLS 
+    fetch(`http://localhost:3500/pantry/${pantryId}/addIngredientQuantity`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ ingredient_id: ingredientId, quantity }), // Use the input quantity
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((error) => {
+            throw new Error(error.message || "Unknown error occurred");
+          });
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log("Ingredient added:", data);
 
         // Calls fetchIngredients to refresh the UI
         fetchIngredients();
       })
-      .catch((error) => console.error("Error adding ingredient:", error));
+      .catch((error) => {
+        console.error("Error adding ingredient:", error);
+        alert(`Error adding ingredient: ${error.message}`);
+      });
   }
 
   // Function to deduct Ingredient Quantity
@@ -113,9 +137,9 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Calls DELETE /pantry/:pantryId/ingredients to Server
-    fetch(`http://localhost:3500/pantry/${pantryId}/ingredients`, {
-      method: "DELETE",
+    // Calls PUT /pantry/:pantryId/ingredients to Server
+    fetch(`http://localhost:3500/pantry/${pantryId}/deductIngredientQuantity`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -170,51 +194,172 @@ document.addEventListener("DOMContentLoaded", function () {
     ).value;
     const quantity = document.getElementById("popup_IngredientQuantity").value;
 
+    // Regular expression to check if the ingredient name contains only letters and spaces
+    const lettersAndSpacesOnly = /^[A-Za-z\s]+$/;
+
     // Checks for Empty Inputs and Alerts User
     if (ingredient_name === "" || quantity === "") {
       alert("Please fill in all fields");
       return;
-    } else {
-      // Calls POST /pantry/:pantryId/ingredients
-      fetch(`http://localhost:3500/pantry/${pantryId}/ingredients`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ ingredient_name, quantity }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            return response.json().then((error) => {
-              throw new Error(error.message);
-            });
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Ingredient added:", data);
-          // Get Ingredients and Make UI Changes
-          fetchIngredients();
-
-          // Clears popup fields and alerts user
-          document.getElementById("popup_IngredientName").value = "";
-          document.getElementById("popup_IngredientQuantity").value = "";
-          alert("Ingredient Added Successfully");
-        })
-        .catch((error) => {
-          // Alert of Error for debugging
-          console.error("Error adding ingredient:", error);
-          alert(`Error adding ingredient: ${error.message}`);
-        });
     }
+
+    // Validates that the ingredient name contains only letters
+    if (!lettersAndSpacesOnly.test(ingredient_name)) {
+      alert("Ingredient name should contain only letters");
+      return;
+    }
+
+    // Calls POST /pantry/:pantryId/ingredients
+    fetch(`http://localhost:3500/pantry/${pantryId}/ingredients`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ ingredient_name, quantity }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((error) => {
+            throw new Error(error.message);
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Ingredient added:", data);
+        // Get Ingredients and Make UI Changes
+        fetchIngredients();
+
+        // Clears popup fields and alerts user
+        document.getElementById("popup_IngredientName").value = "";
+        document.getElementById("popup_IngredientQuantity").value = "";
+        alert("Ingredient Added Successfully");
+      })
+      .catch((error) => {
+        // Alert of Error for debugging
+        console.error("Error adding ingredient:", error);
+        alert(`Ingredient Not Found: ${error.message}`);
+      });
   }
 
   // Function to toggle Popup
   function togglepopup(popupid) {
     document.getElementById(popupid).classList.toggle("active");
   }
-  
+
+  // Function to get Recipe
+  async function getRecipes() {
+    try {
+      const response = await fetch(`http://localhost:3500/recipes/fetch`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Unknown error occurred");
+      }
+
+      const recipes = await response.json();
+      console.log("Fetched recipes based on pantry ingredients:", recipes);
+      alert("Recipes fetched, kindly navigate to recipes page to view.");
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+      alert(`Error fetching recipes: ${error.message}`);
+    }
+  }
+
+  // Function to get Filtered Recipes via selected Ingredients
+  async function getFilteredRecipes(recipe_popup_id) {
+    const recipe_popup = document.getElementById(recipe_popup_id);
+    const recipe_list = recipe_popup.querySelector(".recipe_list");
+
+    if (selectedIngredients.length === 0) {
+      alert("Please select ingredients to filter recipes.");
+      return;
+    } else {
+      togglepopup(recipe_popup_id);
+      try {
+        console.log(
+          "Ingredients selected, fetching filtered recipes based on selected ingredients."
+        );
+        const response = await fetch(
+          `http://localhost:3500/recipes/getfilteredrecipes`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify(selectedIngredients),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Unknown error occurred");
+        }
+
+        const filteredRecipes = await response.json();
+        console.log("Fetched filtered recipes:", filteredRecipes);
+
+        displayRecipes(filteredRecipes, recipe_list);
+      } catch (error) {
+        console.error("Error fetching filtered recipes:", error);
+        alert(`Error fetching filtered recipes: ${error.message}`);
+      }
+    }
+  }
+
+  function displayRecipes(recipes, recipe_list) {
+    // Clear previous content
+    recipe_list.innerHTML = "";
+
+    recipes.forEach((recipe) => {
+      const recipeDiv = document.createElement("div");
+      recipeDiv.classList.add("recipe");
+
+      const recipeImage = document.createElement("img");
+      recipeImage.src = recipe.imageurl;
+      recipeImage.alt = recipe.title;
+
+      const recipeDetailsDiv = document.createElement("div");
+
+      const recipeTitle = document.createElement("h3");
+      recipeTitle.textContent = recipe.title;
+
+      const recipeDetails = document.createElement("p");
+      recipeDetails.innerHTML = `
+        Servings: ${recipe.servings}<br>
+        Ready in: ${recipe.readyInMinutes} minutes<br>
+        Price per serving: $${(recipe.pricePerServing / 100).toFixed(2)}
+      `;
+
+      const saveButton = document.createElement("button");
+      saveButton.textContent = "Save";
+      saveButton.dataset.recipe = JSON.stringify(recipe); // Store the recipe JSON as a string in a data attribute
+      saveButton.addEventListener("click", () => saveRecipe(saveButton));
+
+      recipeDetailsDiv.appendChild(recipeTitle);
+      recipeDetailsDiv.appendChild(recipeDetails);
+      recipeDetailsDiv.appendChild(saveButton);
+
+      recipeDiv.appendChild(recipeImage);
+      recipeDiv.appendChild(recipeDetailsDiv);
+      recipe_list.appendChild(recipeDiv);
+    });
+  }
+
+  function saveRecipe(button) {
+    const recipe = JSON.parse(button.dataset.recipe); // Parse the JSON string back into an object
+    console.log("Saving recipe:", recipe);
+    // Add your save functionality here
+    // For example, you could send the recipe object to your server or store it locally
+  }
 
   // Expose functions to global scope
   window.addToCard = addToCard;
@@ -222,9 +367,9 @@ document.addEventListener("DOMContentLoaded", function () {
   window.toggleSelect = toggleSelect;
   window.togglepopup = togglepopup;
   window.addIngredient = addIngredient;
+  window.getRecipes = getRecipes;
+  window.getFilteredRecipes = getFilteredRecipes;
 });
-
-
 
 // function to hide recipe button if user is a volunteer
 function hideRecipeButton() {
