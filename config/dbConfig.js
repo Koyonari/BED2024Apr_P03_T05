@@ -10,7 +10,8 @@ const dbConfig = {
     trustServerCertificate: true,
     options: {
       port: 1433, // Default SQL Server port
-      connectionTimeout: 15000 // Connection timeout in milliseconds
+      connectionTimeout: 15000, // Connection timeout in milliseconds
+      enableArithAbort: true,  // Enable/disable arithabort setting
     }
 };
 
