@@ -13,7 +13,7 @@ let globalRequests = [];
 // Initialize the app by populating the list with requests
 async function initApp() {
     try {
-        const response = await fetch(`http://localhost:3500/req/accepted/${userId}`, {
+        const response = await fetch(`http://localhost:3500/requests/req/accepted/${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ async function viewDetails(key) {
     try {
         // Get the request_id from the selected request
         let requestId = globalRequests[key].request_id;
-        const response = await fetch(`http://localhost:3500/req/${requestId}`, {
+        const response = await fetch(`http://localhost:3500/requests/req/${requestId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

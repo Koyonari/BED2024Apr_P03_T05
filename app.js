@@ -11,9 +11,7 @@ const errorHandler = require('./middleware/errorHandler');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
-const reqController = require("./controllers/requestController");
 const { connectDB } = require('./config/dbConfig');
-const { validateRequest, validatePatchAcceptedRequest, validatePatchApproveRequest } = require("./middleware/validateRequest");
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 
