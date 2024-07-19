@@ -13,7 +13,7 @@ let globalRequests = [];
 // Initialize the app by populating the list with requests
 async function initApp() {
     try {
-        const response = await fetch(`http://localhost:3500/req/user/${userId}`, {
+        const response = await fetch(`http://localhost:3500/requests/req/user/${userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ async function viewDetails(key) {
     try {
         // Get the request_id from the selected request
         let requestId = globalRequests[key].request_id;
-        const response = await fetch(`http://localhost:3500/req/${requestId}`, {
+        const response = await fetch(`http://localhost:3500/requests/req/${requestId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ async function confirmInput() {
 
     // Send data to the server
     try {
-        const response = await fetch('http://localhost:3500/req', {
+        const response = await fetch('http://localhost:3500/requests/req', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -235,7 +235,7 @@ async function markAsCompleted() {
     let key = document.getElementById('modal').dataset.key;
     let requestId = globalRequests[key].request_id;
     try {
-        const response = await fetch(`http://localhost:3500/req/completed/${requestId}`, {
+        const response = await fetch(`http://localhost:3500/requests/req/completed/${requestId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -269,7 +269,7 @@ async function deleteRequest() {
         let key = document.getElementById('modal').dataset.key;
         let requestId = globalRequests[key].request_id;
 
-        const response = await fetch(`http://localhost:3500/req/${requestId}`, {
+        const response = await fetch(`http://localhost:3500/requests/req/${requestId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
