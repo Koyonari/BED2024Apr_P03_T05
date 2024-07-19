@@ -28,14 +28,17 @@ async function initApp() {
 
             // Display the fetched requests
             displayRequests(requests, document.getElementById('request-list'));
-        } else {
+        } 
+        else if (response.status === 404){
+            alert("No available request")
+        } 
+        else {
             const error = await response.json();
             console.error('Error fetching requests:', error);
             alert(`Error fetching requests: ${error.message}`);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while fetching the requests');
     }
 }
 
