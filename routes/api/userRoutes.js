@@ -11,6 +11,7 @@ const checkAuthorisation = require('../../middleware/checkAuthorisation');
 router.route('/')
     .get(verifyJWT, usersController.getAllUsers)  // GET /users - Retrieve all users
     .post(
+        verifyJWT,                // Middleware to verify JWT token
         verifyRoles(ROLES_LIST.Admin), // Middleware to verify admin role
         usersController.createNewUser  // POST /users - Create a new user
     );

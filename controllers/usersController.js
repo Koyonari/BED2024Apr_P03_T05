@@ -80,14 +80,11 @@ const createNewUser = async (req, res) => {
                 const resultMongo = await newUserMongo.save(); // newUserMongo.save() persists user to MongoDB
                 const userId = resultMongo._id.toString();
                 // Attempt to create the user in SQL
-                const newUserSQL = await createSQLUser(userId, username);
+                await createSQLUser(userId, username);
 
                 // Return success response after both operations are complete
-                res.status(201).json({
-                    message: `User ${username} created successfully in MongoDB and SQL BY Admin ${req.user.username}`,
-                    user: { mongoDB: resultMongo, sqlDB: newUserSQL }
-                });
-
+                res.status(201).json({ message: `User ${username} with ID ${userId} created successfully in MongoDB and SQL BY Admin`});
+                console.log('User created in MongoDB:', resultMongo);
             } catch (err) {
                 console.error(err);
                 res.status(500).json({ message: 'Failed to create user', error: err.message });

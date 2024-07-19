@@ -13537,3 +13537,16 @@ Cleaned log as of 18/07/2024 20240718	20:55:46	3ae073f6-76ac-4b30-b67c-bdf2bb3cd
 20240720	03:58:03	6ada9744-6cf1-45ae-b6ce-339650b897ba	POST	undefined	/auth
 20240720	03:58:10	06581eb2-2366-44c3-ba33-6cfe1c810924	POST	undefined	/auth
 20240720	03:58:24	1702032a-f25a-405b-9d9e-da9a4793d017	POST	undefined	/users
+20240720	04:04:45	7bf3f4b7-fd09-4ef4-bbf1-7ab53a2132b9	POST	undefined	/users
+20240720	04:05:52	851b1933-fbe9-4956-879b-824b4f7149d2	POST	undefined	/users
+20240720	04:07:52	ddc28e92-2556-4d13-bba0-0f028d425238	POST	undefined	/register
+20240720	04:08:13	240ab7c1-fb44-4aaa-b44f-bcbb49875b82	POST	undefined	/register
+20240720	04:08:49	48dc6897-071a-4f03-89a9-adaccc2acf91	POST	undefined	/register
+20240720	04:08:58	0dc97242-6330-4838-98c5-349cb9a73a9f	POST	undefined	/register
+20240720	04:09:00	0b1b4ea6-028f-4352-bc2f-2a5f42cac735	POST	undefined	/register
+20240720	04:09:06	c9b0a642-87c4-4ce0-892c-6452711a19ea	POST	undefined	/users
+20240720	04:12:03	be0a3f97-ee69-4372-8484-cb926b5f64f3	POST	undefined	/users
+20240720	04:14:37	5385fcd6-2222-4671-8631-a82ffcec09fb	POST	undefined	/users
+20240720	04:14:48	f475b323-4b81-4a5e-bebb-445d813f3917	POST	undefined	/users
+20240720	04:17:07	22fa826e-a079-406d-a9f9-13a2cf3f9918	POST	undefined	/users
+20240720	04:26:31	72f518d2-3e39-4489-bb3a-71bbb5548fd3	POST	undefined	/users

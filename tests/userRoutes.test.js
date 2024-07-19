@@ -88,7 +88,9 @@ describe('User Controller Tests', () => {
     });
 
     describe('POST /users', () => {
-        it.only('should create a new user', async () => {
+        it('should create a new user', async () => {
+            // Define mock user ID
+            const mockUserId = '60c72b2f9b1d8b3a3c8d1e35';
             const newUser = {
                 username: 'TestUserWithSQL',
                 password: 'User123!',
@@ -104,21 +106,22 @@ describe('User Controller Tests', () => {
                 dateOfBirth: '2024-06-06'
             };
 
-            // Mock SQL user creation to resolve successfully
-            createSQLUser.mockResolvedValue({ userId: 'mockUserId', username: 'TestUserWithSQL' });
-
             // Mock MongoDB user creation
             mockingoose(User).toReturn({
-                _id: '60c72b2f9b1d8b3a3c8d1e35',
+                _id: mockUserId,
                 ...newUser,
-                dateCreated: '2024-07-20T00:00:00.000Z'
+                dateCreated: new Date().toISOString() // Adjusted to current date for testing
             }, 'save');
 
+            // Mock SQL user creation
+            createSQLUser.mockResolvedValue({ userId: mockUserId, username: newUser.username });
             const res = await request(app).post('/users').send(newUser);
+
             console.log('Response status:', res.status);
             console.log('Response body:', res.body);
+
             expect(res.status).toBe(201);
-            expect(res.body.message).toBe(`User ${newUser.username} created successfully in MongoDB and SQL BY Admin mockUserId`);
+            expect(res.body.message).toBe(`User ${newUser.username} with ID ${mockUserId} created successfully in MongoDB and SQL BY Admin`);
         });
 
         it('should return 400 if required fields are missing', async () => {
