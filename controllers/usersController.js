@@ -102,6 +102,10 @@ const createNewUser = async (req, res) => {
 
 
 const updateUser = async (req, res) => {
+    // Check if request body is empty
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400).json({ message: 'Updates must be provided to update the user' });
+    }
     // Log user information from the request body
     console.log('Request Body:', req.body);
     // Destructure the user information from the request body
@@ -137,7 +141,7 @@ const updateUser = async (req, res) => {
             intolerances: intolerances || [],  // Default to empty array
             excludedIngredients: excludedIngredients || [] // Default to empty array
         };
-        
+
         // Validate user input using middleware or function (assuming validateUser is defined)
         validateUser(req, res, async () => {
             try {
@@ -170,7 +174,10 @@ const editUser = async (req, res) => {
         // Validation to check if user id is provided
         return res.status(400).json({ 'message': 'User ID is required' });
     }
-
+    // Check if request body is empty
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400).json({ message: 'Updates must be provided to update the user' });
+    }
     try {
         // Validation to check if the user id exists in database
         const user = await User.findOne({ _id: id }).exec();
@@ -221,7 +228,7 @@ const editUser = async (req, res) => {
             }
         });
         // Put the edited fields in the response
-        res.json({ message: 'User updated successfully', editedFields});
+        res.json({ message: 'User updated successfully', editedFields });
 
     } catch (err) {
         console.error('Error updating user:', err);

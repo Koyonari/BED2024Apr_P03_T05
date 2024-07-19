@@ -4,6 +4,7 @@ const recipeService = require('../services/recipeService');
 const { getRecipeById, getRecipesByUserId, getAllStoredRecipes, getRecipeIngredientsById, insertRecipe,
   insertRecipeIngredient, updateRecipeDetails, updateRecipeDetailsbyUser, editRecipe, deleteRecipe, deleteRecipeIngredients } = require('../models/recipe');
 const { de } = require('date-fns/locale');
+const e = require('cors');
 
 // Controller function to fetch recipes based on pantry ingredients, stores them in SQL Database
 const getRecipes = async (req, res) => {
@@ -186,6 +187,7 @@ const insertRecipeByUser = async (req, res) => {
   try {
     const userId = req.userid; // Obtain from JWT token
     const recipes = req.body;
+    const errors = []; // To accumulate errors for recipes with missing details
     // Check if user ID and recipes are provided 
     if (!userId || !Array.isArray(recipes) || recipes.length === 0) {
       return res.status(400).json({ message: 'User ID and recipes array must be provided' });
@@ -196,11 +198,21 @@ const insertRecipeByUser = async (req, res) => {
       const recipeDetails = await recipeService.fetchRecipeDetails(recipe.id);
       // Check if the recipe details are found
       if (!recipeDetails) {
-        return res.status(404).json({ message: `Recipe with ID ${recipe.id} not found` });
+        errors.push(`Recipe with ID ${recipe.id} not found`);
+      } else {
+        try {
+          // Call the insertRecipe function in recipe model to insert the recipe into the database (create)
+          await insertRecipe(recipeDetails, userId);
+        } catch (insertError) {
+          // Handle insertion errors
+          console.error(`Error inserting recipe ${recipe.id}:`, insertError.message);
+          errors.push(`Error inserting recipe ${recipe.id}: ${insertError.message}`);
+        }
       }
-
-      // Call the insertRecipe function in recipe model to insert the recipe into the database (create)
-      await insertRecipe(recipeDetails, userId);
+    }
+    // After processing all recipes, check if there were any errors
+    if (errors.length > 0) {
+      return res.status(404).json({ message: 'Some recipes could not be found', errors });
     }
 
     res.status(201).json({ message: 'Recipes inserted and linked to user successfully' });
@@ -216,47 +228,68 @@ const insertRecipeByUser = async (req, res) => {
 
 // Controller function to fetch recipes based on pantry ingredients, stores them in SQL Database
 const insertRecipeIngredientsByRecipeId = async (req, res) => {
-  //Get user id from request
-  const userId = req.userid;
-  console.log('User ID:', userId);
-  const recipeId = req.params.id;
-  const ingredientsArray = req.body;
-  console.log('Ingredients:', ingredientsArray);
-  // Check if the recipe belongs to the user
-  const isUsersRecipe = await isUserRecipe(userId, recipeId);
-  if (!isUsersRecipe) {
-    return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
-  }
-
   try {
+    const userId = req.userid;
+    const recipeId = req.params.id;
+    const ingredientsArray = req.body;
+
+    // Check if the recipe belongs to the user
+    const isUsersRecipe = await isUserRecipe(userId, recipeId);
+    if (!isUsersRecipe) {
+      return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
+    }
+
+    // Process each ingredient
     for (const ingredient of ingredientsArray) {
-      console.log('Fetching ingredient:', ingredient.name);
-      const ingredientData = await recipeService.fetchRecipeIngredient(ingredient.name);
-      console.log('Ingredient Data:', ingredientData);
-      // Check if ingredientData is valid
-      if (!ingredientData || !ingredientData.id) {
+      let ingredientData;
+      try {
+        // Fetch ingredient data from the API
+        console.log('Fetching ingredient:', ingredient.name);
+        ingredientData = await recipeService.fetchRecipeIngredient(ingredient.name);
+        console.log('Fetched ingredient data:', ingredientData);
+      } catch (error) {
+        console.error('Error fetching ingredient from API:', error.message);
+
+        // Handle specific 402 errors
+        if (error.response && error.response.status === 402) {
+          return res.status(402).json({ message: 'API key expired or payment required', error: error.message });
+        }
+
+        // Handle other errors related to ingredient fetching
         return res.status(404).json({ message: `Ingredient with name ${ingredient.name} not found` });
       }
-      // Create new ingredient object with desired format
+
+      // Format ingredient object for insertion
       const formattedIngredient = {
         id: ingredientData.id,
         name: ingredient.name,
         image: ingredientData.image,
-        amount: ingredient.amount || null, // Get amount from request body if available, otherwise null
-        unit: ingredient.unit || null, // Get unit from request body if available, otherwise null
+        amount: ingredient.amount || null,
+        unit: ingredient.unit || null,
       };
-      console.log('Inserting ingredient:', formattedIngredient);
-      await insertRecipeIngredient(formattedIngredient, recipeId);
+
+      try {
+        // Insert ingredient into the database
+        await insertRecipeIngredient(formattedIngredient, recipeId);
+      } catch (error) {
+        console.error('Error inserting recipe ingredients:', error.message);
+        throw new Error('Database connection error'); // Propagate the error to the outer catch block
+      }
     }
+
+    // Respond with success message
     res.status(201).json({ message: 'Recipe ingredients updated and stored in the database.' });
+
   } catch (error) {
     console.error('Error fetching and storing ingredients:', error);
+
+    // Handle API key expiration errors
     if (error.response && error.response.status === 402) {
-      res.status(402).json({ message: 'API key expired or payment required', error: error.message });
+      return res.status(402).json({ message: 'API key expired or payment required', error: error.message });
     }
-    else {
-      res.status(500).json({ message: 'Error fetching and storing recipes', error: error.message });
-    }
+
+    // Handle other internal server errors
+    res.status(500).json({ message: 'Error fetching and storing recipes', error: error.message });
   }
 };
 
@@ -273,10 +306,13 @@ const updateRecipeByUser = async (req, res) => {
     console.log('Request body (updates):', updates);
 
     // Check for missing parameters
-    if (!userId || !recipeId || !updates) {
-      return res.status(400).json({ message: 'User ID, Recipe ID, and updates must be provided' });
+    if (!userId || !recipeId) {
+      return res.status(400).json({ message: 'User ID and Recipe ID must be provided' });
     }
-
+    // Check if updates exist and are not empty
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: 'Updates must be provided to update the recipe' });
+    }
     // Ensure that the recipe belongs to the user
     const userRecipes = await getRecipesByUserId(userId);
 
@@ -326,7 +362,10 @@ const updateRecipeByRecipeId = async (req, res) => {
     if (!recipeId || !updates) {
       return res.status(400).json({ message: 'Recipe ID and updates must be provided' });
     }
-
+    // Check if updates exist and are not empty
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: 'Updates must be provided to update the recipe' });
+    }
     // Fetch the recipe from the database using the recipe ID
     const recipe = await getRecipeById(recipeId);
 
@@ -367,9 +406,13 @@ const patchRecipeByUser = async (req, res) => {
     console.log('Request body:', updates);
 
     // Check for missing parameters
-    if (!userId || !recipeId || !updates) {
+    if (!userId || !recipeId) {
       // Respond with error if any required parameters are missing
-      return res.status(400).json({ message: 'User ID, Recipe ID, and updates must be provided' });
+      return res.status(400).json({ message: 'User ID and Recipe ID must be provided' });
+    }
+    // Check if updates exist and are not empty
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: 'Updates must be provided to update the recipe' });
     }
     // Check if the recipe belongs to the user
     const isUsersRecipe = await isUserRecipe(userId, recipeId);
@@ -484,34 +527,31 @@ const deleteRecipeByRecipeId = async (req, res) => {
 // Controller function to delete a recipe ingredient by recipe ID and ingredient ID
 const deleteRecipeIngredientByRecipeId = async (req, res) => {
   try {
-    const userId = req.userid; // Extracted from JWT token
-    const recipeId = req.params.id; // Extracted from URL parameters
-    const ingredientId = req.body.ingredient_id; // Extracted from request body
+    const userId = req.userid;
+    const recipeId = req.params.id;
+    const ingredientId = req.body.ingredient_id;
 
-    // Log the request for debugging purposes
     console.log('Request to delete ingredient with ID:', ingredientId, 'from recipe with ID:', recipeId);
 
-    // Check if recipe ID and ingredient ID are provided
     if (!recipeId || !ingredientId) {
       return res.status(400).json({ message: 'Recipe ID and ingredient ID must be provided' });
     }
-    // Check if the recipe belongs to the user
+
     const isUsersRecipe = await isUserRecipe(userId, recipeId);
+    console.log('isUsersRecipe:', isUsersRecipe);
+
     if (!isUsersRecipe) {
+      console.log('Recipe not found or does not belong to the user');
       return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
     }
-    // Call the deleteRecipeIngredients function
+
     await deleteRecipeIngredients(recipeId, ingredientId);
-    // Respond with success message
     res.status(200).json({ message: 'Ingredient deleted successfully from recipe' });
   } catch (error) {
-    // Log the error message
     console.error('Error deleting recipe ingredient:', error.message);
-    // Respond with error message
     res.status(500).json({ message: 'Error deleting ingredient from recipe', error: error.message });
   }
 };
-
 // Function to check user ownership of a recipe
 async function isUserRecipe(userId, recipeId) {
   const userRecipes = await getRecipesByUserId(userId);
@@ -538,4 +578,5 @@ module.exports = {
   deleteRecipeByUser,
   deleteRecipeByRecipeId,
   deleteRecipeIngredientByRecipeId,
+  isUserRecipe
 };
