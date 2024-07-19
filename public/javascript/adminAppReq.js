@@ -9,11 +9,11 @@ const accessToken = localStorage.getItem('AccessToken');
 // Global variable to store the requests array
 let globalRequests = [];
 
-// GET: getAvailableRequest
+// GET: getApprovedRequest
 // Initialize the app by populating the list with requests
 async function initApp() {
     try {
-        const response = await fetch(`http://localhost:3500/available`, {
+        const response = await fetch(`http://localhost:3500/approved`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -164,31 +164,31 @@ function applyStyles() {
     modalContent.style.overflow = "auto";
 }
 
-// PATCH: updateAcceptedRequest
-function acceptRequest() {
-    let key = document.getElementById('modal').dataset.key;
-    let requestId = globalRequests[key].request_id;
-    const volunteerId = userId;
+// DELETE: deleteRequest
+async function deleteRequest() {
+    try {
+        let key = document.getElementById('modal').dataset.key;
+        let requestId = globalRequests[key].request_id;
 
-    fetch(`http://localhost:3500/req/accepted/update/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({ volunteer_id: volunteerId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(`Error: ${data.message}`);
-        } else {
-            alert('Request accepted successfully');
+        const response = await fetch(`http://localhost:3500/req/${requestId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+            
+        });
+
+        if (response.ok) {
+            alert('Request deleted successfully');
             window.location.reload();
+        } else {
+            const error = await response.json();
+            console.error('Error deleting request:', error);
+            alert(`Error deleting request: ${error.message}`);
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while accepting the request');
-    });
+        alert('An error occurred while fetching request details');
+    }
 }
