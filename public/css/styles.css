@@ -846,12 +846,18 @@ p a:hover {
   color: black;
 }
 
-.request-Title, .request-Category, .request-Status, .request-Description {
+.request-Title,
+.request-Category,
+.request-Status,
+.request-Description {
   margin: 5px 0;
   text-align: left;
 }
 
-.request-Title, .request-Category, .request-Status, .request-Description {
+.request-Title,
+.request-Category,
+.request-Status,
+.request-Description {
   margin: 5px 0;
   text-align: left;
 }
@@ -1086,6 +1092,7 @@ p a:hover {
 }
 
 .pantry-container #recipes_btn {
+  font-size: 12px;
   background-color: #ff964b;
   width: 150px;
   height: 50px;
@@ -1100,6 +1107,7 @@ p a:hover {
 }
 
 .pantry-container .ingredient_list {
+  margin-left: 55px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   column-gap: 20px;
@@ -1120,8 +1128,8 @@ p a:hover {
 .pantry-container .ingredient_list .item #product_img {
   border-radius: 15px;
   height: 200px;
-  object-fit: contain; 
-  object-position: center; 
+  object-fit: contain;
+  object-position: center;
 }
 
 .pantry-container .ingredient_list .add_remove_holder {
@@ -1200,6 +1208,70 @@ p a:hover {
 
 #confirm_ingredient_btn {
   font-size: 15px;
+}
+
+/* Recipe Popup */
+.recipe_popup .content {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* Recipes Display in Popup*/
+.popup .recipe_list {
+  background-color: rgb(27, 27, 27);
+  display: grid;
+  gap: 20px;
+}
+
+.recipe {
+  background-color: rgb(27, 27, 27);
+  align-items: center;
+  display: flex;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+#recipe_popup .content p {
+  font-weight: bold;
+}
+
+.recipe_list .recipe img {
+  margin: 0px 15px 0px 0px;
+  width: 350px;
+  margin-right: 10px;
+}
+
+.recipe h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.recipe p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.recipe button {
+  font-weight: bold;
+  font-size: 20px;
+  width: 150px;
+  margin-top: 15px;
+  background-color: #ff964b;
+  color: black;
+  border: 1px solid black;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.recipe button:hover {
+  background-color: #ff8127;
 }
 
 /* Pantry PAGE END */
