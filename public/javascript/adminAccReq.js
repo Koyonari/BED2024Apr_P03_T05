@@ -35,7 +35,6 @@ async function initApp() {
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while fetching the requests');
     }
 }
 

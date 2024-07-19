@@ -30,7 +30,7 @@ async function createRequest(req, res) {
 async function getAvailableRequest(req, res) {
     try {
         const requests = await Request.getAvailableRequests();
-        if (!requests || requests.length === 0) {
+        if (!requests) {
             return res.status(404).send("No available requests found");
         }
         res.json(requests);
