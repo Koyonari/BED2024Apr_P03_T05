@@ -9,6 +9,11 @@ INSERT INTO Users (user_id, username) VALUES
 ('669ab53e52ed8860e2afe76b', 'TestVolunteer'),
 ('669ab54752ed8860e2afe76e', 'TestUserWithSQL'),
 ('669ab56a52ed8860e2afe771', 'TestUserAdmin');
+('669abb1ffe3958443cdc03e1', 'TestUser'),
+('668104e73662e3dda4c190e0', 'TestVolunteer'),
+('669abb50fe3958443cdc03e4', 'VolunteerYS'),
+('668104e73662e3dda4c190e2', 'TestAdmin'),
+('667feba5b8086ea59d41f0b3', 'TestAdmin');
 
 -- Create Pantry Table
 CREATE TABLE Pantry (
@@ -47,7 +52,6 @@ CREATE TABLE PantryIngredient (
 INSERT INTO PantryIngredient (pantry_id, ingredient_id, quantity) VALUES 
 ('oTx5s', '5062', 4),
 ('Xy21z', '10115261', 10);
-
 
 -- Create Recipes Table
 CREATE TABLE Recipes (
@@ -92,6 +96,49 @@ CREATE TABLE requests (
     CONSTRAINT FK_Volunteer FOREIGN KEY (volunteer_id) REFERENCES Users(user_id),
     CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES Users(user_id)
 );
+
+INSERT INTO requests (request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id) VALUES
+('RMwDpaQ6fAXQPuID87sJqOKV', 'Would love some protein', 'Low Priority', 'Would love to have some protein powder for my workouts', '669abb1ffe3958443cdc03e1', '669abb50fe3958443cdc03e4', 0, NULL);
+
+CREATE TABLE RequestIngredients (
+    reqing_id VARCHAR(255) PRIMARY KEY,
+    request_id VARCHAR(24) NOT NULL,
+    pantry_id VARCHAR(255) NULL,
+    ingredient_id VARCHAR(255) NULL,
+    FOREIGN KEY (request_id) REFERENCES requests(request_id),
+    FOREIGN KEY (pantry_id) REFERENCES Pantry(pantry_id),
+    FOREIGN KEY (ingredient_id) REFERENCES Ingredients(ingredient_id),
+    FOREIGN KEY (pantry_id, ingredient_id) REFERENCES PantryIngredient(pantry_id, ingredient_id)
+);
+
+-- Example insert statement
+INSERT INTO RequestIngredients (reqing_id, request_id, pantry_id, ingredient_id) VALUES 
+('231321421321', 'RMwDpaQ6fAXQPuID87sJqOKV', 'Xy21z', '10115261');
+
+SELECT 
+    u.username AS user_name,
+    u.user_id AS user_id,
+    v.username AS volunteer_name,
+    v.user_id AS volunteer_id,
+    r.title AS request_title,
+    r.category AS request_category,
+    r.description AS request_description,
+    i.ingredient_name AS ingredient_name,
+    pi.quantity AS ingredient_quantity
+FROM 
+    RequestIngredients ri
+JOIN 
+    requests r ON ri.request_id = r.request_id
+JOIN 
+    Users u ON r.user_id = u.user_id
+LEFT JOIN 
+    Users v ON r.volunteer_id = v.user_id
+JOIN 
+    Ingredients i ON ri.ingredient_id = i.ingredient_id
+JOIN 
+    PantryIngredient pi ON pi.pantry_id = ri.pantry_id AND pi.ingredient_id = ri.ingredient_id
+WHERE 
+    r.user_id = '669abb1ffe3958443cdc03e1';  -- filtering based on a specific user_id
 
 SELECT * FROM Users;
 SELECT * FROM Pantry;
