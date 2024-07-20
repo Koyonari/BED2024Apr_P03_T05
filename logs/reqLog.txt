@@ -13,3 +13,5 @@
 20240720	18:59:28	70572c15-93df-4619-87d4-feda038f03a8	GET	undefined	/users/
 20240720	18:59:32	e00eb9a2-ca5a-4ffc-9f18-d69ffc2f6894	GET	undefined	/users/s
 20240720	18:59:35	08e76991-a8e3-40b0-a6b5-f3766081ab65	GET	undefined	/users/
+20240720	19:45:39	d047b641-0590-46ac-8359-cf44e3fda2dd	POST	undefined	/auth
+20240720	19:45:45	ede4d4fd-69c6-404d-b871-45be075f4cde	GET	undefined	/recipes/fetch
