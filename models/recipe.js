@@ -19,9 +19,10 @@ class Recipe {
 /// Recipe Functions
 // Function to get all recipes by user ID
 const getRecipesByUserId = async (userId) => {
+  let pool;
   try {
     // Connect to database
-    const pool = await sql.connect(dbConfig);
+    pool = await sql.connect(dbConfig);
 
     // SQL query to get recipes by user ID
     const query = `
@@ -48,9 +49,10 @@ const getRecipesByUserId = async (userId) => {
 
 // Function to get a recipe by recipe ID, stored in database
 const getRecipeById = async (recipeId) => {
+  let pool;
   try {
     // Connect to the database
-    const pool = await sql.connect(dbConfig);
+    pool = await sql.connect(dbConfig);
 
     // SQL query to get a recipe by its ID
     const query = `
@@ -82,9 +84,10 @@ const getRecipeById = async (recipeId) => {
 
 // Function to get all recipes stored in database
 const getAllStoredRecipes = async () => {
+  let pool;
   try {
     // Connect to the database
-    const pool = await sql.connect(dbConfig);
+    pool = await sql.connect(dbConfig);
 
     // SQL query to get all recipes
     const query = `
@@ -109,38 +112,63 @@ const getAllStoredRecipes = async () => {
 
 // Function to insert a new recipe and link it to the user
 const insertRecipe = async (recipe, userId) => {
-  // Connect to database
-  const pool = await sql.connect(dbConfig);
-  const transaction = new sql.Transaction(pool);
+  let pool;
+  let transaction;
 
   try {
+    // Connect to database
+    pool = await sql.connect(dbConfig);
+    transaction = new sql.Transaction(pool);
+
     // Begin a transaction to ensure data integrity
     await transaction.begin();
-    // Call function to Insert recipe details into recipe  table
+
+    // Call function to Insert recipe details into recipe table
     const { recipeId } = await insertRecipeDetails(pool, recipe, userId);
     console.log('Recipe ID:', recipeId);
+
     // Call function to Insert recipe ingredients into ingredients table
     await insertRecipeIngredients(transaction, recipe, recipeId);
+
     // Call function to Link user to recipe in UserRecipes table
     await linkUserToRecipe(transaction, userId, recipeId);
+
     // Commit the transaction if all operations are successful
     await transaction.commit();
-    console.log(`Recipe successfuly inserte/updated and linked to user ${userId}: ${recipe.title}`);
+    console.log(`Recipe successfully inserted/updated and linked to user ${userId}: ${recipe.title}`);
+
   } catch (err) {
-    await transaction.rollback();
+    // Rollback the transaction in case of error
+    try {
+      if (transaction) { // Ensure transaction exists before rollback
+        await transaction.rollback();
+      }
+    } catch (rollbackError) {
+      console.error('Error rolling back transaction:', rollbackError.message);
+    }
+
+    // Handle and throw the original error
     console.error('Error inserting recipe:', err.message);
     throw err;
+
   } finally {
-    // Close the database connection in the finally block
-    pool.close();
+    // Ensure connection pool is closed
+    try {
+      if (pool) {
+        await pool.close();
+      }
+    } catch (closeError) {
+      console.error('Error closing connection pool:', closeError.message);
+    }
   }
 };
 
 // Function to get a recipe by recipe ID, stored in database
 const getRecipeIngredientsById = async (recipeId) => {
+  let pool;
   try {
     // Connect to the database
-    const pool = await sql.connect(dbConfig);
+    pool = await sql.connect(dbConfig);
 
     // SQL query to get a recipe by its ID
     const query = `
@@ -278,8 +306,9 @@ const updateRecipeDetails = async (pool, recipe, recipeId) => {
 // Update existing recipe details, no pool parameter
 const updateRecipeDetailsbyUser = async (recipe) => {
   // Connect to database
-  const pool = await sql.connect(dbConfig);
+  let pool;
   try {
+    pool = await sql.connect(dbConfig);
     console.log('Received recipe for update:', recipe); // Log received recipe
     // Debugging: Check if recipe and its properties are defined
     if (!recipe || !recipe.id || !recipe.title) {
@@ -329,9 +358,10 @@ const insertRecipeIngredients = async (pool, recipe, recipeId) => {
 };
 
 const insertRecipeIngredient = async (ingredient, recipeId) => {
+  let pool;
   try {
     // Connect to database
-    const pool = await sql.connect(dbConfig);
+    pool = await sql.connect(dbConfig);
     await insertOrUpdateIngredient(pool, ingredient);
     await linkRecipeIngredient(pool, recipeId, ingredient);
   } catch (error) {
@@ -359,7 +389,7 @@ const insertOrUpdateIngredient = async (pool, ingredient) => {
       .query(ingredientQuery);
   } catch (error) {
     console.error('Error inserting/updating ingredient:', error.message);
-    throw error;
+    throw new Error('Error inserting/updating ingredient: ' + error.message);
   }
 };
 
@@ -396,7 +426,7 @@ const linkRecipeIngredient = async (pool, recipeId, ingredient) => {
     }
   } catch (error) {
     console.error('Error linking recipe to ingredient:', error.message);
-    throw error;
+    throw new Error(`Error linking recipe to ingredient: ${error.message}`);
   }
 };
 
@@ -431,16 +461,19 @@ const linkUserToRecipe = async (transaction, userId, recipeId) => {
     }
   } catch (error) {
     console.error('Error linking user to recipe:', error.message);
-    throw error;
+    throw new Error(`Error linking user to recipe: ${error.message}`);
   }
 };
 
 
 //Update a recipe with provided parameters //Patch Functionaility
 const editRecipe = async (recipeId, updates) => {
-  const pool = await sql.connect(dbConfig);
+  let pool;
 
   try {
+    // Connect to the database
+    pool = await sql.connect(dbConfig);
+
     // Build the SET clause dynamically
     const fields = Object.keys(updates)
       .map(field => `${field} = @${field}`)
@@ -483,60 +516,99 @@ const editRecipe = async (recipeId, updates) => {
     console.error('Error updating recipe:', error.message);
     throw error;
   } finally {
-    // Ensure the pool connection is closed
-    pool.close();
+    if (pool) {
+      // Ensure the pool connection is closed
+      try {
+        await pool.close();
+      } catch (closeError) {
+        console.error('Error closing the database connection:', closeError.message);
+      }
+    }
   }
 };
 
 // Delete a recipe by user ID and recipe ID
 const deleteRecipe = async (recipeId) => {
-  const pool = await sql.connect(dbConfig);
-  const transaction = new sql.Transaction(pool);
-
+  let pool;
+  let transaction;
+  let request;
+  
   try {
-    await transaction.begin();
+    // Establish database connection
+    pool = await sql.connect(dbConfig);
+    transaction = new sql.Transaction(pool);
 
+    // Begin a transaction to ensure data integrity
+    await transaction.begin();
+    
+    // Create a request from the transaction
+    request = transaction.request();
+    if (!request) {
+      throw new Error('Failed to create request from transaction');
+    }
+
+    // Prepare and execute delete queries
     const deleteRecipeIngredientsQuery = `
-      DELETE FROM RecipeIngredients
-      WHERE recipe_id = @recipeId;
+        DELETE FROM RecipeIngredients
+        WHERE recipe_id = @recipeId;
     `;
-    await transaction.request()
+    await request
       .input('recipeId', sql.VarChar(255), recipeId)
       .query(deleteRecipeIngredientsQuery);
 
     const deleteUserRecipesQuery = `
-      DELETE FROM UserRecipes
-      WHERE recipe_id = @recipeId;
+        DELETE FROM UserRecipes
+        WHERE recipe_id = @recipeId;
     `;
-    await transaction.request()
+    await request
       .input('recipeId', sql.VarChar(255), recipeId)
       .query(deleteUserRecipesQuery);
 
     const deleteRecipeQuery = `
-      DELETE FROM Recipes
-      WHERE id = @recipeId;
+        DELETE FROM Recipes
+        WHERE id = @recipeId;
     `;
-    await transaction.request()
+    await request
       .input('recipeId', sql.VarChar(255), recipeId)
       .query(deleteRecipeQuery);
 
+    // Commit the transaction if all operations are successful
     await transaction.commit();
     console.log(`Recipe with ID ${recipeId} and its associated ingredients deleted successfully.`);
+
   } catch (error) {
-    await transaction.rollback();
+    // Rollback the transaction in case of error
+    try {
+      if (transaction) {
+        await transaction.rollback();
+      }
+    } catch (rollbackError) {
+      console.error('Error rolling back transaction:', rollbackError.message);
+    }
+
+    // Handle and throw the original error
     console.error('Error deleting recipe:', error.message);
     throw error;
+
   } finally {
-    pool.close();
+    // Ensure connection pool is closed
+    try {
+      if (pool) {
+        await pool.close();
+      }
+    } catch (closeError) {
+      console.error('Error closing connection pool:', closeError.message);
+    }
   }
 };
 
 // Function to delete recipe ingredients by recipe ID and ingredient ID
 const deleteRecipeIngredients = async (recipeId, ingredientId) => {
-  const pool = await sql.connect(dbConfig);
-  const transaction = new sql.Transaction(pool);
-
+  let pool;
+  let transaction;
   try {
+    pool = await sql.connect(dbConfig);
+    transaction = new sql.Transaction(pool);
     await transaction.begin();
     // Check if the ingredient exists in the recipe
     const checkIngredientQuery = `
@@ -568,7 +640,14 @@ const deleteRecipeIngredients = async (recipeId, ingredientId) => {
     console.error('Error deleting recipe ingredient:', error.message);
     throw error;
   } finally {
-    pool.close();
+    // Ensure connection pool is closed
+    try {
+      if (pool) {
+        await pool.close();
+      }
+    } catch (closeError) {
+      console.error('Error closing connection pool:', closeError.message);
+    }
   }
 };
 
@@ -584,6 +663,10 @@ module.exports = {
   insertRecipeIngredient,
   updateRecipeDetails,
   updateRecipeDetailsbyUser,
+  insertRecipeIngredients,
+  insertOrUpdateIngredient,
+  linkRecipeIngredient,
+  linkUserToRecipe,
   editRecipe,
   deleteRecipe,
   deleteRecipeIngredients
