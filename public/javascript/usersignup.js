@@ -157,14 +157,14 @@ document.querySelector("form").addEventListener("submit", function (event) {
     return;
   }
 
-  // Set dietaryRestrictions to null if empty
-  if (dietaryRestrictions && dietaryRestrictions.length === 0) {
-    dietaryRestrictions = null;
+  // Set dietaryRestrictions to an empty array if null
+  if (dietaryRestrictions === null) {
+    dietaryRestrictions = [];
   }
 
-  // Set intolerances to null if empty
-  if (intolerances && intolerances.length === 0) {
-    intolerances = null;
+  // Set intolerances to an empty array if null
+  if (intolerances === null) {
+    intolerances = [];
   }
 
   // Split excludedIngredients by comma and trim whitespace
@@ -175,7 +175,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
         return ingredient.trim();
       });
   } else {
-    excludedIngredients = null;
+    excludedIngredients = [];
   }
 
   // Create user object to match MongoDB Schema

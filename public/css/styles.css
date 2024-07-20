@@ -502,7 +502,7 @@ p a:hover {
   border: none;
   border-radius: 5px;
   font-size: 25px;
-  transition: 0.2s;
+  transition: 0.5s;
 }
 
 .user-home-btn:hover {
@@ -1089,6 +1089,7 @@ p a:hover {
   height: 50px;
   margin-right: 9px;
   border-radius: 200px;
+  transition: 0.2s;
 }
 
 .pantry-container #recipes_btn {
@@ -1099,6 +1100,7 @@ p a:hover {
   border-radius: 200px;
   margin-left: 9px;
   font-weight: bold;
+  transition: 0.2s;
 }
 
 .pantry-container #add_ingredient_btn:hover,
@@ -1130,6 +1132,7 @@ p a:hover {
   height: 200px;
   object-fit: contain;
   object-position: center;
+  margin-bottom: 15px;
 }
 
 .pantry-container .ingredient_list .add_remove_holder {
@@ -1144,15 +1147,33 @@ p a:hover {
   font-size: 30px;
   color: black;
   cursor: pointer;
+  transition: 0.5s;
 }
 
-.add_remove_holder input {
-  border-radius: 5px;
+.pantry-container #delete_ingredient_icon {
+  display: flex;
+  float: right;
+  font-size: 30px;
+  color: black;
+  cursor: pointer;
+  transition: 0.5s;
 }
+
 .pantry-container #ingredient_minus_icon {
   font-size: 30px;
   color: black;
   cursor: pointer;
+  transition: 0.5s;
+}
+
+#ingredient_minus_icon:hover,
+#ingredient_plus_icon:hover,
+#delete_ingredient_icon:hover {
+  color: #ff964b;
+}
+
+.add_remove_holder input {
+  border-radius: 5px;
 }
 
 .pantry-container .ingredient_list .item .selected {
