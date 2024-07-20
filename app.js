@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./models/swagger-output.json");
+const swaggerDocument = require("./config/swagger-output.json");
 const app = express();
 const path = require('path');
 const cors = require('cors');
@@ -36,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/', require('./routes/root'));
+
 app.use('/register', require('./routes/register'));
 app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
