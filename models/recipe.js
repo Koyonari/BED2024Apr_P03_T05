@@ -173,7 +173,7 @@ const getRecipeIngredientsById = async (recipeId) => {
 };
 
 // Function for Inserting recipe details, part of insertRecipe
-const insertRecipeDetails = async (pool, recipe, userId) => {
+const insertRecipeDetails = async (pool, recipe, userId, uuidGenerator = uuid4) => {
   try {
     // Validate recipe fields
     if (!recipe || !recipe.id || !recipe.title) {
@@ -212,7 +212,7 @@ const insertRecipeDetails = async (pool, recipe, userId) => {
     }
 
     // Generate a unique ID for the recipe, primary key
-    const idString = uuid4();
+    const idString = uuidGenerator(); // Use the injected UUID generator
 
     // If recipe doesn't exist, insert it
     const insertQuery = `
@@ -235,6 +235,7 @@ const insertRecipeDetails = async (pool, recipe, userId) => {
     throw error;
   }
 };
+
 
 // Update existing recipe details
 const updateRecipeDetails = async (pool, recipe, recipeId) => {
@@ -579,6 +580,7 @@ module.exports = {
   getAllStoredRecipes,
   getRecipeIngredientsById,
   insertRecipe,
+  insertRecipeDetails,
   insertRecipeIngredient,
   updateRecipeDetails,
   updateRecipeDetailsbyUser,

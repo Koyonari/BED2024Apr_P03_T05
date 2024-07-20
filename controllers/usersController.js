@@ -4,7 +4,7 @@ const { createSQLUser, updateSQLUsername, deleteSQLUser } = require('../models/u
 const { dbConfig } = require('../config/dbConfig');
 const bcrypt = require('bcrypt');
 const validateUser = require('../middleware/validateUser');
-const { date } = require('joi');
+const Joi = require('joi');
 const checkAuthorisation = require('../middleware/checkAuthorisation');
 const mongoose = require('mongoose');
 
@@ -247,31 +247,39 @@ const editUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-    const userId = req.params.id; // Retrieve user ID from URL parameters
+    const userId = req.params.id;
 
     try {
-        // Check if userId is a valid MongoDB ObjectId
-        // if (!userId.match(/^[0-9a-fA-F]{24}$/)) - Alternative regex check, using mongoose method below
         if (!mongoose.isValidObjectId(userId)) {
             return res.status(400).json({ message: `Invalid user ID format: ${userId}` });
         }
 
-        // Find the user by ID
         const user = await User.findById(userId);
-
         if (!user) {
             return res.status(404).json({ message: `User with ID ${userId} not found` });
         }
 
-        // Delete the user
-        await user.deleteOne();
-        // Delete the user from SQL
-        await deleteSQLUser(userId);
+        // Attempt to delete the user from MongoDB
+        try {
+            await user.deleteOne();
+        } catch (mongoError) {
+            console.error('Error deleting user from MongoDB:', mongoError.message);
+            return res.status(500).json({ message: "Failed to delete user from MongoDB", error: mongoError.message });
+        }
+
+        // Attempt to delete the user from SQL
+        try {
+            await deleteSQLUser(userId);
+        } catch (sqlError) {
+            console.error('Error deleting user from SQL:', sqlError.message);
+            return res.status(500).json({ message: "Failed to delete user from SQL", error: sqlError.message });
+        }
+
         res.json({ message: `User with ID ${userId} deleted successfully` });
     } catch (error) {
         console.error("Error deleting user:", error);
 
-        // Differentiate between different types of errors
+        // Handle errors from MongoDB
         if (error.name === 'CastError') {
             res.status(400).json({ message: `Invalid user ID format: ${userId}` });
         } else if (error.name === 'DocumentNotFoundError') {
@@ -282,7 +290,6 @@ const deleteUser = async (req, res) => {
     }
 };
 
-
 const getUser = async (req, res) => {
     if (!req?.params?.id) {
         return res.status(400).json({ 'message': 'User ID is required' });
@@ -291,20 +298,17 @@ const getUser = async (req, res) => {
     const userId = req.params.id;
 
     try {
-        // Validate if userId is a valid ObjectId, this is native to mongoose 
         if (!mongoose.isValidObjectId(userId)) {
             return res.status(400).json({ 'message': 'Invalid user ID format' });
         }
-        // Find the user by ID
+        
         const user = await User.findOne({ _id: userId }).select('-password -refreshToken').exec();
         if (!user) {
             return res.status(404).json({ 'message': `User with ID ${userId} not found` });
         }
 
-        console.log('Retrieved User:', user); // Log the retrieved user object
-        res.json(user); // Return the user object
+        res.json(user);
     } catch (err) {
-        // Handle specific MongoDB errors
         if (err.name === 'CastError' && err.kind === 'ObjectId') {
             return res.status(400).json({ 'message': `Invalid user ID ${userId}` });
         }

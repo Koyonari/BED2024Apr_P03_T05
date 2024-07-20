@@ -5,7 +5,7 @@ const mockingoose = require('mockingoose');
 const User = require('../models/user');
 const userRoutes = require('../routes/api/userRoutes'); // Adjust the path if necessary
 const mockDB = require('../middleware/mockDB');
-const { createSQLUser } = require('../models/usersql');
+const { createSQLUser, updateSQLUsername, deleteSQLUser } = require('../models/usersql');
 const db = require('../middleware/db');
 const app = express();
 app.use(express.json());
@@ -38,7 +38,9 @@ jest.mock('../middleware/validateUser', () => (req, res, next) => {
 });
 // Mock the SQL functions
 jest.mock('../models/usersql', () => ({
-    createSQLUser: jest.fn()
+    createSQLUser: jest.fn(),
+    updateSQLUsername: jest.fn(),
+    deleteSQLUser: jest.fn()
 }));
 
 jest.mock('../middleware/checkUserExists', () => (req, res, next) => {
@@ -159,9 +161,15 @@ describe('User Controller Tests', () => {
             expect(res.body.message).toBe('Cannot create an admin user through this operation');
         });
     });
+
+    // Test case for editing a user by ID
     describe('PUT /users/:id', () => {
+        beforeEach(() => {
+            mockingoose.resetAll();
+        });
+        // Unable to test, works in Postman and Front-End application but not in Jest
         it.skip('should update an existing user', async () => {
-            const mockUserId = mongoose.Types.ObjectId().toHexString(); // Generate valid ObjectId
+            const mockUserId = new mongoose.Types.ObjectId().toHexString();
             const updatedUser = {
                 username: 'UpdatedUser',
                 password: 'UpdatedPassword123!',
@@ -176,23 +184,38 @@ describe('User Controller Tests', () => {
                 excludedIngredients: ['soy'],
                 dateOfBirth: '1990-01-01'
             };
-    
+
+            // Mock `findByIdAndUpdate` to return the updated user
             mockingoose(User).toReturn({
                 _id: mockUserId,
                 ...updatedUser,
                 dateCreated: new Date().toISOString()
             }, 'findByIdAndUpdate');
-    
-            // Send a PUT request to update the user
+
+            // Mock `findOne` to return the user (if needed for your validation)
+            mockingoose(User).toReturn({
+                _id: mockUserId,
+                username: 'OldUsername',
+                password: 'OldPassword',
+                email: 'old.email@example.com',
+                contact: '12345678'
+            }, 'findOne');
+
             const res = await request(app).put(`/users/${mockUserId}`).send(updatedUser);
-    
+            updateSQLUsername.mockResolvedValue({});
+
             // Log the response status and body for debugging
             console.log('Response status:', res.status);
             console.log('Response body:', res.body);
-    
+            console.log('Updated user:', updatedUser);
+            console.log('Updated username:', updatedUser.username);
             // Assertions
             expect(res.status).toBe(200);
             expect(res.body.message).toBe(`User ${updatedUser.username} updated successfully`);
+            expect(res.body.user).toMatchObject({
+                _id: mockUserId,
+                ...updatedUser
+            });
         });
 
         it('should return 400 if required fields are missing', async () => {
@@ -221,6 +244,8 @@ describe('User Controller Tests', () => {
             expect(res.body.message).toBe('Cannot assign Admin role through this operation');
         });
     });
+
+    // Test case for editing a user by ID
     describe('PATCH /users/:id', () => {
         it('should update the firstname of an existing user', async () => {
             const mockUserId = new mongoose.Types.ObjectId().toHexString();
@@ -252,16 +277,16 @@ describe('User Controller Tests', () => {
                     username: 'oldusername'
                 })
             };
-        
+
             // Mock `findOne` to return the existing user
             mockingoose(User).toReturn(existingUser, 'findOne');
-        
+
             const res = await request(app).patch(`/users/${mockUserId}`).send(updates);
-        
+
             // Log the response status and body for debugging
             console.log('Response status:', res.status);
             console.log('Response body:', res.body);
-        
+
             // Assertions
             expect(res.status).toBe(200);
             expect(res.body.message).toBe('User updated successfully');
@@ -273,49 +298,49 @@ describe('User Controller Tests', () => {
             const updates = {
                 firstname: 'ChangedName'
             };
-    
+
             // Mocking the User model to return null for findOne
             mockingoose(User).toReturn(null, 'findOne');
-    
+
             // Send a PATCH request to update the user
             const res = await request(app).patch(`/users/${mockUserId}`).send(updates);
-    
+
             // Log the response status and body for debugging
             console.log('Response status:', res.status);
             console.log('Response body:', res.body);
-    
+
             // Assertions
             expect(res.status).toBe(404);
             expect(res.body.message).toBe(`User with ID ${mockUserId} not found`);
         });
-    
+
         it('should return 400 if no updates are provided', async () => {
             const mockUserId = new mongoose.Types.ObjectId().toHexString(); // Use `new` here
-    
+
             // Send a PATCH request with no update data
             const res = await request(app).patch(`/users/${mockUserId}`).send({});
-    
+
             // Log the response status and body for debugging
             console.log('Response status:', res.status);
             console.log('Response body:', res.body);
-    
+
             // Assertions
             expect(res.status).toBe(400);
             expect(res.body.message).toBe('Updates must be provided to update the user');
         });
-    
+
         it('should handle validation errors', async () => {
             const mockUserId = new mongoose.Types.ObjectId().toHexString(); // Use `new` here
             const updates = {
                 firstname: 'ChangedName'
             };
-    
+
             // Mocking the User model
             mockingoose(User).toReturn({
                 _id: mockUserId,
                 firstname: updates.firstname
             }, 'findOne');
-            
+
             const validationResult = {
                 errors: {
                     firstname: {
@@ -324,14 +349,14 @@ describe('User Controller Tests', () => {
                 }
             };
             mockingoose(User).toReturn(validationResult, 'validateSync');
-    
+
             // Send a PATCH request with invalid update data
             const res = await request(app).patch(`/users/${mockUserId}`).send(updates);
-    
+
             // Log the response status and body for debugging
             console.log('Response status:', res.status);
             console.log('Response body:', res.body);
-    
+
             // Assertions
             expect(res.status).toBe(400);
             expect(res.body.errors).toEqual(expect.arrayContaining([
@@ -354,4 +379,162 @@ describe('User Controller Tests', () => {
             ]));
         });
     });
+
+    // Test case for deleting a user
+    describe('DELETE /users/:id', () => {
+        let userId;
+
+        beforeAll(() => {
+            userId = '60c72b2f9b1d8b3a3c8d1e33'; // Example MongoDB ObjectID
+        });
+
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+
+        it('should successfully delete a user from both MongoDB and SQL', async () => {
+            mockingoose(User).toReturn({ _id: userId }, 'findOne');
+            mockingoose(User).toReturn({ _id: userId }, 'findById');
+            mockingoose(User).toReturn({ _id: userId }, 'deleteOne');
+            deleteSQLUser.mockResolvedValue({});
+
+            const response = await request(app)
+                .delete(`/users/${userId}`)
+                .send();
+
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe(`User with ID ${userId} deleted successfully`);
+        });
+
+        it('should handle errors during MongoDB user deletion', async () => {
+            // Mock finding the user in MongoDB
+            mockingoose(User).toReturn({ _id: userId }, 'findOne');
+            mockingoose(User).toReturn({ _id: userId }, 'findById');
+            mockingoose(User).toReturn({ _id: userId }, 'deleteOne');
+
+            // Mock MongoDB delete operation error
+            mockingoose(User).toReturn(new Error('MongoDB error'), 'deleteOne');
+
+            const response = await request(app)
+                .delete(`/users/${userId}`)
+                .send();
+
+            expect(response.status).toBe(500);
+            expect(response.body.message).toMatch(/Failed to delete user from MongoDB/);
+        });
+
+        it('should handle errors during SQL user deletion', async () => {
+            // Mock finding the user in MongoDB
+            mockingoose(User).toReturn({ _id: userId }, 'findOne');
+            mockingoose(User).toReturn({ _id: userId }, 'findById');
+            mockingoose(User).toReturn({ _id: userId }, 'deleteOne');
+
+            // Mock successful MongoDB deletion
+            mockingoose(User).toReturn({}, 'deleteOne');
+
+            // Mock SQL deletion error
+            deleteSQLUser.mockRejectedValue(new Error('SQL error'));
+
+            const response = await request(app)
+                .delete(`/users/${userId}`)
+                .send();
+
+            expect(response.status).toBe(500);
+            expect(response.body.message).toMatch(/Failed to delete user from SQL/);
+        });
+
+        it('should return 400 for invalid user ID format', async () => {
+            const invalidUserId = 'invalid-id-format';
+
+            const response = await request(app)
+                .delete(`/users/${invalidUserId}`)
+                .send();
+
+            expect(response.status).toBe(400);
+            expect(response.body.message).toBe(`Invalid user ID format: ${invalidUserId}`);
+        });
+
+        it('should return 404 if the user is not found', async () => {
+            // Mock user not found in MongoDB
+            mockingoose(User).toReturn(null, 'findById');
+
+            const response = await request(app)
+                .delete(`/users/${userId}`)
+                .send();
+
+            expect(response.status).toBe(404);
+            expect(response.body.message).toBe(`User with ID ${userId} not found`);
+        });
+    });
+
+    // Test case for getting a user by ID
+    describe('GET /users/:id', () => {
+        // Test case: Valid user ID with existing user
+        it('should return the user for a valid user ID', async () => {
+            const mockUserId = new mongoose.Types.ObjectId().toHexString();
+            const user = {
+                _id: mockUserId,
+                username: 'TestUser',
+                email: 'testuser@example.com',
+                contact: '1234567890',
+                firstname: 'Test',
+                lastname: 'User'
+            };
+
+            mockingoose(User).toReturn(user, 'findOne');
+
+            const res = await request(app).get(`/users/${mockUserId}`);
+
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+
+            expect(res.status).toBe(200);
+            expect(res.body).toMatchObject(user);
+        });
+
+        // Test case: Valid user ID with non-existing user
+        it('should return 404 for a valid user ID but non-existing user', async () => {
+            const mockUserId = new mongoose.Types.ObjectId().toHexString();
+
+            mockingoose(User).toReturn(null, 'findOne');
+
+            const res = await request(app).get(`/users/${mockUserId}`);
+
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+
+            expect(res.status).toBe(404);
+            expect(res.body.message).toBe(`User with ID ${mockUserId} not found`);
+        });
+
+        // Test case: Invalid user ID format
+        it('should return 400 for invalid user ID format', async () => {
+            const invalidId = 'invalid_id';
+
+            const res = await request(app).get(`/users/${invalidId}`);
+
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+
+            expect(res.status).toBe(400);
+            expect(res.body.message).toBe('Invalid user ID format');
+        });
+
+        // Test case: Missing user ID in request parameters
+        it('should return 400 if user ID is missing', async () => {
+            // Adjust the URL to ensure it hits the route that requires an ID
+            const res = await request(app).get('/users/invalid-id'); // Use an invalid ID format
+        
+            // Log the response status and body for debugging
+            console.log('Response status:', res.status);
+            console.log('Response body:', res.body);
+        
+            expect(res.status).toBe(400);
+            expect(res.body.message).toBe('Invalid user ID format'); // Ensure the message matches for invalid ID format
+        });
+    });
 });
+
