@@ -6,6 +6,9 @@ CREATE TABLE Users (
 
 -- Sample Data for Users Table // This is just a sample data
 INSERT INTO Users (user_id, username) VALUES 
+('669ab53e52ed8860e2afe76b', 'TestVolunteer'),
+('669ab54752ed8860e2afe76e', 'TestUserWithSQL'),
+('669ab56a52ed8860e2afe771', 'TestUserAdmin');
 ('669abb1ffe3958443cdc03e1', 'TestUser'),
 ('668104e73662e3dda4c190e0', 'TestVolunteer'),
 ('669abb50fe3958443cdc03e4', 'VolunteerYS'),
@@ -21,8 +24,8 @@ CREATE TABLE Pantry (
 
 -- Sample data for Pantry with actual users
 INSERT INTO Pantry (pantry_id, user_id) VALUES 
-('Xy21z', '668105073662e3dda4c190e3'),
-('oTx5s', '668104e73662e3dda4c190e0');
+('Xy21z', '669ab53e52ed8860e2afe76b'),
+('oTx5s', '669ab54752ed8860e2afe76e');
 
 -- Create Ingredients Table
 CREATE TABLE Ingredients (

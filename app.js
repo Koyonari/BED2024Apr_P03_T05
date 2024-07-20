@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./models/swagger-output.json");
+const swaggerDocument = require("./config/swagger-output.json");
 const app = express();
 const path = require('path');
 const cors = require('cors');
@@ -36,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/', require('./routes/root'));
+
 app.use('/register', require('./routes/register'));
 app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
@@ -43,7 +44,7 @@ app.use('/logout', require('./routes/logout'));
 
 // JWT protected routes
 app.use(verifyJWT);
-app.use('/users', require('./routes/api/users'));
+app.use('/users', require('./routes/api/userRoutes'));
 app.use('/pantry', require('./routes/api/pantryRoutes'));
 app.use('/recipes', require('./routes/api/recipeRoutes'));
 app.use('/requests', require('./routes/api/requestRoutes'));
@@ -67,3 +68,5 @@ mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB');
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
+
+module.exports = app;

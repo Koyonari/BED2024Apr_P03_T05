@@ -27,62 +27,49 @@ const createSQLUser = async (userId, username) => {
   }
 };
 
-  // Static method to get a user by user ID, utilised for testing purposes without MongoDB, done by Jason
-  const getUserByUID = async (user_id, pool = null) => {
-    let internalPool = pool;
-    let isInternalPool = false;
-    try {
-      if (!internalPool) {
-        internalPool = await sql.connect(dbConfig);
-        isInternalPool = true;
-      }
-
-      const sqlQuery = `SELECT * FROM Users WHERE user_id = @user_id`;
-
-      const request = internalPool.request();
-      request.input('user_id', user_id);
-
-      const result = await request.query(sqlQuery);
-
-      if (result.recordset.length === 0) {
-        return null;
-      }
-
-      const userData = result.recordset[0];
-      return new User(userData.user_id, userData.username);
-    } catch (error) {
-      console.error('Error fetching user by ID:', error.message);
-      throw error;
-    } finally {
-      if (isInternalPool && internalPool) {
-        internalPool.close();
-      }
-    }
-  }
-
-  // Static method to get all users utilised for testing purposes without MongoDB, done by Jason
-  const getAllUsers = async () => {
-    let pool;
-    try {
-      pool = await sql.connect(dbConfig);
-
-      const sqlQuery = `SELECT * FROM Users`;
-
+const updateSQLUsername = async (userId, newUsername) => {
+  try {
+      const pool = await poolPromise;
+      const sqlQuery = `
+          UPDATE Users 
+          SET username = @newUsername 
+          WHERE user_id = @userId;
+      `;
       const request = pool.request();
-      const result = await request.query(sqlQuery);
-
-      return result.recordset.map((row) => new User(row.user_id, row.username));
-    } catch (error) {
-      console.error('Error fetching all users:', error.message);
+      request.input('userId', sql.VarChar(255), userId);
+      request.input('newUsername', sql.VarChar(255), newUsername);
+      await request.query(sqlQuery);
+  } catch (error) {
+      console.error('Error updating username in SQL:', error.message);
       throw error;
-    } finally {
-      if (pool) {
-        pool.close();
-      }
-    }
   }
+};
+const deleteSQLUser = async (userId) => {
+  console.log('Starting SQL user deletion for ID:', userId);
+
+  try {
+      const pool = await poolPromise;
+      const sqlQuery = `
+          DELETE FROM Users 
+          WHERE user_id = @userId;
+      `;
+      const request = pool.request();
+      request.input('userId', sql.VarChar(255), userId);
+
+      console.log('Executing SQL query:', sqlQuery);
+      await request.query(sqlQuery);
+
+      console.log('SQL user deletion completed for ID:', userId);
+  } catch (error) {
+      console.error('Error deleting user from SQL:', error.message);
+      throw error;
+  }
+};
+
+
 
 module.exports = {
-  UserSQL,
-  createSQLUser
+  createSQLUser,
+  updateSQLUsername,
+  deleteSQLUser
 }

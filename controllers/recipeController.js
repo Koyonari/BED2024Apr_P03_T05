@@ -491,7 +491,6 @@ const deleteRecipeByUser = async (req, res) => {
 
 // Controller function to delete a recipe by recipe ID (for admins) 
 const deleteRecipeByRecipeId = async (req, res) => {
-  try {
     const recipeId = req.params.id; // Extracted from URL parameters
 
     // Log the request for debugging purposes
@@ -501,29 +500,26 @@ const deleteRecipeByRecipeId = async (req, res) => {
     if (!recipeId) {
       return res.status(400).json({ message: 'Recipe ID must be provided' });
     }
-    // Fetch all recipes to validate if the recipe exists
-    const allRecipes = await getAllStoredRecipes();
-    // Check if there was an error fetching recipes
-    if (!allRecipes) {
-      return res.status(500).json({ message: 'Error getting recipes' });
+    
+    try {
+      const allRecipes = await getAllStoredRecipes();
+      if (!Array.isArray(allRecipes)) {
+        throw new Error('Invalid response from getAllStoredRecipes');
+      }
+  
+      const recipeToDelete = allRecipes.find(recipe => recipe.id === recipeId);
+      if (!recipeToDelete) {
+        return res.status(404).json({ message: 'Recipe not found' });
+      }
+  
+      await deleteRecipe(recipeId);
+      res.status(200).json({ message: 'Recipe deleted successfully by Admin' });
+    } catch (error) {
+      console.error('Error deleting recipe:', error.message);
+      res.status(500).json({ message: 'Error deleting recipe', error: error.message });
     }
-    // Check if the recipe ID exists in the fetched recipes
-    const recipeToDelete = allRecipes.find(recipe => recipe.id === recipeId);
-    if (!recipeToDelete) {
-      return res.status(404).json({ message: 'Recipe not found' });
-    }
-    // Call the deleteRecipe function
-    await deleteRecipe(recipeId);
-    // Respond with success message
-    res.status(200).json({ message: 'Recipe deleted successfully by Admin' });
-  } catch (error) {
-    // Log the error message
-    console.error('Error deleting recipe:', error.message);
-    // Respond with error message
-    res.status(500).json({ message: 'Error deleting recipe', error: error.message });
-  }
-};
-
+  };
+  
 // Controller function to delete a recipe ingredient by recipe ID and ingredient ID
 const deleteRecipeIngredientByRecipeId = async (req, res) => {
   try {

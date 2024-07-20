@@ -8,7 +8,7 @@ async function getRequestByUserId(req, res) {
         if (!requests) {
             return res.status(404).send("No requests found for this user");
         }
-        res.json(requests);
+        res.status(200).json(requests);
     } catch (error) {
         res.status(500).send("Error retrieving requests");
     }
@@ -33,7 +33,7 @@ async function getAvailableRequest(req, res) {
         if (!requests) {
             return res.status(404).send("No available requests found");
         }
-        res.json(requests);
+        res.status(200).json(requests);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error retrieving available requests");
@@ -50,7 +50,7 @@ async function updateAcceptedRequest(req, res) {
         if (!updatedRequest) {
             return res.status(404).send("Request not found");
         }
-        res.json(updatedRequest);
+        res.status(200).json(updatedRequest);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error updating accepted request");
@@ -65,7 +65,7 @@ async function getAcceptedRequestById(req, res) {
         if (!requests) {
             return res.status(404).send("No accepted requests found for this volunteer");
         }
-        res.json(requests);
+        res.status(200).json(requests);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error retrieving accepted requests");
@@ -110,7 +110,7 @@ async function updateCompletedRequest(req, res) {
         if (!updatedRequest) {
             return res.status(404).send("Request not found");
         }
-        res.json(updatedRequest);
+        res.status(200).json(updatedRequest);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error updating request to completed");
@@ -125,7 +125,7 @@ async function getRequestById(req, res) {
       if (!request) {
         return res.status(404).send("Request not found");
       }
-      res.json(request);
+      res.status(200).json(request);
     } catch (error) {
       res.status(500).send("Error retrieving request");
     }
@@ -139,7 +139,7 @@ async function getUserDetailsById(req, res) {
         if (!user) {
             return res.status(404).send("User not found");
         }
-        res.json(user);
+        res.status(200).json(user);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error retrieving user details");
@@ -156,7 +156,7 @@ async function updateApproveRequest(req, res) {
         if (!updatedRequest) {
             return res.status(404).send("Request not found");
         }
-        res.json(updatedRequest);
+        res.status(200).json(updatedRequest);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error approving request");
@@ -170,7 +170,7 @@ async function getAcceptedRequest(req, res) {
         if (!requests) {
             return res.status(404).send("No accepted requests found");
         }
-        res.json(requests);
+        res.status(200).json(requests);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error retrieving accepted requests");
@@ -184,7 +184,7 @@ async function getCompletedRequest(req, res) {
         if (!requests) {
             return res.status(404).send("No completed requests found");
         }
-        res.json(requests);
+        res.status(200).json(requests);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error retrieving completed requests");
@@ -198,7 +198,7 @@ async function getApprovedRequest(req, res) {
         if (!requests) {
             return res.status(404).send("No approved requests found");
         }
-        res.json(requests);
+        res.status(200).json(requests);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error retrieving approved requests");
@@ -212,7 +212,7 @@ async function deleteRequest(req, res) {
     try {
         const success = await Request.deleteRequest(requestId);
         if (success) {
-            return res.send("Request deleted successfully");
+            return res.status(200).send("Request deleted successfully");
         } else {
             return res.status(404).send("Request not found");
         }

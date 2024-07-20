@@ -1,10 +1,10 @@
 const User = require('../models/user');
 const sql = require('mssql');
-const { createSQLUser } = require('../models/usersql');
+const { createSQLUser, updateSQLUsername, deleteSQLUser } = require('../models/usersql');
 const { dbConfig } = require('../config/dbConfig');
 const bcrypt = require('bcrypt');
 const validateUser = require('../middleware/validateUser');
-const { date } = require('joi');
+const Joi = require('joi');
 const checkAuthorisation = require('../middleware/checkAuthorisation');
 const mongoose = require('mongoose');
 
@@ -80,14 +80,11 @@ const createNewUser = async (req, res) => {
                 const resultMongo = await newUserMongo.save(); // newUserMongo.save() persists user to MongoDB
                 const userId = resultMongo._id.toString();
                 // Attempt to create the user in SQL
-                const newUserSQL = await createSQLUser(userId, username);
+                await createSQLUser(userId, username);
 
                 // Return success response after both operations are complete
-                res.status(201).json({
-                    message: `User ${username} created successfully in MongoDB and SQL BY Admin ${req.user.username}`,
-                    user: { mongoDB: resultMongo, sqlDB: newUserSQL }
-                });
-
+                res.status(201).json({ message: `User ${username} with ID ${userId} created successfully in MongoDB and SQL BY Admin`});
+                console.log('User created in MongoDB:', resultMongo);
             } catch (err) {
                 console.error(err);
                 res.status(500).json({ message: 'Failed to create user', error: err.message });
@@ -152,6 +149,10 @@ const updateUser = async (req, res) => {
                 }
                 // Update the user
                 await User.findByIdAndUpdate(userId, updatedUser, { new: true });
+                  // Update the username in SQL if it was changed
+                  if (username !== existingUser.username) {
+                    await updateSQLUsername(userId, username);
+                }
                 // Return success response
                 res.status(200).json({ message: `User ${username} updated successfully` });
             } catch (err) {
@@ -217,6 +218,10 @@ const editUser = async (req, res) => {
 
         // Save the updated user object
         const result = await user.save();
+        // Update the user in SQL if username is provided
+        if (updates.username) {
+            await updateSQLUsername(id, updates.username);
+        }
 
         // Find the differences between the original and updated user
         const editedFields = {};
@@ -242,30 +247,39 @@ const editUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-    const userId = req.params.id; // Retrieve user ID from URL parameters
+    const userId = req.params.id;
 
     try {
-        // Check if userId is a valid MongoDB ObjectId
-        // if (!userId.match(/^[0-9a-fA-F]{24}$/)) - Alternative regex check, using mongoose method below
         if (!mongoose.isValidObjectId(userId)) {
             return res.status(400).json({ message: `Invalid user ID format: ${userId}` });
         }
 
-        // Find the user by ID
         const user = await User.findById(userId);
-
         if (!user) {
             return res.status(404).json({ message: `User with ID ${userId} not found` });
         }
 
-        // Delete the user
-        await user.deleteOne();
+        // Attempt to delete the user from MongoDB
+        try {
+            await user.deleteOne();
+        } catch (mongoError) {
+            console.error('Error deleting user from MongoDB:', mongoError.message);
+            return res.status(500).json({ message: "Failed to delete user from MongoDB", error: mongoError.message });
+        }
+
+        // Attempt to delete the user from SQL
+        try {
+            await deleteSQLUser(userId);
+        } catch (sqlError) {
+            console.error('Error deleting user from SQL:', sqlError.message);
+            return res.status(500).json({ message: "Failed to delete user from SQL", error: sqlError.message });
+        }
 
         res.json({ message: `User with ID ${userId} deleted successfully` });
     } catch (error) {
         console.error("Error deleting user:", error);
 
-        // Differentiate between different types of errors
+        // Handle errors from MongoDB
         if (error.name === 'CastError') {
             res.status(400).json({ message: `Invalid user ID format: ${userId}` });
         } else if (error.name === 'DocumentNotFoundError') {
@@ -276,7 +290,6 @@ const deleteUser = async (req, res) => {
     }
 };
 
-
 const getUser = async (req, res) => {
     if (!req?.params?.id) {
         return res.status(400).json({ 'message': 'User ID is required' });
@@ -285,20 +298,17 @@ const getUser = async (req, res) => {
     const userId = req.params.id;
 
     try {
-        // Validate if userId is a valid ObjectId, this is native to mongoose 
         if (!mongoose.isValidObjectId(userId)) {
             return res.status(400).json({ 'message': 'Invalid user ID format' });
         }
-        // Find the user by ID
+        
         const user = await User.findOne({ _id: userId }).select('-password -refreshToken').exec();
         if (!user) {
             return res.status(404).json({ 'message': `User with ID ${userId} not found` });
         }
 
-        console.log('Retrieved User:', user); // Log the retrieved user object
-        res.json(user); // Return the user object
+        res.json(user);
     } catch (err) {
-        // Handle specific MongoDB errors
         if (err.name === 'CastError' && err.kind === 'ObjectId') {
             return res.status(400).json({ 'message': `Invalid user ID ${userId}` });
         }
