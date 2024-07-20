@@ -2069,7 +2069,7 @@
     }
   },  "securityDefinitions": {
     "bearerAuth": {
-      "type": "apiKey(accessToken)",
+      "type": "apiKey",
       "name": "Authorization",
       "in": "header",
       "description": "Enter your JWT token in the format **Bearer &lt;token&gt;**"
