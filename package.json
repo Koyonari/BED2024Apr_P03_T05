@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node app",
     "dev": "nodemon app",
-        "test": "jest"
+    "test": "jest",
+    "test:recipes": "jest ./tests/recipeController.test.js",
+    "test:users": "jest ./tests/userRoutes.test.js"
   },
   "author": "BackEndDev_Assignment_T03_Group5",
   "license": "ISC",
@@ -20,14 +22,17 @@
     "express": "^4.19.2",
     "joi": "^17.13.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^8.4.4",
+    "mockingoose": "^2.16.2",
     "mssql": "^11.0.1",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^4.3.2",
     "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.0.0",
+    "mongoose": "^8.5.1",
     "nodemon": "^2.0.12",
     "supertest": "^7.0.0"
   },
