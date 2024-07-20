@@ -2,6 +2,19 @@ const requestController = require('../controllers/requestController');
 const db = require('../middleware/db');
 const sql = require('mssql');
 const Request = require('../models/request');
+const {getRequestByUserId,
+    createRequest,
+    getAvailableRequest,
+    updateAcceptedRequest,
+    getAcceptedRequestById,
+    updateCompletedRequest,
+    getRequestById,
+    getUserDetailsById,
+    updateApproveRequest,
+    getAcceptedRequest,
+    getCompletedRequest,
+    getApprovedRequest,
+    deleteRequest } = require('../controllers/requestController');
 
 // Mock the required modules
 jest.mock('../models/request');
@@ -52,7 +65,7 @@ describe('Request Controller', () => {
     });
 
     describe('getRequestByUserId', () => {
-        it.only('should return requests for a given user ID', async () => {
+        it('should return requests for a given user ID', async () => {
             req.params.id = '123';
             const mockRequests = [{ id: '1', request: 'Sample request' }];
             Request.getRequestByUserId = jest.fn().mockResolvedValue(mockRequests);
