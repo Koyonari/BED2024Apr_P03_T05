@@ -1439,21 +1439,28 @@ Error deleting request
 ```
 ------------------------------------------------
 ### Node Packages Utilised:
-- express: A web framework for building web applications and APIs.
-- axios: A promise-based HTTP client for making HTTP requests.
-- mssql: A Microsoft SQL Server client for Node.js.
-- body-parser: Middleware for parsing incoming request bodies.
-- dotenv: Loads environment variables from a .env file.
-- express: A web framework for building web applications and APIs.
-- path: A core Node.js module for handling file and directory paths.
-- cors: Middleware for enabling Cross-Origin Resource Sharing (CORS).
+#### Dependencies
+- axios: HTTP client for making requests.
+- bcrypt: Library for hashing passwords.
 - cookie-parser: Middleware for parsing cookies.
-- mongoose: An ODM (Object Data Modeling) library for MongoDB and Node.js.
-- jsonwebtoken: For creating and verifying JSON Web Tokens (JWT).
-- Joi: For data validation.
-- date-fns: For manipulating and formatting dates.
-- uuid: For generating unique identifiers.
-- bcrypt: For hashing passwords.
+- cors: Middleware for enabling Cross-Origin Resource Sharing.
+- date-fns: Utility library for date manipulation.
+- dotenv: Loads environment variables from a .env file.
+- express: Web framework for Node.js.
+- joi: Schema validation library.
+- jsonwebtoken: Library for working with JSON Web Tokens.
+- mockingoose: Mocking library for Mongoose models.
+- mssql: SQL Server client for Node.js.
+- swagger-autogen: Automatic Swagger documentation generation.
+- swagger-ui-express: Middleware for serving Swagger UI.
+- uuid: Library for generating unique IDs.
+#### DevDependencies
+- @shelf/jest-mongodb: Jest integration for MongoDB. 
+- jest: Testing framework.
+- mongodb-memory-server: In-memory MongoDB server for testing.
+- mongoose: ODM (Object Data Modeling) library for MongoDB.
+- nodemon: Tool for automatically restarting the application.
+- supertest: HTTP assertions library for testing Express applications.
 ------------------------------------------------
 ### External Sources Utilised:
 - [Spooncular API](https://spoonacular.com/food-api)
