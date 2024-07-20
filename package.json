@@ -9,7 +9,11 @@
     "test": "jest",
     "test:recipeController": "jest ./tests/recipeController.test.js",
     "test:users": "jest ./tests/userRoutes.test.js",
-    "test:recipe": "jest ./tests/recipe.test.js"
+    "test:recipe": "jest ./tests/recipe.test.js",
+    "test:pantry": "jest ./tests/pantry.test.js",
+    "test:pantryController": "jest ./tests/pantryController.test.js",
+    "test:request": "jest ./tests/request.test.js",
+    "test:requestController": "jest ./tests/requestController.test.js"
   },
   "author": "BackEndDev_Assignment_T03_Group5",
   "license": "ISC",
