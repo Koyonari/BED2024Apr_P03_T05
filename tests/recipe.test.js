@@ -44,7 +44,6 @@ const mockConnection = {
   request: jest.fn().mockReturnValue(mockRequest),
   close: jest.fn().mockResolvedValue(undefined)
 };
-
 // Create mock constructors for SQL types
 sql.Int = jest.fn().mockImplementation(() => 'mockConstructor');
 sql.Float = jest.fn().mockImplementation(() => 'mockConstructor');
@@ -743,14 +742,14 @@ describe('Recipe Module Tests', () => {
     let mockConnection;
     let mockTransaction;
     let mockRequest;
-  
+    sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
     beforeEach(() => {
       // Create a mock request object
       mockRequest = {
         input: jest.fn().mockReturnThis(),
         query: jest.fn().mockResolvedValue({})
       };
-  
+
       // Create a mock transaction object
       mockTransaction = {
         begin: jest.fn().mockResolvedValue(),
@@ -758,87 +757,169 @@ describe('Recipe Module Tests', () => {
         commit: jest.fn().mockResolvedValue(),
         rollback: jest.fn().mockResolvedValue()
       };
-  
+
       // Create a mock connection object
       mockConnection = {
         transaction: jest.fn().mockReturnValue(mockTransaction),
         close: jest.fn().mockResolvedValue()
       };
-  
+
       // Mock SQL connection
       sql.connect = jest.fn().mockResolvedValue(mockConnection);
+      sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should delete a recipe and associated data successfully', async () => {
+      const recipeId = '12345';
+
+      // Call the function
+      await deleteRecipe(recipeId);
+
+      // Verify that the transaction methods were called
+      expect(mockTransaction.begin).toHaveBeenCalled();
+      expect(mockTransaction.commit).toHaveBeenCalled();
+      expect(mockTransaction.rollback).not.toHaveBeenCalled(); // Should not be called on success
+
+      // Verify that the delete queries were called with the correct parameters
+      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM RecipeIngredients'));
+      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM UserRecipes'));
+      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM Recipes'));
+
+      // Verify that the connection close method was called
+      expect(mockConnection.close).toHaveBeenCalled();
+    });
+
+    it('should handle errors during deletion and rollback transaction', async () => {
+      const recipeId = '12345';
+      const errorMessage = 'Deletion failed';
+
+      // Mock query to throw an error
+      mockRequest.query.mockRejectedValueOnce(new Error(errorMessage));
+
+      // Expect the deleteRecipe function to throw an error
+      await expect(deleteRecipe(recipeId)).rejects.toThrow(errorMessage);
+
+      // Verify that the transaction methods were called
+      expect(mockTransaction.begin).toHaveBeenCalled();
+      expect(mockTransaction.rollback).toHaveBeenCalled();
+      expect(mockTransaction.commit).not.toHaveBeenCalled(); // Should not be called on failure
+
+      // Verify that the connection close method was called
+      expect(mockConnection.close).toHaveBeenCalled();
+    });
+
+    it('should handle database query errors during transaction', async () => {
+      const recipeId = '12345';
+      const errorMessage = 'Query failed';
+
+      // Mock query to throw an error
+      mockRequest.query.mockRejectedValueOnce(new Error(errorMessage));
+
+      // Expect the deleteRecipe function to throw an error
+      await expect(deleteRecipe(recipeId)).rejects.toThrow(errorMessage);
+
+      // Verify that the transaction methods were called
+      expect(mockTransaction.begin).toHaveBeenCalled();
+      expect(mockTransaction.rollback).toHaveBeenCalled();
+      expect(mockTransaction.commit).not.toHaveBeenCalled(); // Should not be called on failure
+
+      // Verify that the connection close method was called
+      expect(mockConnection.close).toHaveBeenCalled();
+    });
+
+    it('should close the database connection after execution', async () => {
+      const recipeId = '12345';
+
+      // Call the function
+      await deleteRecipe(recipeId);
+
+      // Verify that the connection close method was called
+      expect(mockConnection.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteRecipeIngredients', () => {
+    let mockConnection;
+    let mockTransaction;
+    let mockRequest;
+  
+    beforeEach(() => {
+      // Define mocks for request and transaction
+      mockRequest = {
+        input: jest.fn().mockReturnThis(),
+        query: jest.fn()
+      };
+  
+      mockTransaction = {
+        begin: jest.fn().mockResolvedValue(),
+        request: jest.fn().mockReturnValue(mockRequest),
+        commit: jest.fn().mockResolvedValue(),
+        rollback: jest.fn().mockResolvedValue()
+      };
+  
+      // Define mock for connection
+      mockConnection = {
+        transaction: jest.fn().mockReturnValue(mockTransaction),
+        close: jest.fn().mockResolvedValue()
+      };
+  
+      // Mock sql.connect to return mockConnection
+      sql.connect = jest.fn().mockResolvedValue(mockConnection);
+  
+      // Mock sql.Transaction to return mockTransaction
+      sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
     });
   
     afterEach(() => {
       jest.clearAllMocks();
     });
   
-    it('should delete a recipe and associated data successfully', async () => {
-      const recipeId = '12345';
+    it('should delete an ingredient from a recipe successfully', async () => {
+      // Mock the query result for checking ingredient existence
+      mockRequest.query.mockResolvedValueOnce({ recordset: [{ '': 1 }] });
+  
+      // Mock the query result for deletion
+      mockRequest.query.mockResolvedValueOnce({});
   
       // Call the function
-      await deleteRecipe(recipeId);
+      await deleteRecipeIngredients('recipe123', 'ingredient456');
   
-      // Verify that the transaction methods were called
+      // Assertions
+      expect(sql.connect).toHaveBeenCalledWith(dbConfig);
       expect(mockTransaction.begin).toHaveBeenCalled();
-      expect(mockTransaction.commit).toHaveBeenCalled();
-      expect(mockTransaction.rollback).not.toHaveBeenCalled(); // Should not be called on success
-  
-      // Verify that the delete queries were called with the correct parameters
+      expect(mockTransaction.request).toHaveBeenCalled();
+      expect(mockRequest.input).toHaveBeenCalledWith('recipeId', sql.VarChar(255), 'recipe123');
+      expect(mockRequest.input).toHaveBeenCalledWith('ingredientId', sql.VarChar(255), 'ingredient456');
+      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('SELECT COUNT(*)'));
       expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM RecipeIngredients'));
-      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM UserRecipes'));
-      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM Recipes'));
-  
-      // Verify that the connection close method was called
-      expect(mockConnection.close).toHaveBeenCalled();
+      expect(mockTransaction.commit).toHaveBeenCalled();
+      expect(mockConnection.close).toHaveBeenCalled(); 
     });
-  
+
+    it('should throw an error if the ingredient does not exist', async () => {
+      // Mock the query result for checking ingredient existence
+      mockRequest.query.mockResolvedValueOnce({ recordset: [{ '': 0 }] });
+
+      await expect(deleteRecipeIngredients('recipe123', 'ingredient456')).rejects.toThrow('Ingredient does not exist in the specified recipe');
+
+      // Assertions
+      expect(mockTransaction.rollback).toHaveBeenCalled();
+    });
+
     it('should handle errors during deletion and rollback transaction', async () => {
-      const recipeId = '12345';
-      const errorMessage = 'Deletion failed';
-  
-      // Mock query to throw an error
-      mockRequest.query.mockRejectedValueOnce(new Error(errorMessage));
-  
-      // Expect the deleteRecipe function to throw an error
-      await expect(deleteRecipe(recipeId)).rejects.toThrow(errorMessage);
-  
-      // Verify that the transaction methods were called
-      expect(mockTransaction.begin).toHaveBeenCalled();
+      // Mock the query result for checking ingredient existence
+      mockRequest.query.mockResolvedValueOnce({ recordset: [{ '': 1 }] });
+      // Simulate an error during deletion
+      mockRequest.query.mockRejectedValueOnce(new Error('Database error'));
+
+      await expect(deleteRecipeIngredients('recipe123', 'ingredient456')).rejects.toThrow('Database error');
+
+      // Assertions
       expect(mockTransaction.rollback).toHaveBeenCalled();
-      expect(mockTransaction.commit).not.toHaveBeenCalled(); // Should not be called on failure
-  
-      // Verify that the connection close method was called
-      expect(mockConnection.close).toHaveBeenCalled();
-    });
-  
-    it('should handle database query errors during transaction', async () => {
-      const recipeId = '12345';
-      const errorMessage = 'Query failed';
-  
-      // Mock query to throw an error
-      mockRequest.query.mockRejectedValueOnce(new Error(errorMessage));
-  
-      // Expect the deleteRecipe function to throw an error
-      await expect(deleteRecipe(recipeId)).rejects.toThrow(errorMessage);
-  
-      // Verify that the transaction methods were called
-      expect(mockTransaction.begin).toHaveBeenCalled();
-      expect(mockTransaction.rollback).toHaveBeenCalled();
-      expect(mockTransaction.commit).not.toHaveBeenCalled(); // Should not be called on failure
-  
-      // Verify that the connection close method was called
-      expect(mockConnection.close).toHaveBeenCalled();
-    });
-  
-    it('should close the database connection after execution', async () => {
-      const recipeId = '12345';
-  
-      // Call the function
-      await deleteRecipe(recipeId);
-  
-      // Verify that the connection close method was called
-      expect(mockConnection.close).toHaveBeenCalled();
     });
   });
 });

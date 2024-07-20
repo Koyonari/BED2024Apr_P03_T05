@@ -1361,9 +1361,10 @@ describe('Recipe Controller Tests', () => {
             await deleteRecipeByRecipeId(req, res);
 
             expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Error getting recipes' });
+            expect(res.json).toHaveBeenCalledWith({ message: 'Error deleting recipe', error: 'Invalid response from getAllStoredRecipes' });
             expect(recipe.deleteRecipe).not.toHaveBeenCalled();
         });
+
         // This has to be tested in isolation because it collides
         it.skip('should delete recipe successfully and respond with 200', async () => {
             getAllStoredRecipes.mockResolvedValueOnce([{ id: 'recipe456' }]);

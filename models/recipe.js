@@ -532,7 +532,7 @@ const deleteRecipe = async (recipeId) => {
   let pool;
   let transaction;
   let request;
-  
+
   try {
     // Establish database connection
     pool = await sql.connect(dbConfig);
@@ -540,7 +540,7 @@ const deleteRecipe = async (recipeId) => {
 
     // Begin a transaction to ensure data integrity
     await transaction.begin();
-    
+
     // Create a request from the transaction
     request = transaction.request();
     if (!request) {
@@ -612,10 +612,10 @@ const deleteRecipeIngredients = async (recipeId, ingredientId) => {
     await transaction.begin();
     // Check if the ingredient exists in the recipe
     const checkIngredientQuery = `
-  SELECT COUNT(*)
-  FROM RecipeIngredients
-  WHERE recipe_id = @recipeId AND ingredient_id = @ingredientId;
-`;
+        SELECT COUNT(*)
+        FROM RecipeIngredients
+        WHERE recipe_id = @recipeId AND ingredient_id = @ingredientId;
+      `;
     const checkResult = await transaction.request()
       .input('recipeId', sql.VarChar(255), recipeId)
       .input('ingredientId', sql.VarChar(255), ingredientId)
@@ -636,17 +636,22 @@ const deleteRecipeIngredients = async (recipeId, ingredientId) => {
     await transaction.commit();
     console.log(`Ingredient with ID ${ingredientId} from recipe ${recipeId} deleted successfully.`);
   } catch (error) {
-    await transaction.rollback();
+    if (transaction) {
+      try {
+        await transaction.rollback();
+      } catch (rollbackError) {
+        console.error('Error rolling back transaction:', rollbackError.message);
+      }
+    }
     console.error('Error deleting recipe ingredient:', error.message);
     throw error;
   } finally {
-    // Ensure connection pool is closed
-    try {
-      if (pool) {
+    if (pool) {
+      try {
         await pool.close();
+      } catch (closeError) {
+        console.error('Error closing connection pool:', closeError.message);
       }
-    } catch (closeError) {
-      console.error('Error closing connection pool:', closeError.message);
     }
   }
 };
