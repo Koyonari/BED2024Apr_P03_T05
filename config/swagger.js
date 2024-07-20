@@ -45,5 +45,68 @@ const doc = {
         dateOfBirth: { type: "string", example: "2024-06-06" }
       }
     }
+  }, Ingredient: {
+    type: 'object',
+    properties: {
+      ingredient_id: {
+        type: 'string',
+        example: '10115261'
+      },
+      ingredient_name: {
+        type: 'string',
+        example: 'fish fillets'
+      }
+    }
+  },
+  RecipeIngredient: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        example: 'apples'
+      },
+      amount: {
+        type: 'number',
+        format: 'float',
+        example: 2
+      },
+      unit: {
+        type: 'string',
+        example: 'g'
+      }
+    }
+  },
+  Recipe: {
+    type: 'object',
+    properties: {
+      id: {
+        type: 'string',
+        example: '912331'
+      },
+      title: {
+        type: 'string',
+        example: 'TestRecipePost'
+      },
+      imageurl: {
+        type: 'string',
+        example: 'https://img.spoonacular.com/recipes/639851-556x370.jpg'
+      },
+      servings: {
+        type: 'integer',
+        format: 'int32',
+        example: 2
+      },
+      readyInMinutes: {
+        type: 'integer',
+        format: 'int32',
+        example: 6
+      },
+      pricePerServing: {
+        type: 'number',
+        format: 'float',
+        example: 500
+      }
+    }
   }
 };
+

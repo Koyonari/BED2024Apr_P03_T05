@@ -88,7 +88,7 @@
     },
     "/refresh/": {
       "get": {
-        "description": "This end point is used to refresh the Json Web Access Token for the user, this is done by sending the refresh token in cookie",
+        "description": "This endpoint is used to refresh the Json Web Access Token for the user, this is done by sending the refresh token in cookie",
         "parameters": [
           {
             "name": "origin",
@@ -114,7 +114,7 @@
     },
     "/logout/": {
       "get": {
-        "description": "",
+        "description": "This endpoint is used to logout the user, this is done by deleting the refresh token in cookie and in MongoDB",
         "parameters": [
           {
             "name": "origin",
@@ -131,7 +131,7 @@
     },
     "/users/": {
       "get": {
-        "description": "",
+        "description": "This endpoint is used to obtain the information from all users, omitting password and refreshToken",
         "parameters": [
           {
             "name": "origin",
@@ -163,7 +163,7 @@
         }
       },
       "post": {
-        "description": "",
+        "description": "This endpoint is used for admins to create a new user.",
         "parameters": [
           {
             "name": "origin",
@@ -205,7 +205,7 @@
     },
     "/users/{id}": {
       "get": {
-        "description": "",
+        "description": " This endpoint is used to obtain the information from a specific user, omitting password and refreshToken",
         "parameters": [
           {
             "name": "id",
@@ -245,73 +245,25 @@
         }
       },
       "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
+        "description": " This endpoint is used to update the information from a specific user, have to input entire User Object",
+          "parameters": [
           {
             "name": "origin",
             "in": "header",
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "username": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "dietaryRestrictions": {
-                  "example": "any"
-                },
-                "intolerances": {
-                  "example": "any"
-                },
-                "excludedIngredients": {
-                  "example": "any"
-                },
-                "address": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "contact": {
-                  "example": "any"
-                },
-                "roles": {
-                  "example": "any"
-                },
-                "firstname": {
-                  "example": "any"
-                },
-                "lastname": {
-                  "example": "any"
-                },
-                "dateOfBirth": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/User"
             }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -336,7 +288,7 @@
         }
       },
       "delete": {
-        "description": "",
+        "description": "This endpoint is used to delete a specific user. Only admins can delete users.",
         "parameters": [
           {
             "name": "id",
@@ -348,16 +300,10 @@
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ],  "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -382,7 +328,7 @@
         }
       },
       "patch": {
-        "description": "",
+        "description": "This endpoint is used for users to update their own information, only having to input fields requiore to be updated",
         "parameters": [
           {
             "name": "id",
@@ -409,13 +355,17 @@
             "name": "body",
             "in": "body",
             "schema": {
-              "type": "object",
+              "type": "firstname",
               "properties": {
                 "username": {
                   "example": "any"
                 }
               }
             }
+          }
+        ], "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -442,22 +392,16 @@
     },
     "/pantry/ingredients": {
       "get": {
-        "description": "",
+        "description": "This endpoint is used to obtain ingredients from a user's pantry",
         "parameters": [
           {
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ], "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -544,6 +488,10 @@
             "in": "header",
             "type": "string"
           }
+        ], "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "401": {
@@ -595,6 +543,10 @@
               }
             }
           }
+        ], "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "201": {
@@ -634,6 +586,10 @@
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ], "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -692,6 +648,10 @@
                 }
               }
             }
+          }
+        ], "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -750,6 +710,10 @@
               }
             }
           }
+        ],"security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -807,6 +771,10 @@
               }
             }
           }
+        ],"security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -838,16 +806,10 @@
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ],"security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -862,22 +824,16 @@
     },
     "/recipes/fetch": {
       "get": {
-        "description": "",
+        "description": "This endpoint is to obtain recipes from SpoonacularAPI and automatically insert them into the database",
         "parameters": [
           {
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ],"security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -901,22 +857,16 @@
     },
     "/recipes/fetchuserrecipes": {
       "get": {
-        "description": "",
+        "description": "This endpoint is to obtain recipes attached to the user from the Database, obtains userid from JWT",
         "parameters": [
           {
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ],"security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -943,22 +893,16 @@
     },
     "/recipes/fetchrecipesadmin": {
       "get": {
-        "description": "",
+        "description": "This endpoint is to obtain all Recipes in the database, only admins can access this",
         "parameters": [
           {
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ],"security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -982,7 +926,7 @@
     },
     "/recipes/fetchingredients/{id}": {
       "get": {
-        "description": "",
+        "description": "This endpoint is to fetch ingredients from a specific recipe, input recipe id",
         "parameters": [
           {
             "name": "id",
@@ -994,16 +938,10 @@
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ],"security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1030,7 +968,7 @@
     },
     "/recipes/insertrecipe": {
       "post": {
-        "description": "",
+        "description": "This endpoint is for users to insert a recipe into the database",
         "parameters": [
           {
             "name": "origin",
@@ -1038,26 +976,16 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "length": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/Recipe"
             }
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1084,7 +1012,7 @@
     },
     "/recipes/insertrecipeingredients/{id}": {
       "post": {
-        "description": "",
+        "description": "This endpoint is for users to insert ingredients required for a specific recipe, identified by recipe id in parameter, userid taken from JWT",
         "parameters": [
           {
             "name": "id",
@@ -1098,14 +1026,16 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RecipeIngredient"
+            }
+          }
+        ],"security": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1132,7 +1062,7 @@
     },
     "/recipes/getfilteredrecipes": {
       "post": {
-        "description": "",
+        "description": "This endpoint is for users to post ingredients and get recipes that can be made with those ingredients, takes dietary information and userid from JWT",
         "parameters": [
           {
             "name": "origin",
@@ -1140,26 +1070,16 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "length": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/Ingredient"
             }
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1189,7 +1109,7 @@
     },
     "/recipes/updaterecipedetails/{id}": {
       "put": {
-        "description": "",
+        "description": "This endpoint is for users to update a recipe prexisiting in the database, recipeid taken from parameter, userid taken from JWT",
         "parameters": [
           {
             "name": "id",
@@ -1203,14 +1123,16 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Recipe"
+            }
+          }
+        ],"security": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1237,7 +1159,7 @@
     },
     "/recipes/updaterecipeadmin/{id}": {
       "put": {
-        "description": "",
+        "description": "This endpoint is for admins to update any recipe prexisiting in the database, recipeid taken from parameter.",
         "parameters": [
           {
             "name": "id",
@@ -1251,14 +1173,16 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Recipe"
+            }
+          }
+        ],"security": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1285,7 +1209,7 @@
     },
     "/recipes/editrecipedetails/{id}": {
       "patch": {
-        "description": "",
+        "description": "This endpoint is for users to update a recipe prexisiting in the database, only keying in fields necessary, recipeid taken from parameter, userid taken from JWT",
         "parameters": [
           {
             "name": "id",
@@ -1299,14 +1223,32 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "servings": {
+                  "type": "integer",
+                  "format": "int32",
+                  "example": 2
+                },
+                "readyInMinutes": {
+                  "type": "integer",
+                  "format": "int32",
+                  "example": 6
+                },
+                "pricePerServing": {
+                  "type": "number",
+                  "format": "float",
+                  "example": 500
+                }
+              }
+            }
+          }
+        ],"security": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1333,7 +1275,7 @@
     },
     "/recipes/editrecipeadmin/{id}": {
       "patch": {
-        "description": "",
+        "description": "This endpoint is for admins to update any recipe, only inputting required parameters, recipeid taken from parameter",
         "parameters": [
           {
             "name": "id",
@@ -1347,14 +1289,32 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "servings": {
+                  "type": "integer",
+                  "format": "int32",
+                  "example": 2
+                },
+                "readyInMinutes": {
+                  "type": "integer",
+                  "format": "int32",
+                  "example": 6
+                },
+                "pricePerServing": {
+                  "type": "number",
+                  "format": "float",
+                  "example": 500
+                }
+              }
+            }
+          }
+        ],"security": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1378,7 +1338,7 @@
     },
     "/recipes/deleterecipe/{id}": {
       "delete": {
-        "description": "",
+        "description": "This endpoint is for users to delete a recipe from the database, recipeid taken from parameter, userid taken from JWT",
         "parameters": [
           {
             "name": "id",
@@ -1390,16 +1350,10 @@
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ],"security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1426,7 +1380,7 @@
     },
     "/recipes/deleterecipeadmin/{id}": {
       "delete": {
-        "description": "",
+        "description": "This endpoint is for admins to delete any recipe prexisiting in the database, recipeid taken from parameter.",
         "parameters": [
           {
             "name": "id",
@@ -1438,16 +1392,10 @@
             "name": "origin",
             "in": "header",
             "type": "string"
-          },
+          }
+        ],"security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1474,7 +1422,7 @@
     },
     "/recipes/deleterecipeingredients/{id}": {
       "delete": {
-        "description": "",
+        "description": "This endpoint is for admins to delete recipe ingredients prexisiting in the database, recipeid taken from parameter, ingredients is in request body",
         "parameters": [
           {
             "name": "id",
@@ -1488,26 +1436,27 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "ingredient_id": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "10115261"
+                },
+                "ingredient_name": {
+                  "type": "string",
+                  "example": "fish fillets"
                 }
-              }
+              },
+              "additionalProperties": true
             }
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1550,6 +1499,10 @@
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1596,6 +1549,10 @@
             "in": "header",
             "type": "string"
           }
+        ],"security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -1634,6 +1591,10 @@
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1680,6 +1641,10 @@
             "in": "header",
             "type": "string"
           }
+        ],"security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -1725,6 +1690,10 @@
             "in": "header",
             "type": "string"
           }
+        ],"security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -1768,6 +1737,10 @@
             "in": "header",
             "type": "string"
           }
+        ],"security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -1806,6 +1779,10 @@
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1846,6 +1823,10 @@
             "in": "header",
             "type": "string"
           }
+        ],"security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -1884,6 +1865,10 @@
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1942,6 +1927,10 @@
               }
             }
           }
+        ],"security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -1989,6 +1978,10 @@
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -2046,6 +2039,10 @@
                 }
               }
             }
+          }
+        ],"security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -2155,6 +2152,69 @@
           "type": "string",
           "format": "date",
           "example": "2024-06-06"
+        }
+      }
+    },
+    "Ingredient": {
+      "type": "object",
+      "properties": {
+        "ingredient_id": {
+          "type": "string",
+          "example": "10115261"
+        },
+        "ingredient_name": {
+          "type": "string",
+          "example": "fish fillets"
+        }
+      }
+    },
+    "RecipeIngredient": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "apples"
+        },
+        "amount": {
+          "type": "number",
+          "format": "float",
+          "example": 2
+        },
+        "unit": {
+          "type": "string",
+          "example": "g"
+        }
+      }
+    },
+    "Recipe": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "912331"
+        },
+        "title": {
+          "type": "string",
+          "example": "TestRecipePost"
+        },
+        "imageurl": {
+          "type": "string",
+          "example": "https://img.spoonacular.com/recipes/639851-556x370.jpg"
+        },
+        "servings": {
+          "type": "integer",
+          "format": "int32",
+          "example": 2
+        },
+        "readyInMinutes": {
+          "type": "integer",
+          "format": "int32",
+          "example": 6
+        },
+        "pricePerServing": {
+          "type": "number",
+          "format": "float",
+          "example": 500
         }
       }
     }
