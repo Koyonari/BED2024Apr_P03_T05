@@ -45,6 +45,8 @@ const updateSQLUsername = async (userId, newUsername) => {
   }
 };
 const deleteSQLUser = async (userId) => {
+  console.log('Starting SQL user deletion for ID:', userId);
+
   try {
       const pool = await poolPromise;
       const sqlQuery = `
@@ -53,12 +55,17 @@ const deleteSQLUser = async (userId) => {
       `;
       const request = pool.request();
       request.input('userId', sql.VarChar(255), userId);
+
+      console.log('Executing SQL query:', sqlQuery);
       await request.query(sqlQuery);
+
+      console.log('SQL user deletion completed for ID:', userId);
   } catch (error) {
       console.error('Error deleting user from SQL:', error.message);
       throw error;
   }
 };
+
 
 
 module.exports = {
