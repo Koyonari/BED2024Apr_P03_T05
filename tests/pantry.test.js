@@ -1,7 +1,6 @@
 const sql = require("mssql");
 const axios = require("axios");
-const Pantry = require("../models/pantry"); // Adjust the path to your model
-
+const Pantry = require("../models/pantry"); 
 jest.mock("mssql");
 jest.mock("axios");
 

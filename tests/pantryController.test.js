@@ -1,4 +1,4 @@
-const Pantry = require('../models/pantry'); // Adjust the path to your model
+const Pantry = require('../models/pantry'); 
 const db = require('../middleware/db');
 const { getPantryIngredients, createPantry, getPantryIDByUserID, addIngredientToPantry, getIngredientsByPantryID, updateIngredientInPantry, deductIngredientQuantity, addIngredientQuantity, deleteIngredientFromPantry } = require('../controllers/pantryController');
 
