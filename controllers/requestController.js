@@ -74,10 +74,10 @@ async function getAcceptedRequestById(req, res) {
 
 // Create Ingredient List
 async function createIngredientList(req, res) {
-    const { request_id, pantry_id, ingredient_id } = req.body;
+    const { request_id, pantry_id } = req.body;
 
     try {
-        const createdIngreList = await Request.createIngredientList(request_id, pantry_id, ingredient_id);
+        const createdIngreList = await Request.createIngredientList(request_id, pantry_id);
         res.status(201).json(createdIngreList);
     } catch (error) {
         console.error("Error creating request ingredients:", error);

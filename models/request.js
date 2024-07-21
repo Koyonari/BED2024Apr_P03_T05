@@ -150,25 +150,24 @@ class Request {
     }
 
     // POST: Package 2.2.2 - User Creates Ingredient List based on Request
-    static async createIngredientList(request_id, pantry_id, ingredient_id) {
+    static async createIngredientList(request_id, pantry_id) {
         let connection;
         try {
             // Generate a unique reqing_id
             const reqing_id = generateUUID24();
-    
+        
             connection = await sql.connect(dbConfig);
             const sqlQuery = `
                 INSERT INTO RequestIngredients (reqing_id, request_id, pantry_id, ingredient_id) 
-                VALUES (@reqing_id, @request_id, @pantry_id, @ingredient_id);
+                VALUES (@reqing_id, @request_id, @pantry_id, NULL);
             `;
             const req = connection.request();
             req.input('reqing_id', reqing_id);
             req.input('request_id', request_id);
             req.input('pantry_id', pantry_id);
-            req.input('ingredient_id', ingredient_id);
-
+    
             await req.query(sqlQuery);
-            return { reqing_id, request_id, pantry_id, ingredient_id };
+            return { reqing_id, request_id, pantry_id, ingredient_id: null };
         } catch (error) {
             console.error("Error creating request ingredients:", error);
             throw error;
