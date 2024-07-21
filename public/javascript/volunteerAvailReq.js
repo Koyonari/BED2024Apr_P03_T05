@@ -76,13 +76,46 @@ function displayRequests(requests, container) {
     applyStyles();
 }
 
+async function fetchPantryId(userId) {
+    const response = await fetch(`http://localhost:3500/pantry/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error fetching pantry ID: ${response.statusText}`);
+    }
+
+    const pantryData = await response.json();
+    return pantryData.pantry_id;
+}
+
+async function fetchUser(userId) {
+    const response = await fetch(`http://localhost:3500/users/${userId}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error fetching user data: ${response.statusText}`);
+    }
+
+    const userData = await response.json();
+    return userData;
+}
+
 initApp();
 
 // GET: getRequestById
 // Function to handle "View Details" button click
 async function viewDetails(key) {
     try {
-        // Get the request_id from the selected request
         let requestId = globalRequests[key].request_id;
         const response = await fetch(`http://localhost:3500/requests/req/${requestId}`, {
             method: 'GET',
@@ -96,6 +129,19 @@ async function viewDetails(key) {
             const request = await response.json();
             console.log('Request details fetched:', request);
 
+            // Call to get user address, email, contact from mongo
+            fetchUser(userId)
+                .then(user => {
+                    const { address, email, contact } = user;
+                    document.getElementById('ua').innerText = `User Address: ${address}`;
+                    document.getElementById('ucontact').innerText = `User Number: ${contact}`;
+                    document.getElementById('uemail').innerText = `User Email: ${email}`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                }
+            );
+
             // Populate modal with request details
             document.getElementById('modal').dataset.key = key;
             document.getElementById('modalNum').innerText = `Request ${document.querySelector(`.item:nth-child(${key + 1})`).dataset.num}`;
@@ -104,10 +150,8 @@ async function viewDetails(key) {
             document.getElementById('modalStatus').innerText = `Status:  ${getStatusText(request)}`;
             document.getElementById('modalDescription').innerText = `Description: ${request.description}`;
 
-            // Give margin bottom to modal num
-            let modalNumElement = document.getElementById('modalNum');
-            modalNumElement.style.marginBottom = '10px'; 
-            modalNumElement.style.marginBottom = '25px'; 
+            // Fetch and display ingredients
+            await displayReqIng(requestId);
 
             // Show the modal
             toggleModal();
@@ -122,6 +166,45 @@ async function viewDetails(key) {
     }
 }
 
+async function displayReqIng(requestId) {
+    try {
+        const response = await fetch(`http://localhost:3500/requests/req/ing/${requestId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            const ingredients = await response.json();
+            console.log('Ingredients fetched:', ingredients);
+
+            // Assume we are taking the first element for demonstration
+            const ingredient = ingredients[0];
+
+            // Set the text for each corresponding HTML element
+            const username = document.getElementById('u_name');
+            const ingname = document.getElementById('ing_name');
+            const quantity = document.getElementById('quantity');
+            const volunteerName = document.getElementById('v_name');
+
+            if (ingredient.volunteer_name != null) {
+                volunteerName.textContent = `Volunteer: ${ingredient.volunteer_name}`;
+            }
+            username.textContent = `User: ${ingredient.user_name}`;
+            ingname.textContent = `Ingredient: ${ingredient.ingredient_name}`;
+            quantity.textContent = `Quantity: ${ingredient.ingredient_quantity}`;
+        } else {
+            const error = await response.json();
+            console.error('Error fetching ingredients:', error);
+            alert(`Error fetching ingredients: ${error.message}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while fetching ingredients');
+    }
+}
 // Helper function to determine status text
 function getStatusText(request) {
     if (request.isCompleted) {
