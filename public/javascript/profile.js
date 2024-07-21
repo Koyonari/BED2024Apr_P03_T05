@@ -100,7 +100,7 @@ async function fetchUser() {
     }
 
     const profileData = await response.json();
-    
+
     // Log the profile data fetched
     console.log("Profile data fetched: ", profileData);
     populateProfileFields(profileData);
@@ -218,13 +218,19 @@ function checkAllProfileChanged() {
   let updates = {};
 
   // Check each field to see if it has changed
-  if (document.getElementById("username").value !== currentUserProfile.username) {
+  if (
+    document.getElementById("username").value !== currentUserProfile.username
+  ) {
     updates.username = document.getElementById("username").value;
   }
-  if (document.getElementById("firstName").value !== currentUserProfile.firstName) {
+  if (
+    document.getElementById("firstName").value !== currentUserProfile.firstName
+  ) {
     updates.firstname = document.getElementById("firstName").value;
   }
-  if (document.getElementById("lastName").value !== currentUserProfile.lastName) {
+  if (
+    document.getElementById("lastName").value !== currentUserProfile.lastName
+  ) {
     updates.lastname = document.getElementById("lastName").value;
   }
   if (document.getElementById("dob").value !== currentUserProfile.dob) {
@@ -243,14 +249,17 @@ function checkAllProfileChanged() {
     updates.password = document.getElementById("password").value;
   }
 
-  // Checks if the user is a "User" role and checks for any changes in the dietary restrictions, 
+  // Checks if the user is a "User" role and checks for any changes in the dietary restrictions,
   // intolerances and excluded ingredients
   if (currentUserProfile.role === "User") {
     let excludedIngredients = document
       .getElementById("excluded-ingredients")
       .value.split(", ")
       .map((ingredient) => ingredient.trim());
-    if (excludedIngredients.toString() !== currentUserProfile.excludedIngredients.toString()) {
+    if (
+      excludedIngredients.toString() !==
+      currentUserProfile.excludedIngredients.toString()
+    ) {
       updates.excludedIngredients = excludedIngredients;
     }
 
@@ -260,7 +269,10 @@ function checkAllProfileChanged() {
       .forEach((checkbox) => {
         dietaryRestrictions.push(checkbox.value);
       });
-    if (dietaryRestrictions.toString() !== currentUserProfile.dietaryRestrictions.toString()) {
+    if (
+      dietaryRestrictions.toString() !==
+      currentUserProfile.dietaryRestrictions.toString()
+    ) {
       updates.dietaryRestrictions = dietaryRestrictions;
     }
 
@@ -270,7 +282,9 @@ function checkAllProfileChanged() {
       .forEach((checkbox) => {
         intolerances.push(checkbox.value);
       });
-    if (intolerances.toString() !== currentUserProfile.intolerances.toString()) {
+    if (
+      intolerances.toString() !== currentUserProfile.intolerances.toString()
+    ) {
       updates.intolerances = intolerances;
     }
   }
@@ -278,7 +292,10 @@ function checkAllProfileChanged() {
   // This will check the update object created(new user inputs) and compare it with the current profile data
   // via their object key length , if the length is the same, means all data were changed and will call
   // PUT updateProfile() else it will call PATCH editProfile() to update the data
-  if (Object.keys(updates).length === Object.keys(currentUserProfile).length-1) {
+  if (
+    Object.keys(updates).length ===
+    Object.keys(currentUserProfile).length - 1
+  ) {
     console.log("Calling PUT");
     updateProfile(); // Use PUT
   } else {
@@ -287,7 +304,7 @@ function checkAllProfileChanged() {
   }
 }
 
-// Update Profile (PUT) 
+// Update Profile (PUT)
 async function updateProfile() {
   try {
     const accessToken = localStorage.getItem("AccessToken");
@@ -301,13 +318,18 @@ async function updateProfile() {
       firstname: document.getElementById("firstName").value,
       lastname: document.getElementById("lastName").value,
       roles: {
-        [document.getElementById("role").value]: getRoleCode(document.getElementById("role").value)
+        [document.getElementById("role").value]: getRoleCode(
+          document.getElementById("role").value
+        ),
       },
       address: document.getElementById("address").value,
       email: document.getElementById("email").value,
       contact: document.getElementById("contact").value,
       dateOfBirth: document.getElementById("dob").value,
     };
+
+    // Log profile data before sending
+    console.log("Profile data to send: ", profile);
 
     if (profile.roles.User === 2001) {
       profile.dietaryRestrictions = [];
@@ -330,6 +352,9 @@ async function updateProfile() {
         .map((ingredient) => ingredient.trim());
     }
 
+    // Log the final profile data to be sent
+    console.log("Final profile data to send: ", JSON.stringify(profile));
+
     const response = await fetch(`http://localhost:3500/users/${userId}`, {
       method: "PUT",
       headers: {
@@ -340,7 +365,10 @@ async function updateProfile() {
     });
 
     if (!response.ok) {
-      throw new Error(`Error updating user data: ${response.statusText}`);
+      const errorText = await response.text(); // Get error text
+      throw new Error(
+        `Error updating user data: ${response.statusText} - ${errorText}`
+      );
     }
 
     const updatedProfile = await response.json();
@@ -350,11 +378,11 @@ async function updateProfile() {
     await fetchUser();
   } catch (error) {
     console.error(error);
-    alert("Failed to update profile.");
+    alert(`Failed to update profile: ${error.message}`);
   }
 }
 
-// Edit Profile (PATCH) 
+// Edit Profile (PATCH)
 async function editProfile(updates) {
   try {
     const accessToken = localStorage.getItem("AccessToken");

@@ -149,6 +149,81 @@ class Request {
         }
     }
 
+    // POST: Package 2.2.2 - User Creates Ingredient List based on Request
+    static async createIngredientList(request_id, pantry_id, ingredient_id) {
+        let connection;
+        try {
+            // Generate a unique reqing_id
+            const reqing_id = generateUUID24();
+    
+            connection = await sql.connect(dbConfig);
+            const sqlQuery = `
+                INSERT INTO RequestIngredients (reqing_id, request_id, pantry_id, ingredient_id) 
+                VALUES (@reqing_id, @request_id, @pantry_id, @ingredient_id);
+            `;
+            const req = connection.request();
+            req.input('reqing_id', reqing_id);
+            req.input('request_id', request_id);
+            req.input('pantry_id', pantry_id);
+            req.input('ingredient_id', ingredient_id);
+
+            await req.query(sqlQuery);
+            return { reqing_id, request_id, pantry_id, ingredient_id };
+        } catch (error) {
+            console.error("Error creating request ingredients:", error);
+            throw error;
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
+    // GET: Package 2.2.2 - User Views Request Ingredient List
+    static async getRequestIngredientById(id) {
+        let connection;
+        try {
+            connection = await sql.connect(dbConfig);
+            const sqlQuery = `
+                SELECT 
+                    u.username AS user_name,
+                    u.user_id AS user_id,
+                    v.username AS volunteer_name,
+                    v.user_id AS volunteer_id,
+                    r.title AS request_title,
+                    r.category AS request_category,
+                    r.description AS request_description,
+                    i.ingredient_name AS ingredient_name,
+                    pi.quantity AS ingredient_quantity
+                FROM 
+                    RequestIngredients ri
+                JOIN 
+                    requests r ON ri.request_id = r.request_id
+                JOIN 
+                    Users u ON r.user_id = u.user_id
+                LEFT JOIN 
+                    Users v ON r.volunteer_id = v.user_id
+                JOIN 
+                    Ingredients i ON ri.ingredient_id = i.ingredient_id
+                JOIN 
+                    PantryIngredient pi ON pi.pantry_id = ri.pantry_id AND pi.ingredient_id = ri.ingredient_id
+                WHERE 
+                    r.request_id = @request_id;
+            `;
+            const request = connection.request();
+            request.input("request_id", id);
+            const result = await request.query(sqlQuery);
+            return result.recordset;
+        } catch (error) {
+            console.error("Error getting request by request ID", error);
+            throw error;
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
     // PATCH: Package 2.2.2 - Allow Users to update the status to true for isCompleted
     static async updateCompletedRequest(id) {
         const connection = await sql.connect(dbConfig);

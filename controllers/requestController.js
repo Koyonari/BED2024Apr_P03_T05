@@ -72,6 +72,35 @@ async function getAcceptedRequestById(req, res) {
     }
 }
 
+// Create Ingredient List
+async function createIngredientList(req, res) {
+    const { request_id, pantry_id, ingredient_id } = req.body;
+
+    try {
+        const createdIngreList = await Request.createIngredientList(request_id, pantry_id, ingredient_id);
+        res.status(201).json(createdIngreList);
+    } catch (error) {
+        console.error("Error creating request ingredients:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+// Get Request Ingredients
+async function getRequestIngredientById(req, res) {
+    const requestId = req.params.id;
+
+    try {
+        const requestIngredients = await Request.getRequestIngredientById(requestId);
+        if (requestIngredients.length === 0) {
+            return res.status(404).json({ message: 'Request not found' });
+        }
+        res.status(200).json(requestIngredients);
+    } catch (error) {
+        console.error("Error fetching request ingredients:", error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
 // Update request to completed
 async function updateCompletedRequest(req, res) {
     const requestId = req.params.id;
@@ -199,6 +228,8 @@ module.exports = {
     getAvailableRequest,
     updateAcceptedRequest,
     getAcceptedRequestById,
+    createIngredientList,
+    getRequestIngredientById,
     updateCompletedRequest,
     getRequestById,
     getUserDetailsById,
