@@ -184,16 +184,16 @@ document.addEventListener("DOMContentLoaded", (function () {
     }
 }
 
-async function addToUserPantry(userPantryId, ingredientId, quantity) {
+async function addToUserPantry(userPantryId, ingredientName, quantity) {
     try {
-        console.log(`Attempting to add ${quantity} of ingredient ${ingredientId} to pantry ${userPantryId}`);
+        console.log(`Attempting to add ${quantity} of ingredient ${ingredientName} to pantry ${userPantryId}`);
         const response = await fetch(`http://localhost:3500/pantry/${userPantryId}/ingredients`, {
-            method: "PUT",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${accessToken}`,
             },
-            body: JSON.stringify({ ingredient_id: ingredientId, quantity }),
+            body: JSON.stringify({ ingredientName, quantity }),
         });
         if (!response.ok) {
             const errorData = await response.json();
@@ -201,7 +201,7 @@ async function addToUserPantry(userPantryId, ingredientId, quantity) {
             throw new Error(`Server responded with ${response.status}: ${JSON.stringify(errorData)}`);
         }
         const data = await response.json();
-        console.log(`Added ${quantity} of ingredient ${ingredientId} to user pantry:`, data);
+        console.log(`Added ${quantity} of ingredient ${ingredientName} to user pantry:`, data);
         return data;
     } catch (error) {
         console.error("Error in addToUserPantry:", error);
@@ -228,7 +228,7 @@ async function processDonation() {
 
                 // Add ingredients to user's pantry
                 console.log(`Adding ${ingredient.quantity} of ${ingredient.ingredient_name} to user's pantry`);
-                await addToUserPantry(userPantryId, ingredient.ingredient_id, ingredient.quantity);
+                await addToUserPantry(userPantryId, ingredient.ingredient_name, ingredient.quantity);
             } catch (error) {
                 console.error(`Error processing ingredient ${ingredient.ingredient_name}:`, error);
                 throw error; // Re-throw to stop processing if an error occurs
