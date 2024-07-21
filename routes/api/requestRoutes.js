@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const reqController = require("../../controllers/requestController");
-const { validateRequest, validatePatchAcceptedRequest, validatePatchApproveRequest } = require("../../middleware/validateRequest");
+const { validateRequest, validateCreateIngredientList, validatePatchAcceptedRequest, validatePatchApproveRequest } = require("../../middleware/validateRequest");
 
 // POST ROUTE
 // POST: User Creates New Request
 router.post('/req', validateRequest, reqController.createRequest);
+// POST: User Create Ingredient List When Making New Request
+router.post('/inglist', validateCreateIngredientList, reqController.createIngredientList);
 
 // GET ROUTES
 // GET: User Views Own Request
@@ -15,7 +17,9 @@ router.get("/available", reqController.getAvailableRequest);
 // GET: Volunteer View Own Accepted Requests
 router.get("/req/accepted/:id", reqController.getAcceptedRequestById);
 // GET: User, Volunteer, Admin View Details of Request
-router.get("/req/:id", reqController.getRequestById); //need add ingredient list + volunteer id, name, contact, email in charge
+router.get("/req/:id", reqController.getRequestById);
+// GET: User, Volunteer, Admin View Request Ingredients
+router.get("/req/ing/:id", reqController.getRequestIngredientById);
 // GET: Admin Views Accepted Requests
 router.get("/accepted", reqController.getAcceptedRequest);
 // GET: Admin Views Completed Requests

@@ -5,6 +5,7 @@ let listvol = document.querySelector(".list-vol");
 // Fetch user id and token
 const userId = localStorage.getItem('UserId');
 const accessToken = localStorage.getItem('AccessToken');
+const pantryId = localStorage.getItem('PantryID');
 
 // Global variable to store the requests array
 let globalRequests = [];
@@ -71,6 +72,36 @@ function displayRequests(requests, container) {
     });
     applyStyles();
 }
+
+async function fetchUser(userId) {
+    const response = await fetch(`http://localhost:3500/users/${userId}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error fetching user data: ${response.statusText}`);
+    }
+
+    const userData = await response.json();
+    return userData;
+}
+
+// Call to get user address, email, contact from mongo
+fetchUser(userId)
+    .then(user => {
+        const { address, email, contact } = user;
+        console.log(`Address: ${address}`);
+        console.log(`Email: ${email}`);
+        console.log(`Contact: ${contact}`);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    }
+);
 
 // Initialize the app
 initApp();
