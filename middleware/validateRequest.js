@@ -22,9 +22,8 @@ const validateRequest = (req, res, next) => {
 const validateCreateIngredientList = (req, res, next) => {
   const schema = Joi.object({
     request_id: Joi.string().required(),
-    pantry_id: Joi.string().required(),
-    ingredient_id: Joi.string().required()
-  });
+    pantry_id: Joi.string().required()
+   });
 
   const validation = schema.validate(req.body, { abortEarly: false }); // Validate request body
 

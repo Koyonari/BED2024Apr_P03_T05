@@ -25,7 +25,8 @@ CREATE TABLE Pantry (
 -- Sample data for Pantry with actual users
 INSERT INTO Pantry (pantry_id, user_id) VALUES 
 ('Xy21z', '669ab53e52ed8860e2afe76b'),
-('oTx5s', '669ab54752ed8860e2afe76e');
+('oTx5s', '669ab54752ed8860e2afe76e'),
+('eF7Mq', '669abb1ffe3958443cdc03e1');
 
 -- Create Ingredients Table
 CREATE TABLE Ingredients (
@@ -51,7 +52,8 @@ CREATE TABLE PantryIngredient (
 
 INSERT INTO PantryIngredient (pantry_id, ingredient_id, quantity) VALUES 
 ('oTx5s', '5062', 4),
-('Xy21z', '10115261', 10);
+('Xy21z', '10115261', 10),
+('eF7Mq', '10115261', 2);
 
 -- Create Recipes Table
 CREATE TABLE Recipes (
@@ -114,31 +116,6 @@ CREATE TABLE RequestIngredients (
 -- Example insert statement
 INSERT INTO RequestIngredients (reqing_id, request_id, pantry_id, ingredient_id) VALUES 
 ('231321421321', 'RMwDpaQ6fAXQPuID87sJqOKV', 'Xy21z', '10115261');
-
-SELECT 
-    u.username AS user_name,
-    u.user_id AS user_id,
-    v.username AS volunteer_name,
-    v.user_id AS volunteer_id,
-    r.title AS request_title,
-    r.category AS request_category,
-    r.description AS request_description,
-    i.ingredient_name AS ingredient_name,
-    pi.quantity AS ingredient_quantity
-FROM 
-    RequestIngredients ri
-JOIN 
-    requests r ON ri.request_id = r.request_id
-JOIN 
-    Users u ON r.user_id = u.user_id
-LEFT JOIN 
-    Users v ON r.volunteer_id = v.user_id
-JOIN 
-    Ingredients i ON ri.ingredient_id = i.ingredient_id
-JOIN 
-    PantryIngredient pi ON pi.pantry_id = ri.pantry_id AND pi.ingredient_id = ri.ingredient_id
-WHERE 
-    r.user_id = '669abb1ffe3958443cdc03e1';  -- filtering based on a specific user_id
 
 SELECT * FROM Users;
 SELECT * FROM Pantry;

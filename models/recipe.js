@@ -56,7 +56,7 @@ const getRecipeById = async (recipeId) => {
 
     // SQL query to get a recipe by its ID
     const query = `
-      SELECT id, title, imageurl, servings, readyInMinutes, pricePerServing
+      SELECT id, title, imageurl, servings, readyInMinutes, pricePerServing, spoonacularId
       FROM Recipes
       WHERE id = @recipeId;
     `;
@@ -91,7 +91,8 @@ const getAllStoredRecipes = async () => {
 
     // SQL query to get all recipes
     const query = `
-      SELECT id, title, imageurl, servings, readyInMinutes, pricePerServing
+      SELECT id, title, imageurl, servings, readyInMinutes, pricePerServing, spoonacularId
+      FROM Recipes
       FROM Recipes;
     `;
 
