@@ -534,6 +534,10 @@ const deleteRecipe = async (recipeId) => {
   let transaction;
 
   try {
+      // Validate recipeId
+      if (!recipeId) {
+        throw new DatabaseError('Invalid recipe ID provided.');
+      }
       // Establish database connection
       pool = await sql.connect(dbConfig);
       transaction = new sql.Transaction(pool);
@@ -551,7 +555,6 @@ const deleteRecipe = async (recipeId) => {
       await request
           .input('recipeId', sql.VarChar(255), recipeId)
           .query(deleteRecipeIngredientsQuery);
-          console.log('Deleted from RecipeIngredients.');
 
       // Create and execute the second delete query for UserRecipes
       request = new sql.Request(transaction); // Create a new request object
@@ -562,7 +565,6 @@ const deleteRecipe = async (recipeId) => {
       await request
           .input('recipeId', sql.VarChar(255), recipeId)
           .query(deleteUserRecipesQuery);
-          console.log('Deleted from UserRecipes.');
 
       // Create and execute the third delete query for Recipes
       request = new sql.Request(transaction); // Create a new request object
@@ -573,7 +575,6 @@ const deleteRecipe = async (recipeId) => {
       await request
           .input('recipeId', sql.VarChar(255), recipeId)
           .query(deleteRecipeQuery);
-          console.log('Deleted from Recipes.');
 
       // Commit the transaction if all operations are successful
       await transaction.commit();
