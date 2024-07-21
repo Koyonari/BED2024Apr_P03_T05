@@ -275,169 +275,204 @@ describe('Recipe Module Tests', () => {
         .rejects.toThrow('Insert/Update failed');
     });
   });
+
   describe('updateRecipeDetails', () => {
     let mockConnection;
     let mockRequest;
 
     beforeEach(() => {
-      mockRequest = {
-        input: jest.fn().mockReturnThis(),
-        query: jest.fn()
-      };
-      mockConnection = {
-        request: jest.fn(() => mockRequest)
-      };
-      sql.connect.mockResolvedValue(mockConnection);
+        mockRequest = {
+            input: jest.fn().mockReturnThis(),
+            query: jest.fn()
+        };
+        mockConnection = {
+            request: jest.fn(() => mockRequest)
+        };
+        sql.connect.mockResolvedValue(mockConnection);
     });
 
     it('should update recipe details successfully', async () => {
-      const mockRecipe = {
-        id: '12345',
-        title: 'Updated Spaghetti Bolognese',
-        image: 'http://example.com/new-image.jpg',
-        servings: 4,
-        readyInMinutes: 30,
-        pricePerServing: 6,
-        spoonacularId: '12345'
-      };
-      const recipeId = '12345';
+        const mockRecipe = {
+            id: '12345',
+            title: 'Updated Spaghetti Bolognese',
+            imageurl: 'http://example.com/new-image.jpg',
+            servings: 4,
+            readyInMinutes: 30,
+            pricePerServing: 6,
+            spoonacularId: '12345'
+        };
+        const recipeId = '12345';
 
-      // Simulate successful query
-      mockRequest.query.mockResolvedValueOnce({ recordset: [] });
+        // Simulate successful query
+        mockRequest.query.mockResolvedValueOnce({ recordset: [] });
 
-      // Call the function
-      await updateRecipeDetails(mockConnection, mockRecipe, recipeId);
+        // Call the function
+        await updateRecipeDetails(mockConnection, mockRecipe, recipeId);
 
-      // Verify that input parameters are set correctly
-      expect(mockRequest.input).toHaveBeenCalledWith('id_update', sql.VarChar(255), recipeId);
-      expect(mockRequest.input).toHaveBeenCalledWith('title', sql.NVarChar, mockRecipe.title);
-      expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.NVarChar, mockRecipe.image || '');
-      expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
-      expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
-      expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
-      expect(mockRequest.input).toHaveBeenCalledWith('spoonacularId', sql.VarChar(255), mockRecipe.id.toString());
+        // Verify that input parameters are set correctly
+        expect(mockRequest.input).toHaveBeenCalledWith('id_update', sql.VarChar(255), recipeId);
+        expect(mockRequest.input).toHaveBeenCalledWith('title', sql.NVarChar, mockRecipe.title);
+        expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.NVarChar, mockRecipe.imageurl || '');
+        expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
+        expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
+        expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
+        expect(mockRequest.input).toHaveBeenCalledWith('spoonacularId', sql.VarChar(255), mockRecipe.id || '');
 
-      // Verify that the query method was called with the correct SQL update query
-      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('UPDATE Recipes'));
+        // Verify that the query method was called with the correct SQL update query
+        expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('UPDATE Recipes'));
     });
 
     it('should throw an error if recipe object is invalid', async () => {
-      const invalidRecipe = { id: '12345' }; // Missing title
+        const invalidRecipe = { id: '12345' }; // Missing title
 
-      await expect(updateRecipeDetails(mockConnection, invalidRecipe, '12345'))
-        .rejects.toThrow('Recipe object, id, or title is undefined');
+        await expect(updateRecipeDetails(mockConnection, invalidRecipe, '12345'))
+            .rejects.toThrow('Recipe object, id, or title is undefined');
     });
 
     it('should handle errors from the database query', async () => {
-      const mockRecipe = {
-        id: '12345',
-        title: 'Updated Spaghetti Bolognese',
-        image: 'http://example.com/new-image.jpg',
-        servings: 4,
-        readyInMinutes: 30,
-        pricePerServing: 6,
-        spoonacularId: '12345'
-      };
-      const recipeId = '12345';
-      const error = new Error('Query failed');
+        const mockRecipe = {
+            id: '12345',
+            title: 'Updated Spaghetti Bolognese',
+            imageurl: 'http://example.com/new-image.jpg',
+            servings: 4,
+            readyInMinutes: 30,
+            pricePerServing: 6,
+            spoonacularId: '12345'
+        };
+        const recipeId = '12345';
+        const error = new Error('Query failed');
 
-      // Simulate query failure
-      mockRequest.query.mockRejectedValueOnce(error);
+        // Simulate query failure
+        mockRequest.query.mockRejectedValueOnce(error);
 
-      await expect(updateRecipeDetails(mockConnection, mockRecipe, recipeId))
-        .rejects.toThrow('Query failed');
+        await expect(updateRecipeDetails(mockConnection, mockRecipe, recipeId))
+            .rejects.toThrow('Query failed');
     });
-  });
-  describe('updateRecipeDetailsbyUser', () => {
+});
+
+describe('updateRecipeDetailsbyUser', () => {
     let mockConnection;
     let mockRequest;
 
     beforeEach(() => {
-      mockRequest = {
-        input: jest.fn().mockReturnThis(),
-        query: jest.fn()
-      };
-      mockConnection = {
-        request: jest.fn(() => mockRequest)
-      };
-      sql.connect.mockResolvedValue(mockConnection);
+        // Initialize mockRequest and mockConnection
+        mockRequest = {
+            input: jest.fn().mockReturnThis(),
+            query: jest.fn()
+        };
+        mockConnection = {
+            request: jest.fn(() => mockRequest)
+        };
+        sql.connect = jest.fn().mockResolvedValue(mockConnection); // Mock sql.connect to return mockConnection
     });
 
     it('should update recipe details successfully', async () => {
-      const mockRecipe = {
-        id: '12345',
-        title: 'Updated Spaghetti Bolognese',
-        image: 'http://example.com/new-image.jpg',
-        servings: 4,
-        readyInMinutes: 30,
-        pricePerServing: 6,
-        spoonacularId: '12345'
-      };
+        const mockRecipe = {
+            id: '12345',
+            title: 'Updated Spaghetti Bolognese',
+            imageurl: 'http://example.com/new-image.jpg',
+            servings: 4,
+            readyInMinutes: 30,
+            pricePerServing: 6,
+            spoonacularId: '12345'
+        };
 
-      // Simulate successful query
-      mockRequest.query.mockResolvedValueOnce({ recordset: [] });
+        // Simulate successful query
+        mockRequest.query.mockResolvedValueOnce({ recordset: [] });
 
-      // Call the function
-      await updateRecipeDetailsbyUser(mockRecipe);
+        // Call the function
+        await updateRecipeDetailsbyUser(mockRecipe);
 
-      // Verify that input parameters are set correctly
-      expect(mockRequest.input).toHaveBeenCalledWith('id_update', sql.VarChar(255), mockRecipe.id.toString());
-      expect(mockRequest.input).toHaveBeenCalledWith('title', sql.NVarChar, mockRecipe.title);
-      expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.NVarChar, mockRecipe.image || '');
-      expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
-      expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
-      expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
-      expect(mockRequest.input).toHaveBeenCalledWith('spoonacularId', sql.VarChar(255), null);
+        // Verify that input parameters are set correctly
+        expect(mockRequest.input).toHaveBeenCalledWith('id_update', sql.VarChar(255), mockRecipe.id.toString());
+        expect(mockRequest.input).toHaveBeenCalledWith('title', sql.VarChar, mockRecipe.title);
+        expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.VarChar, mockRecipe.imageurl);
+        expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
+        expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
+        expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
+        expect(mockRequest.input).toHaveBeenCalledWith('spoonacularId', sql.VarChar(255), mockRecipe.id);
 
-      // Verify that the query method was called with the correct SQL update query
-      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('UPDATE Recipes'));
+        // Verify that the query method was called with the correct SQL update query
+        expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('UPDATE Recipes'));
+    });
+
+    it('should update recipe details without spoonacularId if not provided', async () => {
+        const mockRecipe = {
+            id: '12345',
+            title: 'Updated Spaghetti Bolognese',
+            imageurl: 'http://example.com/new-image.jpg',
+            servings: 4,
+            readyInMinutes: 30,
+            pricePerServing: 6
+        };
+
+        // Simulate successful query
+        mockRequest.query.mockResolvedValueOnce({ recordset: [] });
+
+        // Call the function
+        await updateRecipeDetailsbyUser(mockRecipe);
+
+        // Verify that input parameters are set correctly
+        expect(mockRequest.input).toHaveBeenCalledWith('id_update', sql.VarChar(255), mockRecipe.id.toString());
+        expect(mockRequest.input).toHaveBeenCalledWith('title', sql.VarChar, mockRecipe.title);
+        expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.VarChar, mockRecipe.imageurl);
+        expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
+        expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
+        expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
+
+        // Verify that input for spoonacularId is not included
+        expect(mockRequest.input).not.toHaveBeenCalledWith('spoonacularId', sql.VarChar(255), expect.anything());
+
+        // Verify that the query method was called with the correct SQL update query
+        expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('UPDATE Recipes'));
     });
 
     it('should throw an error if recipe object is invalid', async () => {
-      const invalidRecipe = { id: '12345' }; // Missing title
+        const invalidRecipe = { id: '12345' }; // Missing title
 
-      await expect(updateRecipeDetailsbyUser(invalidRecipe))
-        .rejects.toThrow('Recipe object, id, or title is undefined');
+        await expect(updateRecipeDetailsbyUser(invalidRecipe))
+            .rejects.toThrow('Recipe object, id, or title is undefined');
     });
 
     it('should handle errors from the database connection', async () => {
-      const mockRecipe = {
-        id: '12345',
-        title: 'Updated Spaghetti Bolognese',
-        image: 'http://example.com/new-image.jpg',
-        servings: 4,
-        readyInMinutes: 30,
-        pricePerServing: 6,
-        spoonacularId: '12345'
-      };
-      const error = new Error('Connection failed');
+        const mockRecipe = {
+            id: '12345',
+            title: 'Updated Spaghetti Bolognese',
+            imageurl: 'http://example.com/new-image.jpg',
+            servings: 4,
+            readyInMinutes: 30,
+            pricePerServing: 6,
+            spoonacularId: '12345'
+        };
+        const error = new Error('Connection failed');
 
-      // Simulate connection failure
-      sql.connect.mockRejectedValueOnce(error);
+        // Simulate connection failure
+        sql.connect.mockRejectedValueOnce(error);
 
-      await expect(updateRecipeDetailsbyUser(mockRecipe))
-        .rejects.toThrow('Connection failed');
+        await expect(updateRecipeDetailsbyUser(mockRecipe))
+            .rejects.toThrow('Connection failed');
     });
 
     it('should handle errors from the database query', async () => {
-      const mockRecipe = {
-        id: '12345',
-        title: 'Updated Spaghetti Bolognese',
-        image: 'http://example.com/new-image.jpg',
-        servings: 4,
-        readyInMinutes: 30,
-        pricePerServing: 6,
-        spoonacularId: '12345'
-      };
-      const queryError = new Error('Query failed');
+        const mockRecipe = {
+            id: '12345',
+            title: 'Updated Spaghetti Bolognese',
+            imageurl: 'http://example.com/new-image.jpg',
+            servings: 4,
+            readyInMinutes: 30,
+            pricePerServing: 6,
+            spoonacularId: '12345'
+        };
+        const queryError = new Error('Query failed');
 
-      // Simulate query failure
-      mockRequest.query.mockRejectedValueOnce(queryError);
+        // Simulate query failure
+        mockRequest.query.mockRejectedValueOnce(queryError);
 
-      await expect(updateRecipeDetailsbyUser(mockRecipe))
-        .rejects.toThrow('Query failed');
+        await expect(updateRecipeDetailsbyUser(mockRecipe))
+            .rejects.toThrow('Query failed');
     });
-  });
+});
+
   describe('insertOrUpdateIngredient', () => {
     let mockConnection;
     let mockRequest;
@@ -765,13 +800,12 @@ describe('Recipe Module Tests', () => {
         // Create a mock transaction object
         mockTransaction = {
             begin: jest.fn().mockResolvedValue(),
-            request: jest.fn()
-                .mockReturnValueOnce(mockRequest1)
-                .mockReturnValueOnce(mockRequest2)
-                .mockReturnValueOnce(mockRequest3),
             commit: jest.fn().mockResolvedValue(),
             rollback: jest.fn().mockResolvedValue()
         };
+
+        // Mock sql.Transaction to return the mock transaction object
+        sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
 
         // Create a mock connection object
         mockConnection = {
@@ -781,7 +815,12 @@ describe('Recipe Module Tests', () => {
 
         // Mock SQL connection
         sql.connect = jest.fn().mockResolvedValue(mockConnection);
-        sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
+
+        // Mock SQL request creation to return the different mock requests
+        sql.Request = jest.fn()
+            .mockImplementationOnce(() => mockRequest1)
+            .mockImplementationOnce(() => mockRequest2)
+            .mockImplementationOnce(() => mockRequest3);
     });
 
     afterEach(() => {
@@ -800,8 +839,11 @@ describe('Recipe Module Tests', () => {
         expect(mockTransaction.rollback).not.toHaveBeenCalled(); // Should not be called on success
 
         // Verify that the delete queries were called with the correct parameters
+        expect(mockRequest1.input).toHaveBeenCalledWith('recipeId', sql.VarChar(255), recipeId);
         expect(mockRequest1.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM RecipeIngredients'));
+        expect(mockRequest2.input).toHaveBeenCalledWith('recipeId', sql.VarChar(255), recipeId);
         expect(mockRequest2.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM UserRecipes'));
+        expect(mockRequest3.input).toHaveBeenCalledWith('recipeId', sql.VarChar(255), recipeId);
         expect(mockRequest3.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM Recipes'));
 
         // Verify that the connection close method was called
