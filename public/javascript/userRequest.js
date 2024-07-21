@@ -5,7 +5,7 @@ let listvol = document.querySelector(".list-vol");
 // Fetch user id and token
 const userId = localStorage.getItem('UserId');
 const accessToken = localStorage.getItem('AccessToken');
-const pantryId = localStorage.getItem('PantryID');
+let pantryId;
 
 // Global variable to store the requests array
 let globalRequests = [];
@@ -73,13 +73,30 @@ function displayRequests(requests, container) {
     applyStyles();
 }
 
+async function fetchPantryId(userId) {
+    const response = await fetch(`http://localhost:3500/pantry/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error fetching pantry ID: ${response.statusText}`);
+    }
+
+    const pantryData = await response.json();
+    return pantryData.pantry_id;
+}
+
 async function fetchUser(userId) {
     const response = await fetch(`http://localhost:3500/users/${userId}`, {
         method: 'GET',
         headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
-          },
+        },
     });
 
     if (!response.ok) {
@@ -95,8 +112,12 @@ initApp();
 
 // GET: getRequestById
 // Function to handle "View Details" button click
-async function viewDetails(key) {
+async function viewDetails(key) {  
     try {
+        if (!pantryId) {
+            pantryId = await fetchPantryId(userId);
+        }
+
         let requestId = globalRequests[key].request_id;
         const response = await fetch(`http://localhost:3500/requests/req/${requestId}`, {
             method: 'GET',
@@ -109,6 +130,19 @@ async function viewDetails(key) {
         if (response.ok) {
             const request = await response.json();
             console.log('Request details fetched:', request);
+
+            const ids = [
+                'modalNum', 'u_name', 'ua', 'ucontact', 'uemail',
+                'v_name', 'modalTitle', 'modalCategory', 'modalStatus', 'modalDescription', 'ing_name', 'quantity'
+            ];
+            
+            // Loop through each ID and set its textContent to an empty string
+            ids.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = '';
+                }
+            });
 
             // Call to get user address, email, contact from mongo
             fetchUser(userId)
@@ -213,7 +247,7 @@ window.onclick = function(event) {
 
 // Function to apply CSS styles to elements
 function applyStyles() {
-    //Style for modal content
+    let modal = document.getElementById('modal');
     let modalContent = modal.querySelector('.modal-content');
     modalContent.style.backgroundColor = "lightgrey";
     modalContent.style.margin = "15% auto";
@@ -241,6 +275,24 @@ function closepopup(popupid) {
     document.getElementById('ctitle').value = '';
     document.getElementById('cmessage').value = '';
     window.location.reload();
+}
+
+
+
+function removeViewDetails() {
+    const ids = [
+        'modalNum', 'u_name', 'ua', 'ucontact', 'uemail',
+        'v_name', 'modalTitle', 'modalCategory', 'modalStatus', 'modalDescription',
+        'modalTitle1', 'ing_name', 'quantity'
+    ];
+    
+    // Loop through each ID and set its textContent to an empty string
+    ids.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = '';
+        }
+    });
 }
 
 // POST: createRequest
@@ -305,12 +357,14 @@ async function confirmInput() {
 
 // Create Ingredient List
 async function createIngredientList(requestId) {
-    const pantryId = localStorage.getItem('PantryID');
-    
     if (!pantryId) {
-        console.error('PantryID not found in localStorage');
-        alert('PantryID is missing. Please try again.');
-        return;
+        try {
+            pantryId = await fetchPantryId(userId);
+        } catch (error) {
+            console.error('Error fetching pantryId:', error);
+            alert('Failed to retrieve pantryId.');
+            return;
+        }
     }
 
     const requestBody = {
@@ -330,9 +384,6 @@ async function createIngredientList(requestId) {
             body: JSON.stringify(requestBody)
         });
 
-        console.log('Response status:', response.status);
-        console.log('Response statusText:', response.statusText);
-
         if (response.ok) {
             const result = await response.json();
             console.log('Ingredient list created successfully', result);
@@ -342,6 +393,8 @@ async function createIngredientList(requestId) {
             alert(`Error creating ingredient list: ${error.message}`);
         }
     } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while creating the ingredient list');
     }
 }
 
@@ -389,7 +442,6 @@ async function deleteRequest() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${accessToken}`
             }
-            
         });
 
         if (response.ok) {
@@ -402,6 +454,6 @@ async function deleteRequest() {
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while deleting request');
+        alert('An error occurred while deleting the request');
     }
 }

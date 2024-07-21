@@ -59,45 +59,54 @@
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="toggleModal()">&times;</span>
-            <div class = "requests">
-                <div class="req-wrapper">
-                    <div class = "req-details1">
-                        <div class = "req-det1">
-                            <div>
-                                <h1 id="modalNum"></h1>
-                            </div>
-                            <div>
-                                <p id="modalTitle"></p>
-                            </div>
-                            <div>
-                                <p id = "modalCategory"></p>
-                            </div>
-                            <div>
-                                <p id = "modalStatus"></p>
-                            </div>
-                            <div>
-                                <p id="modalDescription"></p>
-                            </div>
-                        </div>
+            <div class = "req-details1">
+                <div class = "req-det1">
+                    <div>
+                        <h1 id="modalNum"></h1>
                     </div>
-                    <div class = "req-details2">
-                        <div class = "req-det2">
-                            <div>
-                                <h1 id="modalTitle1"></h1>
-                            </div>
-                            <div>
-                                <p id = "modalCategory1"></p>
-                            </div>
-                            <div>
-                                <p id = "modalStatus1"></p>
-                            </div>
-                            <div>
-                                <p id="modalDescription1"></p>
-                            </div>
-                        </div>
+                    <div>
+                        <p id = "u_name"></p>
+                    </div>
+                    <div>
+                        <p id = "ua"></p>
+                    </div>
+                    <div>
+                        <p id = "ucontact"></p>
+                    </div>
+                    <div>
+                        <p id = "uemail"></p>
+                    </div>
+                    <div>
+                        <p id = "v_name"></p>
+                    </div>
+                    <div>
+                        <p id="modalTitle"></p>
+                    </div>
+                    <div>
+                        <p id = "modalCategory"></p>
+                    </div>
+                    <div>
+                        <p id = "modalStatus"></p>
+                    </div>
+                    <div>
+                        <p id="modalDescription"></p>
                     </div>
                 </div>
-                <button class = "accept-btn" onclick = "acceptRequest()">Accept</button>
+                <button onclick = "deleteRequest()">View Profile</button>
+            </div>
+            <div class = "req-details2">
+                <div class = "req-det2">
+                    <div>
+                        <h1 id="modalTitle1">Ingredients List</h1>
+                    </div>
+                    <div>
+                        <p id = "ing_name"></p>
+                    </div>
+                    <div>
+                        <p id = "quantity"></p>
+                    </div>
+                </div>
+                <button onclick = "markAsCompleted()">Add Ingredients</button>
             </div>
         </div>
     </div>
