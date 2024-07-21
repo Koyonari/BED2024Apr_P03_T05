@@ -41,3 +41,21 @@
 20240718	22:24:23	b693ed0a-ab47-4a1d-b1b0-2543a60f0257	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
 20240718	22:24:29	27be5d95-a4e4-454a-993f-9d2993e9028d	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
 20240718	22:25:15	759308aa-2329-4933-b6cc-2ea2838f08a5	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
+20240721	20:38:00	49a27dec-87e9-48a6-a66e-f8883100a89f	Error: Not allowed by CORS
+20240721	20:38:00	bde6d19f-9e8f-48ec-8499-0412ba69b0fb	Error: Not allowed by CORS
+20240721	20:38:01	064df6a7-501c-4a07-b4c6-75c7929f3204	Error: Not allowed by CORS
+20240721	20:38:01	431bb618-7e81-46b5-a388-3c77637add38	Error: Not allowed by CORS
+20240721	20:38:02	4d56f77b-010d-4443-a138-2fd3834730eb	Error: Not allowed by CORS
+20240721	20:38:02	909baca1-2c48-47d5-a827-f0535983358c	Error: Not allowed by CORS
+20240721	20:38:02	34d00003-2049-407c-8b98-504651201f30	Error: Not allowed by CORS
+20240721	20:38:03	4cbea83a-dee4-4649-9afb-373384748670	Error: Not allowed by CORS
+20240721	20:38:03	99abb511-461f-4cad-83e1-6ff7931ce645	Error: Not allowed by CORS
+20240721	20:38:04	96d9abac-d37e-4bec-9896-25c88a0dfd1c	Error: Not allowed by CORS
+20240721	20:38:04	a4ecd3c4-f307-4c02-9d2b-22e946b7f948	Error: Not allowed by CORS
+20240721	20:38:05	9a3473da-d801-487f-b478-9536ca976bcb	Error: Not allowed by CORS
+20240721	20:38:05	fa7b739a-7aed-4c0f-b10c-776b3c68c12d	Error: Not allowed by CORS
+20240721	20:38:06	4b1c6663-1f1c-4c74-80f6-e7f72b09350c	Error: Not allowed by CORS
+20240721	20:38:06	e577e061-3d3d-4cb4-9378-e05189bc0ea3	Error: Not allowed by CORS
+20240721	20:38:07	dd9906b9-fddf-460b-8e9f-093cd3bef124	Error: Not allowed by CORS
+20240721	20:38:07	11955bb5-cd38-4d34-b55e-dbddb3ef48e1	Error: Not allowed by CORS
+20240721	20:38:08	7704ec51-88f0-4767-8a0e-88f0f967b8d8	Error: Not allowed by CORS
