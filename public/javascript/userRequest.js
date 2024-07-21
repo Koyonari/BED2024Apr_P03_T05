@@ -90,19 +90,6 @@ async function fetchUser(userId) {
     return userData;
 }
 
-// Call to get user address, email, contact from mongo
-fetchUser(userId)
-    .then(user => {
-        const { address, email, contact } = user;
-        console.log(`Address: ${address}`);
-        console.log(`Email: ${email}`);
-        console.log(`Contact: ${contact}`);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    }
-);
-
 // Initialize the app
 initApp();
 
@@ -110,7 +97,6 @@ initApp();
 // Function to handle "View Details" button click
 async function viewDetails(key) {
     try {
-        // Get the request_id from the selected request
         let requestId = globalRequests[key].request_id;
         const response = await fetch(`http://localhost:3500/requests/req/${requestId}`, {
             method: 'GET',
@@ -124,6 +110,19 @@ async function viewDetails(key) {
             const request = await response.json();
             console.log('Request details fetched:', request);
 
+            // Call to get user address, email, contact from mongo
+            fetchUser(userId)
+                .then(user => {
+                    const { address, email, contact } = user;
+                    document.getElementById('ua').innerText = `User Address: ${address}`;
+                    document.getElementById('ucontact').innerText = `User Number: ${contact}`;
+                    document.getElementById('uemail').innerText = `User Email: ${email}`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                }
+            );
+
             // Populate modal with request details
             document.getElementById('modal').dataset.key = key;
             document.getElementById('modalNum').innerText = `Request ${document.querySelector(`.item:nth-child(${key + 1})`).dataset.num}`;
@@ -132,10 +131,8 @@ async function viewDetails(key) {
             document.getElementById('modalStatus').innerText = `Status:  ${getStatusText(request)}`;
             document.getElementById('modalDescription').innerText = `Description: ${request.description}`;
 
-            // Give margin bottom to modal num
-            let modalNumElement = document.getElementById('modalNum');
-            modalNumElement.style.marginBottom = '10px'; 
-            modalNumElement.style.marginBottom = '25px'; 
+            // Fetch and display ingredients
+            await displayReqIng(requestId);
 
             // Show the modal
             toggleModal();
@@ -147,6 +144,46 @@ async function viewDetails(key) {
     } catch (error) {
         console.error('Error:', error);
         alert('An error occurred while fetching request details');
+    }
+}
+
+async function displayReqIng(requestId) {
+    try {
+        const response = await fetch(`http://localhost:3500/requests/req/ing/${requestId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            const ingredients = await response.json();
+            console.log('Ingredients fetched:', ingredients);
+
+            // Assume we are taking the first element for demonstration
+            const ingredient = ingredients[0];
+
+            // Set the text for each corresponding HTML element
+            const username = document.getElementById('u_name');
+            const ingname = document.getElementById('ing_name');
+            const quantity = document.getElementById('quantity');
+            const volunteerName = document.getElementById('v_name');
+
+            if (ingredient.volunteer_name != null) {
+                volunteerName.textContent = `Volunteer: ${ingredient.volunteer_name}`;
+            }
+            username.textContent = `User: ${ingredient.user_name}`;
+            ingname.textContent = `Ingredient: ${ingredient.ingredient_name}`;
+            quantity.textContent = `Quantity: ${ingredient.ingredient_quantity}`;
+        } else {
+            const error = await response.json();
+            console.error('Error fetching ingredients:', error);
+            alert(`Error fetching ingredients: ${error.message}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while fetching ingredients');
     }
 }
 
@@ -207,6 +244,7 @@ function closepopup(popupid) {
 }
 
 // POST: createRequest
+// Confirm Input and Create Ingredient List
 async function confirmInput() {
     // Capture input data
     const title = document.getElementById('ctitle').value;
@@ -252,6 +290,9 @@ async function confirmInput() {
 
             // Close popup
             closepopup('new-req');
+
+            // Call createIngredientList
+            await createIngredientList(result.request_id);
         } else {
             const error = await response.json();
             alert(`Error creating request: ${error.message}`);
@@ -259,6 +300,48 @@ async function confirmInput() {
     } catch (error) {
         console.error('Error:', error);
         alert('An error occurred while creating the request');
+    }
+}
+
+// Create Ingredient List
+async function createIngredientList(requestId) {
+    const pantryId = localStorage.getItem('PantryID');
+    
+    if (!pantryId) {
+        console.error('PantryID not found in localStorage');
+        alert('PantryID is missing. Please try again.');
+        return;
+    }
+
+    const requestBody = {
+        request_id: requestId,
+        pantry_id: pantryId
+    };
+
+    console.log('Creating ingredient list with requestBody:', requestBody);
+
+    try {
+        const response = await fetch('http://localhost:3500/requests/inglist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response statusText:', response.statusText);
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Ingredient list created successfully', result);
+        } else {
+            const error = await response.json();
+            console.error('Error creating ingredient list:', error);
+            alert(`Error creating ingredient list: ${error.message}`);
+        }
+    } catch (error) {
     }
 }
 
