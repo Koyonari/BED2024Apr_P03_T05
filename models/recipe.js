@@ -547,12 +547,17 @@ const deleteRecipe = async (recipeId) => {
   let transaction;
 
   try {
-    // Establish database connection
-    pool = await sql.connect(dbConfig);
-    transaction = new sql.Transaction(pool);
+      // Validate recipeId
+      if (!recipeId) {
+        throw new DatabaseError('Invalid recipe ID provided.');
+      }
+      // Establish database connection
+      pool = await sql.connect(dbConfig);
+      transaction = new sql.Transaction(pool);
 
-    // Begin a transaction to ensure data integrity
-    await transaction.begin();
+      // Begin a transaction to ensure data integrity
+      await transaction.begin();
+      console.log('Transaction begun.');
 
     // Create and execute the first delete query for RecipeIngredients
     let request = new sql.Request(transaction);
@@ -589,14 +594,15 @@ const deleteRecipe = async (recipeId) => {
     console.log(`Recipe with ID ${recipeId} and its associated ingredients deleted successfully.`);
 
   } catch (error) {
-    // Rollback the transaction in case of error
-    try {
-      if (transaction) {
-        await transaction.rollback();
+      // Rollback the transaction in case of error
+      try {
+          if (transaction) {
+              await transaction.rollback();
+              console.log('Transaction rolled back.');
+          }
+      } catch (rollbackError) {
+          console.error('Error rolling back transaction:', rollbackError.message);
       }
-    } catch (rollbackError) {
-      console.error('Error rolling back transaction:', rollbackError.message);
-    }
 
     // Handle and throw the original error
     console.error('Error deleting recipe:', error.message);
