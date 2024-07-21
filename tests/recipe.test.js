@@ -765,13 +765,12 @@ describe('Recipe Module Tests', () => {
         // Create a mock transaction object
         mockTransaction = {
             begin: jest.fn().mockResolvedValue(),
-            request: jest.fn()
-                .mockReturnValueOnce(mockRequest1)
-                .mockReturnValueOnce(mockRequest2)
-                .mockReturnValueOnce(mockRequest3),
             commit: jest.fn().mockResolvedValue(),
             rollback: jest.fn().mockResolvedValue()
         };
+
+        // Mock sql.Transaction to return the mock transaction object
+        sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
 
         // Create a mock connection object
         mockConnection = {
@@ -781,7 +780,12 @@ describe('Recipe Module Tests', () => {
 
         // Mock SQL connection
         sql.connect = jest.fn().mockResolvedValue(mockConnection);
-        sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
+
+        // Mock SQL request creation to return the different mock requests
+        sql.Request = jest.fn()
+            .mockImplementationOnce(() => mockRequest1)
+            .mockImplementationOnce(() => mockRequest2)
+            .mockImplementationOnce(() => mockRequest3);
     });
 
     afterEach(() => {
@@ -800,8 +804,11 @@ describe('Recipe Module Tests', () => {
         expect(mockTransaction.rollback).not.toHaveBeenCalled(); // Should not be called on success
 
         // Verify that the delete queries were called with the correct parameters
+        expect(mockRequest1.input).toHaveBeenCalledWith('recipeId', sql.VarChar(255), recipeId);
         expect(mockRequest1.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM RecipeIngredients'));
+        expect(mockRequest2.input).toHaveBeenCalledWith('recipeId', sql.VarChar(255), recipeId);
         expect(mockRequest2.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM UserRecipes'));
+        expect(mockRequest3.input).toHaveBeenCalledWith('recipeId', sql.VarChar(255), recipeId);
         expect(mockRequest3.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM Recipes'));
 
         // Verify that the connection close method was called

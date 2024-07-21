@@ -540,6 +540,7 @@ const deleteRecipe = async (recipeId) => {
 
       // Begin a transaction to ensure data integrity
       await transaction.begin();
+      console.log('Transaction begun.');
 
       // Create and execute the first delete query for RecipeIngredients
       let request = new sql.Request(transaction);
@@ -550,6 +551,7 @@ const deleteRecipe = async (recipeId) => {
       await request
           .input('recipeId', sql.VarChar(255), recipeId)
           .query(deleteRecipeIngredientsQuery);
+          console.log('Deleted from RecipeIngredients.');
 
       // Create and execute the second delete query for UserRecipes
       request = new sql.Request(transaction); // Create a new request object
@@ -560,6 +562,7 @@ const deleteRecipe = async (recipeId) => {
       await request
           .input('recipeId', sql.VarChar(255), recipeId)
           .query(deleteUserRecipesQuery);
+          console.log('Deleted from UserRecipes.');
 
       // Create and execute the third delete query for Recipes
       request = new sql.Request(transaction); // Create a new request object
@@ -570,6 +573,7 @@ const deleteRecipe = async (recipeId) => {
       await request
           .input('recipeId', sql.VarChar(255), recipeId)
           .query(deleteRecipeQuery);
+          console.log('Deleted from Recipes.');
 
       // Commit the transaction if all operations are successful
       await transaction.commit();
@@ -580,6 +584,7 @@ const deleteRecipe = async (recipeId) => {
       try {
           if (transaction) {
               await transaction.rollback();
+              console.log('Transaction rolled back.');
           }
       } catch (rollbackError) {
           console.error('Error rolling back transaction:', rollbackError.message);
