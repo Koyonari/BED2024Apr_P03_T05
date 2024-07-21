@@ -14791,3 +14791,23 @@ Cleaned log as of 18/07/2024 20240718	20:55:46	3ae073f6-76ac-4b30-b67c-bdf2bb3cd
 20240721	00:02:02	1832c6d1-db61-40b8-8fc8-f144921c77be	GET	undefined	/users/
 20240721	00:02:13	370636ed-b5bf-4a1e-996a-6cad600ce53a	POST	http://localhost:3500	/users/
 >>>>>>> ea9a3ac6afa7ddff535542734a517f676eadf1e4
+20240721	20:19:42	24cb1b4a-178a-4167-b9b8-ee430ee1b967	PUT	undefined	/recipes/updaterecipedetails/dc073705-8c4b-42c9-9f45-7bb34d98d7d7
+20240721	20:20:00	affb9576-775d-4d2e-9d0c-6934ec8bd7be	POST	undefined	/auth
+20240721	20:20:06	ad02ffcb-3fb4-4af8-abda-4daf21e868d2	PUT	undefined	/recipes/updaterecipedetails/dc073705-8c4b-42c9-9f45-7bb34d98d7d7
+20240721	20:20:13	c0212f68-9aa7-42eb-add7-955d4a274443	PUT	undefined	/recipes/updaterecipedetails/dc073705-8c4b-42c9-9f45-7bb34d98d7d
+20240721	20:20:16	510582c8-dc27-473b-b5f2-ed6812ba392f	PUT	undefined	/recipes/updaterecipedetails/dc073705-8c4b-42c9-9f45-7bb34d98d7d7
+20240721	20:30:49	a34bc164-95a2-4b60-bbca-7986839c3313	POST	undefined	/auth
+20240721	20:30:55	77cbd556-8834-4b88-ba2e-49df556f1a84	GET	undefined	/recipes/fetch
+20240721	20:31:39	6d10b549-be49-4410-9119-16326bf44f7c	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:31:48	7331a04d-ea05-43c8-86a3-79ecb356ff4f	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:33:17	32c100d8-8cfc-4357-801b-ea2bea8d701c	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:33:22	6b418618-430f-4a2a-9621-fb7d4b600669	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:33:23	7baadb26-73b5-42b3-939a-c53a1d78f475	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:33:57	a0bc6a55-3312-4dcd-930d-0c09414148ac	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:33:59	47b3fb4b-5986-4b72-8543-a2cc4b5d91b2	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:34:07	07a011cb-c0af-45ad-b07e-5adbb58f9433	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:34:08	dd2fc1ce-3fb6-4fba-aee1-35cbc2367231	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:34:19	a0b8af61-d8c2-4273-b9bb-f7e879958ca9	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:34:48	edeb8c6d-f642-44c3-b250-12c3da5564a9	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:34:49	cc8f4b44-eee4-487c-a396-debad82e1132	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3
+20240721	20:35:34	6d97e641-4793-42b1-8bc8-fc89673c4747	DELETE	undefined	/recipes/deleterecipe/067badfe-367a-4a7c-a937-b52623f334a3

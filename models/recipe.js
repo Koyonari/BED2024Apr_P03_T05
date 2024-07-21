@@ -532,74 +532,72 @@ const editRecipe = async (recipeId, updates) => {
 const deleteRecipe = async (recipeId) => {
   let pool;
   let transaction;
-  let request;
 
   try {
-    // Establish database connection
-    pool = await sql.connect(dbConfig);
-    transaction = new sql.Transaction(pool);
+      // Establish database connection
+      pool = await sql.connect(dbConfig);
+      transaction = new sql.Transaction(pool);
 
-    // Begin a transaction to ensure data integrity
-    await transaction.begin();
+      // Begin a transaction to ensure data integrity
+      await transaction.begin();
 
-    // Create a request from the transaction
-    request = transaction.request();
-    if (!request) {
-      throw new Error('Failed to create request from transaction');
-    }
+      // Create and execute the first delete query for RecipeIngredients
+      let request = new sql.Request(transaction);
+      const deleteRecipeIngredientsQuery = `
+          DELETE FROM RecipeIngredients
+          WHERE recipe_id = @recipeId;
+      `;
+      await request
+          .input('recipeId', sql.VarChar(255), recipeId)
+          .query(deleteRecipeIngredientsQuery);
 
-    // Prepare and execute delete queries
-    const deleteRecipeIngredientsQuery = `
-        DELETE FROM RecipeIngredients
-        WHERE recipe_id = @recipeId;
-    `;
-    await request
-      .input('recipeId', sql.VarChar(255), recipeId)
-      .query(deleteRecipeIngredientsQuery);
+      // Create and execute the second delete query for UserRecipes
+      request = new sql.Request(transaction); // Create a new request object
+      const deleteUserRecipesQuery = `
+          DELETE FROM UserRecipes
+          WHERE recipe_id = @recipeId;
+      `;
+      await request
+          .input('recipeId', sql.VarChar(255), recipeId)
+          .query(deleteUserRecipesQuery);
 
-    const deleteUserRecipesQuery = `
-        DELETE FROM UserRecipes
-        WHERE recipe_id = @recipeId;
-    `;
-    await request
-      .input('recipeId', sql.VarChar(255), recipeId)
-      .query(deleteUserRecipesQuery);
+      // Create and execute the third delete query for Recipes
+      request = new sql.Request(transaction); // Create a new request object
+      const deleteRecipeQuery = `
+          DELETE FROM Recipes
+          WHERE id = @recipeId;
+      `;
+      await request
+          .input('recipeId', sql.VarChar(255), recipeId)
+          .query(deleteRecipeQuery);
 
-    const deleteRecipeQuery = `
-        DELETE FROM Recipes
-        WHERE id = @recipeId;
-    `;
-    await request
-      .input('recipeId', sql.VarChar(255), recipeId)
-      .query(deleteRecipeQuery);
-
-    // Commit the transaction if all operations are successful
-    await transaction.commit();
-    console.log(`Recipe with ID ${recipeId} and its associated ingredients deleted successfully.`);
+      // Commit the transaction if all operations are successful
+      await transaction.commit();
+      console.log(`Recipe with ID ${recipeId} and its associated ingredients deleted successfully.`);
 
   } catch (error) {
-    // Rollback the transaction in case of error
-    try {
-      if (transaction) {
-        await transaction.rollback();
+      // Rollback the transaction in case of error
+      try {
+          if (transaction) {
+              await transaction.rollback();
+          }
+      } catch (rollbackError) {
+          console.error('Error rolling back transaction:', rollbackError.message);
       }
-    } catch (rollbackError) {
-      console.error('Error rolling back transaction:', rollbackError.message);
-    }
 
-    // Handle and throw the original error
-    console.error('Error deleting recipe:', error.message);
-    throw error;
+      // Handle and throw the original error
+      console.error('Error deleting recipe:', error.message);
+      throw error;
 
   } finally {
-    // Ensure connection pool is closed
-    try {
-      if (pool) {
-        await pool.close();
+      // Ensure connection pool is closed
+      try {
+          if (pool) {
+              await pool.close();
+          }
+      } catch (closeError) {
+          console.error('Error closing connection pool:', closeError.message);
       }
-    } catch (closeError) {
-      console.error('Error closing connection pool:', closeError.message);
-    }
   }
 };
 
