@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Cleared reqLog.txt
 <<<<<<< HEAD
 Cleaned log as of 18/07/2024 20240718	20:55:46	3ae073f6-76ac-4b30-b67c-bdf2bb3cd072	POST	undefined	/auth
@@ -17401,3 +17402,11 @@ Cleaned log as of 18/07/2024 20240718	20:55:46	3ae073f6-76ac-4b30-b67c-bdf2bb3cd
 20240721	20:49:03	520991de-ae17-4a4a-a7c9-951ec25d17cb	GET	undefined	/requests/req/RMwDpaQ6fAXQPuID87sJqOKT
 20240721	20:49:03	c3cc4c0c-0217-47a0-8e36-ebe90c228a05	GET	undefined	/users/669abb50fe3958443cdc03e4
 20240721	20:49:03	70722263-fc73-4a8a-91c9-4ae777c2bd6e	GET	undefined	/requests/req/ing/RMwDpaQ6fAXQPuID87sJqOKT
+=======
+>>>>>>> 4d53a9abab074ae367c6702d67bd757b593b4da1
+20240721	20:49:09	e5e78065-dae7-4c52-a786-85c59ff3a656	GET	undefined	/requests/req/pV2JKc8HNXNrQVoL5R7gmJAL
+20240721	20:49:09	85d64e26-2c69-4a30-97f0-8bc045c73833	GET	undefined	/requests/req/ing/pV2JKc8HNXNrQVoL5R7gmJAL
+20240721	20:49:09	927bab23-75ac-416a-8394-13a0803c0f9a	GET	undefined	/users/669abb50fe3958443cdc03e4
+20240721	20:49:14	eb9b62c8-4254-41b6-ba48-96f2bb3977e1	GET	undefined	/requests/req/yObFYQyYgs9dFJs6rcmJwmJW
+20240721	20:49:14	c24ecacf-f210-4fc0-bcd1-737e4e57f4c2	GET	undefined	/requests/req/ing/yObFYQyYgs9dFJs6rcmJwmJW
+20240721	20:49:14	7b5d7d70-6dd7-453e-89e5-eff0836926fb	GET	undefined	/users/669abb50fe3958443cdc03e4
