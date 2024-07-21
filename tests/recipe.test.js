@@ -741,106 +741,121 @@ describe('Recipe Module Tests', () => {
   describe('deleteRecipe', () => {
     let mockConnection;
     let mockTransaction;
-    let mockRequest;
-    sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
+    let mockRequest1;
+    let mockRequest2;
+    let mockRequest3;
+
     beforeEach(() => {
-      // Create a mock request object
-      mockRequest = {
-        input: jest.fn().mockReturnThis(),
-        query: jest.fn().mockResolvedValue({})
-      };
+        // Create mock request objects
+        mockRequest1 = {
+            input: jest.fn().mockReturnThis(),
+            query: jest.fn().mockResolvedValue({})
+        };
 
-      // Create a mock transaction object
-      mockTransaction = {
-        begin: jest.fn().mockResolvedValue(),
-        request: jest.fn().mockReturnValue(mockRequest),
-        commit: jest.fn().mockResolvedValue(),
-        rollback: jest.fn().mockResolvedValue()
-      };
+        mockRequest2 = {
+            input: jest.fn().mockReturnThis(),
+            query: jest.fn().mockResolvedValue({})
+        };
 
-      // Create a mock connection object
-      mockConnection = {
-        transaction: jest.fn().mockReturnValue(mockTransaction),
-        close: jest.fn().mockResolvedValue()
-      };
+        mockRequest3 = {
+            input: jest.fn().mockReturnThis(),
+            query: jest.fn().mockResolvedValue({})
+        };
 
-      // Mock SQL connection
-      sql.connect = jest.fn().mockResolvedValue(mockConnection);
-      sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
+        // Create a mock transaction object
+        mockTransaction = {
+            begin: jest.fn().mockResolvedValue(),
+            request: jest.fn()
+                .mockReturnValueOnce(mockRequest1)
+                .mockReturnValueOnce(mockRequest2)
+                .mockReturnValueOnce(mockRequest3),
+            commit: jest.fn().mockResolvedValue(),
+            rollback: jest.fn().mockResolvedValue()
+        };
+
+        // Create a mock connection object
+        mockConnection = {
+            transaction: jest.fn().mockReturnValue(mockTransaction),
+            close: jest.fn().mockResolvedValue()
+        };
+
+        // Mock SQL connection
+        sql.connect = jest.fn().mockResolvedValue(mockConnection);
+        sql.Transaction = jest.fn().mockImplementation(() => mockTransaction);
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     it('should delete a recipe and associated data successfully', async () => {
-      const recipeId = '12345';
+        const recipeId = '12345';
 
-      // Call the function
-      await deleteRecipe(recipeId);
+        // Call the function
+        await deleteRecipe(recipeId);
 
-      // Verify that the transaction methods were called
-      expect(mockTransaction.begin).toHaveBeenCalled();
-      expect(mockTransaction.commit).toHaveBeenCalled();
-      expect(mockTransaction.rollback).not.toHaveBeenCalled(); // Should not be called on success
+        // Verify that the transaction methods were called
+        expect(mockTransaction.begin).toHaveBeenCalled();
+        expect(mockTransaction.commit).toHaveBeenCalled();
+        expect(mockTransaction.rollback).not.toHaveBeenCalled(); // Should not be called on success
 
-      // Verify that the delete queries were called with the correct parameters
-      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM RecipeIngredients'));
-      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM UserRecipes'));
-      expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM Recipes'));
+        // Verify that the delete queries were called with the correct parameters
+        expect(mockRequest1.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM RecipeIngredients'));
+        expect(mockRequest2.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM UserRecipes'));
+        expect(mockRequest3.query).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM Recipes'));
 
-      // Verify that the connection close method was called
-      expect(mockConnection.close).toHaveBeenCalled();
+        // Verify that the connection close method was called
+        expect(mockConnection.close).toHaveBeenCalled();
     });
 
     it('should handle errors during deletion and rollback transaction', async () => {
-      const recipeId = '12345';
-      const errorMessage = 'Deletion failed';
+        const recipeId = '12345';
+        const errorMessage = 'Deletion failed';
 
-      // Mock query to throw an error
-      mockRequest.query.mockRejectedValueOnce(new Error(errorMessage));
+        // Mock query to throw an error on the first request
+        mockRequest1.query.mockRejectedValueOnce(new Error(errorMessage));
 
-      // Expect the deleteRecipe function to throw an error
-      await expect(deleteRecipe(recipeId)).rejects.toThrow(errorMessage);
+        // Expect the deleteRecipe function to throw an error
+        await expect(deleteRecipe(recipeId)).rejects.toThrow(errorMessage);
 
-      // Verify that the transaction methods were called
-      expect(mockTransaction.begin).toHaveBeenCalled();
-      expect(mockTransaction.rollback).toHaveBeenCalled();
-      expect(mockTransaction.commit).not.toHaveBeenCalled(); // Should not be called on failure
+        // Verify that the transaction methods were called
+        expect(mockTransaction.begin).toHaveBeenCalled();
+        expect(mockTransaction.rollback).toHaveBeenCalled();
+        expect(mockTransaction.commit).not.toHaveBeenCalled(); // Should not be called on failure
 
-      // Verify that the connection close method was called
-      expect(mockConnection.close).toHaveBeenCalled();
+        // Verify that the connection close method was called
+        expect(mockConnection.close).toHaveBeenCalled();
     });
 
     it('should handle database query errors during transaction', async () => {
-      const recipeId = '12345';
-      const errorMessage = 'Query failed';
+        const recipeId = '12345';
+        const errorMessage = 'Query failed';
 
-      // Mock query to throw an error
-      mockRequest.query.mockRejectedValueOnce(new Error(errorMessage));
+        // Mock query to throw an error on the second request
+        mockRequest2.query.mockRejectedValueOnce(new Error(errorMessage));
 
-      // Expect the deleteRecipe function to throw an error
-      await expect(deleteRecipe(recipeId)).rejects.toThrow(errorMessage);
+        // Expect the deleteRecipe function to throw an error
+        await expect(deleteRecipe(recipeId)).rejects.toThrow(errorMessage);
 
-      // Verify that the transaction methods were called
-      expect(mockTransaction.begin).toHaveBeenCalled();
-      expect(mockTransaction.rollback).toHaveBeenCalled();
-      expect(mockTransaction.commit).not.toHaveBeenCalled(); // Should not be called on failure
+        // Verify that the transaction methods were called
+        expect(mockTransaction.begin).toHaveBeenCalled();
+        expect(mockTransaction.rollback).toHaveBeenCalled();
+        expect(mockTransaction.commit).not.toHaveBeenCalled(); // Should not be called on failure
 
-      // Verify that the connection close method was called
-      expect(mockConnection.close).toHaveBeenCalled();
+        // Verify that the connection close method was called
+        expect(mockConnection.close).toHaveBeenCalled();
     });
 
     it('should close the database connection after execution', async () => {
-      const recipeId = '12345';
+        const recipeId = '12345';
 
-      // Call the function
-      await deleteRecipe(recipeId);
+        // Call the function
+        await deleteRecipe(recipeId);
 
-      // Verify that the connection close method was called
-      expect(mockConnection.close).toHaveBeenCalled();
+        // Verify that the connection close method was called
+        expect(mockConnection.close).toHaveBeenCalled();
     });
-  });
+});
 
   describe('deleteRecipeIngredients', () => {
     let mockConnection;
