@@ -265,37 +265,53 @@ const insertRecipeDetails = async (pool, recipe, userId, uuidGenerator = uuid4) 
   }
 };
 
-
 // Update existing recipe details
 const updateRecipeDetails = async (pool, recipe, recipeId) => {
   try {
     console.log('Received recipe for update:', recipe); // Log received recipe
+
     // Debugging: Check if recipe and its properties are defined
     if (!recipe || !recipe.id || !recipe.title) {
       throw new Error('Recipe object, id, or title is undefined');
     }
 
-    const updateQuery = `
+    // Constructing SQL query
+    let updateQuery = `
       UPDATE Recipes
       SET 
         title = @title, 
         imageurl = @imageurl, 
         servings = @servings, 
         readyInMinutes = @readyInMinutes, 
-        pricePerServing = @pricePerServing,
+        pricePerServing = @pricePerServing
+    `;
+
+    // Conditionally add spoonacularId to the query if it is present
+    if (recipe.spoonacularId !== undefined) {
+      updateQuery += `,
         spoonacularId = @spoonacularId
+      `;
+    }
+
+    updateQuery += `
       WHERE id = @id_update;
     `;
 
-    await pool.request()
-      .input('id_update', sql.VarChar(255), recipeId) // Make sure recipe.id is defined
+    // Execute the query
+    const request = pool.request()
+      .input('id_update', sql.VarChar(255), recipeId) // Ensure recipe.id is used correctly
       .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
-      .input('imageurl', sql.NVarChar, recipe.image || '') // Default to empty if recipe.image is not provided
+      .input('imageurl', sql.NVarChar, recipe.imageurl || '') // Default to empty if recipe.imageurl is not provided
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
-      .input('pricePerServing', sql.Float, recipe.pricePerServing)
-      .input(`spoonacularId`, sql.VarChar(255), recipe.id.toString())
-      .query(updateQuery);
+      .input('pricePerServing', sql.Float, recipe.pricePerServing);
+
+    // Add input for spoonacularId only if it's defined
+    if (recipe.spoonacularId !== undefined) {
+      request.input('spoonacularId', sql.VarChar(255), recipe.spoonacularId);
+    }
+
+    await request.query(updateQuery);
 
     console.log(`Recipe details updated for recipe with id ${recipe.id}.`);
   } catch (error) {
@@ -316,27 +332,40 @@ const updateRecipeDetailsbyUser = async (recipe) => {
       throw new Error('Recipe object, id, or title is undefined');
     }
 
-    const updateQuery = `
+    // Constructing dynamic SQL query based on provided fields
+    let updateQuery = `
       UPDATE Recipes
       SET 
         title = @title, 
         imageurl = @imageurl, 
         servings = @servings, 
         readyInMinutes = @readyInMinutes, 
-        pricePerServing = @pricePerServing,
+        pricePerServing = @pricePerServing
+    `;
+
+    // Add conditional logic for spoonacularId
+    if (recipe.spoonacularId !== undefined) {
+      updateQuery += `,
         spoonacularId = @spoonacularId
+      `;
+    }
+
+    updateQuery += `
       WHERE id = @id_update;
     `;
 
-    await pool.request()
+    const request = pool.request()
       .input('id_update', sql.VarChar(255), recipe.id.toString()) // Make sure recipe.id is defined
-      .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
-      .input('imageurl', sql.NVarChar, recipe.image || '') // Default to empty if recipe.image is not provided
+      .input('title', sql.VarChar, recipe.title) // Ensure recipe.title is a string
+      .input('imageurl', sql.VarChar, recipe.imageurl) // Default to empty if recipe.image is not provided
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
-      .input('pricePerServing', sql.Float, recipe.pricePerServing)
-      .input(`spoonacularId`, sql.VarChar(255), null)
-      .query(updateQuery);
+      .input('pricePerServing', sql.Float, recipe.pricePerServing);
+       // Add input for spoonacularId only if it's defined
+      if (recipe.spoonacularId !== undefined) {
+        request.input('spoonacularId', sql.VarChar(255), recipe.spoonacularId);
+      }
+      await request.query(updateQuery);
 
     console.log(`Recipe details updated for recipe with id ${recipe.id}.`);
   } catch (error) {
@@ -546,39 +575,39 @@ const deleteRecipe = async (recipeId) => {
       await transaction.begin();
       console.log('Transaction begun.');
 
-      // Create and execute the first delete query for RecipeIngredients
-      let request = new sql.Request(transaction);
-      const deleteRecipeIngredientsQuery = `
+    // Create and execute the first delete query for RecipeIngredients
+    let request = new sql.Request(transaction);
+    const deleteRecipeIngredientsQuery = `
           DELETE FROM RecipeIngredients
           WHERE recipe_id = @recipeId;
       `;
-      await request
-          .input('recipeId', sql.VarChar(255), recipeId)
-          .query(deleteRecipeIngredientsQuery);
+    await request
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .query(deleteRecipeIngredientsQuery);
 
-      // Create and execute the second delete query for UserRecipes
-      request = new sql.Request(transaction); // Create a new request object
-      const deleteUserRecipesQuery = `
+    // Create and execute the second delete query for UserRecipes
+    request = new sql.Request(transaction); // Create a new request object
+    const deleteUserRecipesQuery = `
           DELETE FROM UserRecipes
           WHERE recipe_id = @recipeId;
       `;
-      await request
-          .input('recipeId', sql.VarChar(255), recipeId)
-          .query(deleteUserRecipesQuery);
+    await request
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .query(deleteUserRecipesQuery);
 
-      // Create and execute the third delete query for Recipes
-      request = new sql.Request(transaction); // Create a new request object
-      const deleteRecipeQuery = `
+    // Create and execute the third delete query for Recipes
+    request = new sql.Request(transaction); // Create a new request object
+    const deleteRecipeQuery = `
           DELETE FROM Recipes
           WHERE id = @recipeId;
       `;
-      await request
-          .input('recipeId', sql.VarChar(255), recipeId)
-          .query(deleteRecipeQuery);
+    await request
+      .input('recipeId', sql.VarChar(255), recipeId)
+      .query(deleteRecipeQuery);
 
-      // Commit the transaction if all operations are successful
-      await transaction.commit();
-      console.log(`Recipe with ID ${recipeId} and its associated ingredients deleted successfully.`);
+    // Commit the transaction if all operations are successful
+    await transaction.commit();
+    console.log(`Recipe with ID ${recipeId} and its associated ingredients deleted successfully.`);
 
   } catch (error) {
       // Rollback the transaction in case of error
@@ -591,19 +620,19 @@ const deleteRecipe = async (recipeId) => {
           console.error('Error rolling back transaction:', rollbackError.message);
       }
 
-      // Handle and throw the original error
-      console.error('Error deleting recipe:', error.message);
-      throw error;
+    // Handle and throw the original error
+    console.error('Error deleting recipe:', error.message);
+    throw error;
 
   } finally {
-      // Ensure connection pool is closed
-      try {
-          if (pool) {
-              await pool.close();
-          }
-      } catch (closeError) {
-          console.error('Error closing connection pool:', closeError.message);
+    // Ensure connection pool is closed
+    try {
+      if (pool) {
+        await pool.close();
       }
+    } catch (closeError) {
+      console.error('Error closing connection pool:', closeError.message);
+    }
   }
 };
 
