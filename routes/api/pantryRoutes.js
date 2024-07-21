@@ -9,6 +9,7 @@ router.get('/ingredients', verifyJWT, pantryController.getPantryIngredients); //
 // Jason Pantry Routes
 router.post('/:user_id', pantryController.createPantry); // Create a pantry for a user // works
 router.post('/:pantry_id/ingredients', pantryController.addIngredientToPantry); // Add an ingredient to a pantry // works
+// ^ or updates quantity if ingredient already exists in pantry
 
 router.get('/:user_id', pantryController.getPantryIDByUserID); // Get the pantry ID for a user // works
 router.get('/:pantry_id/ingredients', pantryController.getIngredientsByPantryID); // Get all ingredients in a pantry // works
