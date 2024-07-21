@@ -41,3 +41,5 @@
 20240718	22:24:23	b693ed0a-ab47-4a1d-b1b0-2543a60f0257	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
 20240718	22:24:29	27be5d95-a4e4-454a-993f-9d2993e9028d	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
 20240718	22:25:15	759308aa-2329-4933-b6cc-2ea2838f08a5	Error: ENOENT: no such file or directory, stat 'C:\Users\user\Documents\Files\Ngee Ann\Y2 Semester 1\Back-end Development 4CU\Assignment\BED2024Apr_P03_T05\views\index.html'
+20240721	21:06:37	4fde56da-34e2-4a87-84df-ea1b558125d3	SyntaxError: Expected double-quoted property name in JSON at position 252
+20240721	21:13:04	77955ea1-d6a4-43a8-b8a6-0ab6f32946b4	SyntaxError: Expected double-quoted property name in JSON at position 250
