@@ -67,7 +67,7 @@
     <div class="back-btn">
       <a href="javascript:history.back()"><i class="bx bx-chevron-left"></i></a>
     </div>
-    
+
     <!-- Recipe Start -->
     <div class="recipe-container">
       <h1 class="main-title">Your Recipes</h1>
@@ -91,7 +91,7 @@
     </div>
     <!-- Recipe End -->
 
-    <!-- Edit Recipe Modal -->
+    <!-- Modal for Editing Recipe -->
     <div
       class="modal fade"
       id="editRecipeModal"
@@ -99,8 +99,8 @@
       aria-labelledby="editRecipeModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
-        <div class="modal-content">
+      <div id="edit-recipe-holder" class="modal-dialog modal-lg">
+        <div id="edit-recipe-content" class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="editRecipeModalLabel">Edit Recipe</h5>
             <button
@@ -113,36 +113,48 @@
           <div class="modal-body">
             <form id="editRecipeForm">
               <div class="mb-3">
-                <label for="recipeTitle" class="form-label">Title</label>
-                <input type="text" class="form-control" id="recipeTitle" />
+                <label for="recipeTitle" class="form-label">Recipe Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="recipeTitle"
+                  required
+                />
               </div>
               <div class="mb-3">
                 <label for="recipeServings" class="form-label">Servings</label>
-                <input type="number" class="form-control" id="recipeServings" />
+                <input
+                  type="number"
+                  class="form-control"
+                  id="recipeServings"
+                  required
+                />
               </div>
               <div class="mb-3">
                 <label for="recipeReadyInMinutes" class="form-label"
-                  >Ready in Minutes</label
+                  >Ready In Minutes</label
                 >
                 <input
                   type="number"
                   class="form-control"
                   id="recipeReadyInMinutes"
+                  required
                 />
               </div>
               <div class="mb-3">
                 <label for="recipePricePerServing" class="form-label"
-                  >Price per Serving (in cents)</label
+                  >Price Per Serving ($)</label
                 >
                 <input
                   type="number"
+                  step="0.01"
                   class="form-control"
                   id="recipePricePerServing"
-                  step="0.01"
+                  required
                 />
               </div>
               <button type="submit" class="btn btn-primary">
-                Save changes
+                Save Changes
               </button>
             </form>
           </div>
@@ -150,7 +162,173 @@
       </div>
     </div>
 
-    <script src="../javascript/logout.js"></script>
-    <script src="../javascript/userRecipe.js"></script>
+    <!-- Modal for Viewing Ingredients -->
+    <div
+      class="modal fade"
+      id="ingredientsModal"
+      tabindex="-1"
+      aria-labelledby="ingredientsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ingredientsModalLabel">
+              Recipe Ingredients
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="ingredientsList"></div>
+            <button id="addIngredientButton" class="btn btn-primary">
+              Add Ingredient
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Adding Ingredient -->
+    <div
+      class="modal fade"
+      id="addIngredientModal"
+      tabindex="-1"
+      aria-labelledby="addIngredientModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addIngredientModalLabel">
+              Add Ingredient
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="addIngredientForm">
+              <div class="mb-3">
+                <label for="ingredientName" class="form-label">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="ingredientName"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="ingredientAmount" class="form-label">Amount</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="ingredientAmount"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="ingredientUnit" class="form-label">Unit</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="ingredientUnit"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Add Ingredient
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Deleting Ingredient -->
+    <div
+      class="modal fade"
+      id="deleteIngredientModal"
+      tabindex="-1"
+      aria-labelledby="deleteIngredientModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteIngredientModalLabel">
+              Delete Ingredient
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="deleteIngredientForm">
+              <div class="mb-3">
+                <label for="deleteIngredientName" class="form-label"
+                  >Ingredient Name</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="deleteIngredientName"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-danger">
+                Delete Ingredient
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Deleting Recipe -->
+    <div
+      class="modal fade"
+      id="deleteRecipeModal"
+      tabindex="-1"
+      aria-labelledby="deleteRecipeModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteRecipeModalLabel">
+              Delete Recipe
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this recipe?</p>
+            <button id="confirmDeleteRecipeButton" class="btn btn-danger">
+              Yes, Delete
+            </button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
+  <script src="../javascript/logout.js"></script>
+  <script src="../javascript/userRecipe.js"></script>
 </html>
