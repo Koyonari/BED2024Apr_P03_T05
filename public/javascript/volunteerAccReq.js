@@ -212,6 +212,11 @@ function getStatusText(request) {
     }
 }
 
+function addIngredients() {
+    // Navigate to the pantry_vol.html page
+    window.location.href = 'pantry_vol.html';
+}
+
 function toggleModal() {
     let modal = document.getElementById('modal');
     modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
