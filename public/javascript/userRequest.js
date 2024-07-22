@@ -112,12 +112,8 @@ initApp();
 
 // GET: getRequestById
 // Function to handle "View Details" button click
-async function viewDetails(key) {  
+async function viewDetails(key) {
     try {
-        if (!pantryId) {
-            pantryId = await fetchPantryId(userId);
-        }
-
         let requestId = globalRequests[key].request_id;
         const response = await fetch(`http://localhost:3500/requests/req/${requestId}`, {
             method: 'GET',
@@ -131,21 +127,13 @@ async function viewDetails(key) {
             const request = await response.json();
             console.log('Request details fetched:', request);
 
-            const ids = [
-                'modalNum', 'u_name', 'ua', 'ucontact', 'uemail',
-                'v_name', 'modalTitle', 'modalCategory', 'modalStatus', 'modalDescription', 'ing_name', 'quantity'
-            ];
-            
-            // Loop through each ID and set its textContent to an empty string
-            ids.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = '';
-                }
-            });
-
             // Call to get user address, email, contact from mongo
-            fetchUser(userId)
+            requestee_id = request.user_id;
+
+            localStorage.setItem('request_id', request.request_id);
+            localStorage.setItem('requestee_id', requestee_id);
+
+            fetchUser(requestee_id)
                 .then(user => {
                     const { address, email, contact } = user;
                     document.getElementById('ua').innerText = `User Address: ${address}`;
@@ -181,6 +169,7 @@ async function viewDetails(key) {
     }
 }
 
+const inglist = document.getElementById('ingredients-list');
 async function displayReqIng(requestId) {
     try {
         const response = await fetch(`http://localhost:3500/requests/req/ing/${requestId}`, {
@@ -195,25 +184,33 @@ async function displayReqIng(requestId) {
             const ingredients = await response.json();
             console.log('Ingredients fetched:', ingredients);
 
-            // Assume we are taking the first element for demonstration
-            const ingredient = ingredients[0];
 
             // Set the text for each corresponding HTML element
             const username = document.getElementById('u_name');
-            const ingname = document.getElementById('ing_name');
-            const quantity = document.getElementById('quantity');
+            inglist.innerHTML = '';
             const volunteerName = document.getElementById('v_name');
 
-            if (ingredient.volunteer_name != null) {
-                volunteerName.textContent = `Volunteer: ${ingredient.volunteer_name}`;
+            if (ingredients.length > 0) {
+                if (ingredients[0].volunteer_name != null) {
+                    volunteerName.textContent = `Volunteer: ${ingredients[0].volunteer_name}`;
+                }
+                username.textContent = `User: ${ingredients[0].user_name}`;
             }
-            username.textContent = `User: ${ingredient.user_name}`;
-            ingname.textContent = `Ingredient: ${ingredient.ingredient_name}`;
-            quantity.textContent = `Quantity: ${ingredient.ingredient_quantity}`;
+
+            // Display all ingredients
+            ingredients.forEach(ingredient => {
+                const ingredientItem = document.createElement('p');
+                ingredientItem.textContent = `${ingredient.ingredient_name}: ${ingredient.ingredient_quantity}`;
+                inglist.appendChild(ingredientItem);
+            });
         } else {
-            const error = await response.json();
-            console.error('Error fetching ingredients:', error);
-            alert(`Error fetching ingredients: ${error.message}`);
+            if (response.status === 404) {
+                inglist.innerHTML = 'No ingredients';
+            } else {
+                const error = await response.json();
+                console.error('Error fetching ingredients:', error);
+                alert(`Error fetching ingredients: ${error.message}`);
+            }
         }
     } catch (error) {
         console.error('Error:', error);
@@ -342,9 +339,6 @@ async function confirmInput() {
 
             // Close popup
             closepopup('new-req');
-
-            // Call createIngredientList
-            await createIngredientList(result.request_id);
         } else {
             const error = await response.json();
             alert(`Error creating request: ${error.message}`);
@@ -352,49 +346,6 @@ async function confirmInput() {
     } catch (error) {
         console.error('Error:', error);
         alert('An error occurred while creating the request');
-    }
-}
-
-// Create Ingredient List
-async function createIngredientList(requestId) {
-    if (!pantryId) {
-        try {
-            pantryId = await fetchPantryId(userId);
-        } catch (error) {
-            console.error('Error fetching pantryId:', error);
-            alert('Failed to retrieve pantryId.');
-            return;
-        }
-    }
-
-    const requestBody = {
-        request_id: requestId,
-        pantry_id: pantryId
-    };
-
-    console.log('Creating ingredient list with requestBody:', requestBody);
-
-    try {
-        const response = await fetch('http://localhost:3500/requests/inglist', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Ingredient list created successfully', result);
-        } else {
-            const error = await response.json();
-            console.error('Error creating ingredient list:', error);
-            alert(`Error creating ingredient list: ${error.message}`);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while creating the ingredient list');
     }
 }
 
@@ -443,17 +394,9 @@ async function deleteRequest() {
                 'Authorization': `Bearer ${accessToken}`
             }
         });
-
-        if (response.ok) {
-            alert('Request deleted successfully');
-            window.location.reload();
-        } else {
-            const error = await response.json();
-            console.error('Error deleting request:', error);
-            alert(`Error deleting request: ${error.message}`);
-        }
+        alert('Request deleted successfully');
+        window.location.reload();
     } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while deleting the request');
+        console.log('Delete:', error);
     }
 }

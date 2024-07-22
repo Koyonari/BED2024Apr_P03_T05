@@ -33,7 +33,31 @@ document.addEventListener("DOMContentLoaded", (function () {
   }
 
   fetchIngredients();
+  async function addIngredientToRequest(requestId, pantryId, ingredientId) {
+    try {
+        const response = await fetch('http://localhost:3500/requests/inglist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({ request_id: requestId, pantry_id: pantryId, ingredient_id: ingredientId })
+        });
 
+        if (response.status === 201) {
+            const data = await response.json();
+            console.log('Ingredient added successfully:', data);
+        } else if (response.status === 409) {
+            const data = await response.json();
+            console.log('Ingredient already exists:', data.message);
+        } else {
+            const error = await response.json();
+            console.error('Error adding ingredient:', error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+    }
   // Generates a HTML Card for each ingredient retrieved from the server
   function generateIngredients(products) {
       ingredient_list.innerHTML = ""; // Clear the list before adding new items
@@ -107,7 +131,6 @@ document.addEventListener("DOMContentLoaded", (function () {
           if (!response.ok) throw await response.json();
           const data = await response.json();
           console.log("Ingredient deleted:", data);
-          alert("Ingredient deleted successfully.");
           fetchIngredients(); // Fetch the ingredients again
       } catch (error) {
           handleError("Error deleting ingredient:", error);
@@ -240,6 +263,12 @@ async function processDonation() {
                 // Add ingredients to user's pantry
                 console.log(`Adding ${ingredient.quantity} of ${ingredient.ingredient_name} to user's pantry`);
                 await addToUserPantry(userPantryId, ingredient.ingredient_name, ingredient.quantity);
+
+                // Add ingredient to request
+                console.log(`Adding ingredient ${ingredient.ingredient_id} to request`);
+                const req_id = localStorage.getItem('request_id');
+                console.log(req_id, userPantryId, ingredient.ingredient_id);
+                await addIngredientToRequest(req_id, userPantryId, ingredient.ingredient_id);
             } catch (error) {
                 console.error(`Error processing ingredient ${ingredient.ingredient_name}:`, error);
                 throw error; // Re-throw to stop processing if an error occurs
@@ -258,7 +287,6 @@ async function processDonation() {
   // Error handling utility
   function handleError(message, error) {
       console.error(message, error);
-      alert(`${message} ${error.message || error}`);
   }
 
   // Attach processDonation to the global scope for the button to access it
