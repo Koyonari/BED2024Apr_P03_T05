@@ -150,24 +150,44 @@ class Request {
     }
 
     // POST: Package 2.2.2 - User Creates Ingredient List based on Request
-    static async createIngredientList(request_id, pantry_id) {
+    static async createIngredientList(request_id, pantry_id, ingredient_id) {
         let connection;
         try {
-            // Generate a unique reqing_id
-            const reqing_id = generateUUID24();
-        
             connection = await sql.connect(dbConfig);
-            const sqlQuery = `
-                INSERT INTO RequestIngredients (reqing_id, request_id, pantry_id, ingredient_id) 
-                VALUES (@reqing_id, @request_id, @pantry_id, NULL);
-            `;
-            const req = connection.request();
-            req.input('reqing_id', reqing_id);
-            req.input('request_id', request_id);
-            req.input('pantry_id', pantry_id);
     
-            await req.query(sqlQuery);
-            return { reqing_id, request_id, pantry_id, ingredient_id: null };
+            // Check if the entry already exists
+            const checkQuery = `
+                SELECT COUNT(*) as count
+                FROM RequestIngredients
+                WHERE request_id = @request_id AND ingredient_id = @ingredient_id
+            `;
+            const checkReq = connection.request();
+            checkReq.input('request_id', request_id);
+            checkReq.input('ingredient_id', sql.Int, ingredient_id);
+    
+            const checkResult = await checkReq.query(checkQuery);
+            const count = checkResult.recordset[0].count;
+    
+            if (count === 0) {
+                // Entry doesn't exist, so insert it
+                const reqing_id = generateUUID24();
+    
+                const insertQuery = `
+                    INSERT INTO RequestIngredients (reqing_id, request_id, pantry_id, ingredient_id) 
+                    VALUES (@reqing_id, @request_id, @pantry_id, @ingredient_id);
+                `;
+                const insertReq = connection.request();
+                insertReq.input('reqing_id', reqing_id);
+                insertReq.input('request_id', request_id);
+                insertReq.input('pantry_id', pantry_id);
+                insertReq.input('ingredient_id', ingredient_id);
+    
+                await insertReq.query(insertQuery);
+                return { reqing_id, request_id, pantry_id, ingredient_id, count: 1 };
+            } else {
+                // Entry already exists
+                console.log( "Ingredient already exists for this request", count);
+            }
         } catch (error) {
             console.error("Error creating request ingredients:", error);
             throw error;
