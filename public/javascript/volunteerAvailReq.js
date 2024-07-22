@@ -130,7 +130,11 @@ async function viewDetails(key) {
             console.log('Request details fetched:', request);
 
             // Call to get user address, email, contact from mongo
-            fetchUser(userId)
+            requestee_id = request.user_id
+
+            localStorage.setItem('requestee_id', requestee_id);
+
+            fetchUser(requestee_id)
                 .then(user => {
                     const { address, email, contact } = user;
                     document.getElementById('ua').innerText = `User Address: ${address}`;

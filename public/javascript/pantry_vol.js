@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", (function () {
   let ingredient_list = document.querySelector(".ingredient_list");
   const accessToken = localStorage.getItem("AccessToken");
   const pantryId = localStorage.getItem("PantryID");
-  const userId = localStorage.getItem('UserId');
+  const userId = localStorage.getItem('requestee_id');
   let selectedIngredients = [];
 
   // Base URL for ingredient images from Spoonacular API
@@ -116,32 +116,38 @@ document.addEventListener("DOMContentLoaded", (function () {
 
   // Function to select ingredient and store their ID in an array of selectedIngredients
   function toggleSelect(ingredientId, ingredientName, button) {
-      const quantityInput = document.getElementById(`quantity-${ingredientId}`);
-      const quantity = parseInt(quantityInput.value, 10);
+    const quantityInput = document.getElementById(`quantity-${ingredientId}`);
+    const quantity = parseInt(quantityInput.value, 10);
+    const currentQuantity = parseInt(button.parentElement.querySelector('.quantity').textContent.split(': ')[1].replace(',', ''), 10);
 
-      if (isNaN(quantity) || quantity <= 0) {
-          alert("Please input a valid quantity to donate.");
-          return;
-      }
+    if (isNaN(quantity) || quantity <= 0) {
+        alert("Please input a valid quantity to donate.");
+        return;
+    }
 
-      const isSelected = selectedIngredients.some(item => item.ingredient_id === ingredientId);
+    if (quantity > currentQuantity) {
+        alert(`The quantity you entered (${quantity}) exceeds the available amount (${currentQuantity}). Please enter a lower quantity.`);
+        return;
+    }
 
-      if (isSelected) {
-          selectedIngredients = selectedIngredients.filter(item => item.ingredient_id !== ingredientId);
-          button.classList.remove("selected");
-          button.textContent = "Select Ingredient";
-      } else {
-          selectedIngredients.push({
-              ingredient_id: ingredientId,
-              ingredient_name: ingredientName,
-              quantity: quantity
-          });
-          button.classList.add("selected");
-          button.textContent = "Selected";
-      }
+    const isSelected = selectedIngredients.some(item => item.ingredient_id === ingredientId);
 
-      console.log("Selected ingredients:", selectedIngredients);
-  }
+    if (isSelected) {
+        selectedIngredients = selectedIngredients.filter(item => item.ingredient_id !== ingredientId);
+        button.classList.remove("selected");
+        button.textContent = "Select Ingredient";
+    } else {
+        selectedIngredients.push({
+            ingredient_id: ingredientId,
+            ingredient_name: ingredientName,
+            quantity: quantity
+        });
+        button.classList.add("selected");
+        button.textContent = "Selected";
+    }
+
+    console.log("Selected ingredients:", selectedIngredients);
+}
 
   async function fetchPantryId(userId) {
       const response = await fetch(`http://localhost:3500/pantry/${userId}`, {
@@ -184,27 +190,23 @@ document.addEventListener("DOMContentLoaded", (function () {
     }
 }
 
-async function addToUserPantry(userPantryId, ingredientName, quantity) {
+async function addToUserPantry(userPantryId, ingredient_name, quantity) {
     try {
-        console.log(`Attempting to add ${quantity} of ingredient ${ingredientName} to pantry ${userPantryId}`);
+        console.log(`Attempting to add ${quantity} of ingredient ${ingredient_name} to pantry ${userPantryId}`);
         const response = await fetch(`http://localhost:3500/pantry/${userPantryId}/ingredients`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${accessToken}`,
             },
-            body: JSON.stringify({ ingredientName, quantity }),
+            body: JSON.stringify({ ingredient_name, quantity }),
         });
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Server response:", errorData);
-            throw new Error(`Server responded with ${response.status}: ${JSON.stringify(errorData)}`);
-        }
+        if (!response.ok) throw await response.json();
         const data = await response.json();
-        console.log(`Added ${quantity} of ingredient ${ingredientName} to user pantry:`, data);
+        console.log(`Added ${quantity} of ingredient ${ingredient_name} to user pantry:`, data);
         return data;
     } catch (error) {
-        console.error("Error in addToUserPantry:", error);
+        handleError("Error adding ingredient to user pantry:", error);
         throw error;
     }
 }
@@ -222,6 +224,15 @@ async function processDonation() {
 
         for (const ingredient of selectedIngredients) {
             try {
+                // Check if the selected quantity is still valid
+                const ingredientElement = document.querySelector(`[data-ingredient-id="${ingredient.ingredient_id}"]`);
+                const currentQuantity = parseInt(ingredientElement.querySelector('.quantity').textContent.split(': ')[1].replace(',', ''), 10);
+
+                if (ingredient.quantity > currentQuantity) {
+                    alert(`The selected quantity (${ingredient.quantity}) for ${ingredient.ingredient_name} exceeds the available amount (${currentQuantity}). Please refresh and try again.`);
+                    return; // Stop the process if any ingredient quantity is invalid
+                }
+
                 // Deduct ingredients from volunteer's pantry
                 console.log(`Removing ${ingredient.quantity} of ${ingredient.ingredient_name} from volunteer's pantry`);
                 await removeFromCard(ingredient.ingredient_id, ingredient.quantity);

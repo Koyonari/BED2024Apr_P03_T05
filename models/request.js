@@ -377,7 +377,9 @@ class Request {
     static async deleteRequest(id) {
         const connection = await sql.connect(dbConfig);
     
-        const sqlQuery = `DELETE FROM requests WHERE request_id = @id`;
+        const sqlQuery = `
+        DELETE FROM requests WHERE request_id = @id
+        DELETE FROM RequestIngredients WHERE request_id = @id`;
     
         const request = connection.request();
         request.input("id", id);
