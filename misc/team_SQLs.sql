@@ -114,7 +114,7 @@ CREATE TABLE requests (
     title NVARCHAR(255) NOT NULL,              
     category NVARCHAR(100) NOT NULL,           
     description NVARCHAR(MAX) NOT NULL,        
-    user_id CHAR(24) NOT NULL,                      
+    user_id CHAR(24) NULL,                      
     volunteer_id CHAR(24) NULL,                     
     isCompleted BIT NOT NULL DEFAULT 0,        
     admin_id CHAR(24) NULL,                         
