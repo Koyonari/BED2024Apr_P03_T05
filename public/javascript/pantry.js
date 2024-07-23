@@ -342,7 +342,7 @@ document.addEventListener(
       });
     }
 
-    // Function to save a recipe
+
     // Function to save a recipe
     async function saveRecipe(button) {
       const recipe = JSON.parse(button.dataset.recipe);
@@ -398,7 +398,10 @@ document.addEventListener(
       const roles = userInfo.roles;
       if (roles.includes(2002)) {
         document.getElementById("recipes_btn").style.display = "none";
+        document.getElementById("choose_recipes_btn").style.display = "none";
+
       }
+
     }
   })()
 );

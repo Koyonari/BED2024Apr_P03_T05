@@ -27,6 +27,8 @@
     "express": "^4.19.2",
     "joi": "^17.13.3",
     "jsonwebtoken": "^8.5.1",
+    "mock-axios": "^0.0.1",
+    "mock-sql": "^0.0.1",
     "mockingoose": "^2.16.2",
     "mssql": "^11.0.1",
     "swagger-autogen": "^2.23.7",
