@@ -1101,7 +1101,8 @@ p a:hover {
   transition: 0.2s;
 }
 
-.pantry-container #recipes_btn {
+.pantry-container #recipes_btn,
+#choose_recipes_btn {
   font-size: 12px;
   background-color: #ff964b;
   width: 150px;
@@ -1114,7 +1115,8 @@ p a:hover {
 
 .pantry-container #add_ingredient_btn:hover,
 .pantry-container #recipes_btn:hover,
-.pantry-container #requests_btn:hover {
+.pantry-container #requests_btn:hover,
+.pantry-container #choose_recipes_btn:hover {
   background-color: #ff8127;
 }
 
