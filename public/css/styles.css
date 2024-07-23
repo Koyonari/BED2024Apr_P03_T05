@@ -1084,7 +1084,7 @@ p a:hover {
   text-align: center;
 }
 
-.pantry-container #add_ingredient_btn{
+.pantry-container #add_ingredient_btn {
   background-color: #ff964b;
   width: 150px;
   height: 50px;
@@ -1458,6 +1458,7 @@ p a:hover {
 }
 
 .recipe-action {
+  gap: 5px;
   padding: 16px;
   display: flex;
   justify-content: center;
@@ -1471,6 +1472,70 @@ p a:hover {
   color: #fff;
   cursor: pointer;
   border: none;
+}
+
+/* View Ingredient Styling */
+
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ingredient-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.ingredient-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.ingredient-name {
+  font-weight: bold;
+}
+
+#recipe-ingred-footer {
+  display: flex;
+  justify-content: center;
+}
+
+#add-recipe-ingred-btn,
+#recipe-ingred-close-btn,
+#delete-recipe-ingred-btn,
+#deleteIngredientButton,
+#addIngredientButton {
+  background-color: #ff8127;
+  color: black;
+  border: 1px solid black;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+  width: 30%;
+  transition: 0.5s;
+}
+
+#add-recipe-ingred-btn:hover,
+#recipe-ingred-close-btn:hover,
+#delete-recipe-ingred-btn:hover,
+#deleteIngredientButton:hover,
+#addIngredientButton:hover {
+  background-color: #ff964b;
+}
+
+/* Edit Recipe Styling*/
+#edit-recipe-holder {
+  display: flex;
+  justify-content: center;
+}
+#edit-recipe-content {
+  width: 70%;
+}
+
+#editRecipeForm .mb-3 {
+  border: 1px solid black;
 }
 
 /* Recipe PAGE END */
