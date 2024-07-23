@@ -71,23 +71,6 @@ function displayRequests(requests, container) {
     applyStyles();
 }
 
-async function fetchPantryId(userId) {
-    const response = await fetch(`http://localhost:3500/pantry/${userId}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error(`Error fetching pantry ID: ${response.statusText}`);
-    }
-
-    const pantryData = await response.json();
-    return pantryData.pantry_id;
-}
-
 async function fetchUser(userId) {
     const response = await fetch(`http://localhost:3500/users/${userId}`, {
         method: 'GET',
