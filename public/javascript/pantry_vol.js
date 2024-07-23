@@ -89,34 +89,6 @@ document.addEventListener("DOMContentLoaded", (function () {
       ingredient_list.appendChild(fragment); // Append fragment to DOM
   }
 
-  // Function to add ingredient Quantity
-  async function addToCard(ingredientId) {
-      const quantityInput = document.getElementById(`quantity-${ingredientId}`);
-      const quantity = parseInt(quantityInput.value, 10);
-
-      if (isNaN(quantity) || quantity <= 0) {
-          alert("Please enter a valid quantity to add.");
-          return;
-      }
-
-      try {
-          const response = await fetch(`http://localhost:3500/pantry/${pantryId}/addIngredientQuantity`, {
-              method: "PUT",
-              headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${accessToken}`,
-              },
-              body: JSON.stringify({ ingredient_id: ingredientId, quantity }),
-          });
-          if (!response.ok) throw await response.json();
-          const data = await response.json();
-          console.log("Ingredient added:", data);
-          fetchIngredients(); // Refresh the UI
-      } catch (error) {
-          handleError("Error adding ingredient:", error);
-      }
-  }
-
   // Function to delete an ingredient
   async function deleteIngredient(ingredientId) {
       try {
