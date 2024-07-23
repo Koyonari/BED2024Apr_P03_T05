@@ -1093,7 +1093,16 @@ p a:hover {
   transition: 0.2s;
 }
 
-.pantry-container #recipes_btn {
+.pantry-container #requests_btn {
+  background-color: #ff964b;
+  width: 150px;
+  height: 50px;
+  border-radius: 200px;
+  transition: 0.2s;
+}
+
+.pantry-container #recipes_btn,
+#choose_recipes_btn {
   font-size: 12px;
   background-color: #ff964b;
   width: 150px;
@@ -1105,7 +1114,9 @@ p a:hover {
 }
 
 .pantry-container #add_ingredient_btn:hover,
-.pantry-container #recipes_btn:hover {
+.pantry-container #recipes_btn:hover,
+.pantry-container #requests_btn:hover,
+.pantry-container #choose_recipes_btn:hover {
   background-color: #ff8127;
 }
 
@@ -1178,8 +1189,8 @@ p a:hover {
 }
 
 .pantry-container .ingredient_list .item .selected {
-  background-color: white; /* Adjusted color for selected button */
-  color: black;
+  background-color: black;
+  color: white;
 }
 
 .pantry-container .ingredient_list .item img {
@@ -1449,6 +1460,7 @@ p a:hover {
 }
 
 .recipe-action {
+  gap: 5px;
   padding: 16px;
   display: flex;
   justify-content: center;
@@ -1462,6 +1474,66 @@ p a:hover {
   color: #fff;
   cursor: pointer;
   border: none;
+}
+
+/* View Ingredient Styling */
+
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ingredient-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.ingredient-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.ingredient-name {
+  font-weight: bold;
+}
+
+#recipe-ingred-footer {
+  display: flex;
+  justify-content: center;
+}
+
+#add-recipe-ingred-btn,
+#recipe-ingred-close-btn,
+#delete-recipe-ingred-btn,
+#deleteIngredientButton,
+#addIngredientButton {
+  background-color: #ff8127;
+  color: black;
+  border: 1px solid black;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+  width: 30%;
+  transition: 0.5s;
+}
+
+#add-recipe-ingred-btn:hover,
+#recipe-ingred-close-btn:hover,
+#delete-recipe-ingred-btn:hover,
+#deleteIngredientButton:hover,
+#addIngredientButton:hover {
+  background-color: #ff964b;
+}
+
+/* Edit Recipe Styling*/
+#edit-recipe-holder {
+  display: flex;
+  justify-content: center;
+}
+#edit-recipe-content {
+  width: 70%;
 }
 
 /* Recipe PAGE END */

@@ -74,11 +74,15 @@ async function getAcceptedRequestById(req, res) {
 
 // Create Ingredient List
 async function createIngredientList(req, res) {
-    const { request_id, pantry_id } = req.body;
+    const { request_id, pantry_id, ingredient_id } = req.body;
 
     try {
-        const createdIngreList = await Request.createIngredientList(request_id, pantry_id);
-        res.status(201).json(createdIngreList);
+        const createdIngreList = await Request.createIngredientList(request_id, pantry_id, ingredient_id);
+        if (createdIngreList.message) {
+            res.status(409).json(createdIngreList);
+        } else {
+            res.status(201).json(createdIngreList);
+        }
     } catch (error) {
         console.error("Error creating request ingredients:", error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -213,8 +217,6 @@ async function deleteRequest(req, res) {
         const success = await Request.deleteRequest(requestId);
         if (success) {
             return res.status(200).send("Request deleted successfully");
-        } else {
-            return res.status(404).send("Request not found");
         }
     } catch (error) {
         console.error(error);

@@ -11,12 +11,12 @@ describe("Pantry Class", () => {
 
     // Fix this test
     describe("createPantry", () => {
-        it("should create a new pantry if none exists for the user", async () => {
+        it.only("should create a new pantry if none exists for the user", async () => {
             const user_id = "123";
             const pantry_id = "ABCDE";
 
             Pantry.getPantryIDByUserID = jest.fn().mockResolvedValue(null);
-            Pantry.generate5CharacterGene = jest.fn().mockReturnValue(pantry_id);
+            Pantry.generate5CharacterGene = jest.fn().mockReturnValue("pantry_id");
             sql.connect = jest.fn().mockResolvedValue({
                 request: () => ({
                     input: jest.fn(),
@@ -26,6 +26,7 @@ describe("Pantry Class", () => {
             });
 
             const result = await Pantry.createPantry(user_id);
+            console.log(result);
 
             expect(result).toBe(pantry_id);
             expect(Pantry.generate5CharacterGene).toHaveBeenCalled();

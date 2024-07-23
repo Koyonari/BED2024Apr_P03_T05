@@ -63,52 +63,19 @@
     <div class="back-btn">
       <a href="javascript:history.back()"><i class="bx bx-chevron-left"></i></a>
     </div>
-
-    <!-- New Ingredient Popup -->
-    <div class="popup" id="new_ingredient_popup">
-      <div class="overlay"></div>
-      <div class="content">
-        <div class="close-btn" onclick="togglepopup('new_ingredient_popup')">&times;</div>
-        <p>Ingredient Name</p>
-        <input
-          id="popup_IngredientName"
-          type="text"
-          placeholder="Ingredient Name"
-        ></input>
-        <p>Ingredient Quantity</p>
-        <input type="number" min="0"
-          id="popup_IngredientQuantity"
-          type="number"
-          placeholder="Ingredient Quantity"
-        ></input>
-        <button id="confirm_Ingredient_btn" onclick="addIngredient()"><b>Confirm</b></button>
-      </div>
-    </div>
     
     <!-- Recipe Popup -->
     <div class="popup" id="recipe_popup">
       <div class="overlay"></div>
       <div class="content">
-        <div class="close-btn" onclick="togglepopup('recipe_popup')">&times;</div>
-        <p>Generated Recipes</p>
-        <div class="recipe_list"></div>
-      </div>
     </div>
 
     <!-- Pantry START -->
     <div class="pantry-container">
       <h1 class = "pantry-head"><b>Pantry</b></h1>
       <header>
-        <button id="add_ingredient_btn" onclick="togglepopup('new_ingredient_popup')">
-          <b>Add Ingredient</b>
-        </button>
-
-        <button id="recipes_btn" onclick="getRecipes()">
-          Generate Recipes Automatically
-        </button>
-
-        <button id="choose_recipes_btn" onclick="getFilteredRecipes('recipe_popup')">
-          Choose your own recipes
+        <button id="requests_btn" onclick="processDonation()">
+          <b>Add to Request</b>
         </button>
       </header>
 
@@ -118,7 +85,7 @@
 
     <!-- Javascript -->
     <script src="../javascript/logout.js"></script>
-    <script src="../javascript/pantry.js"></script>
+    <script src="../javascript/pantry_vol.js"></script>
 
   </body>
 </html>
