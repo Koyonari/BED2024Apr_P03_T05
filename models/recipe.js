@@ -33,7 +33,7 @@ const getRecipesByUserId = async (userId) => {
     `;
     // Execute the query with parameterized input
     const result = await pool.request()
-      .input('userId', sql.VarChar(255), userId)
+      .input('userId', sql.VarChar(24), userId)
       .query(query);
 
     // Return the fetched records
@@ -63,7 +63,7 @@ const getRecipeById = async (recipeId) => {
 
     // Execute the query with parameterized input
     const result = await pool.request()
-      .input('recipeId', sql.VarChar(255), recipeId)
+      .input('recipeId', sql.VarChar(36), recipeId)
       .query(query);
 
     // Check if a recipe was found
@@ -182,7 +182,7 @@ const getRecipeIngredientsById = async (recipeId) => {
 
     // Execute the query with parameterized input
     const result = await pool.request()
-      .input('recipeId', sql.VarChar(255), recipeId.toString())
+      .input('recipeId', sql.VarChar(36), recipeId.toString())
       .query(query);
 
     // Check if a recipe was found
@@ -219,8 +219,8 @@ const insertRecipeDetails = async (pool, recipe, userId, uuidGenerator = uuid4) 
 
     // Check if the recipe with the same id already exists
     const existingRecipe = await pool.request()
-      .input('user_id_check', sql.VarChar(255), userId)
-      .input('spoonacularid_check', sql.VarChar(255), spoonacularId)
+      .input('user_id_check', sql.VarChar(24), userId)
+      .input('spoonacularid_check', sql.VarChar(10), spoonacularId)
       .query(`
         SELECT *
         FROM UserRecipes ur
@@ -249,13 +249,13 @@ const insertRecipeDetails = async (pool, recipe, userId, uuidGenerator = uuid4) 
       VALUES (@id_insert, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing, @spoonacularId);
     `;
     await pool.request()
-      .input('id_insert', sql.VarChar(255), idString)
+      .input('id_insert', sql.VarChar(36), idString)
       .input('title', sql.NVarChar, recipe.title)
       .input('imageurl', sql.NVarChar, recipe.image || '')
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
-      .input('spoonacularId', sql.VarChar(255), spoonacularId)
+      .input('spoonacularId', sql.VarChar(10), spoonacularId)
       .query(insertQuery);
     console.log(`Recipe with id ${idString} and spoonacular id ${spoonacularId} inserted successfully.`);
     return { recipeId: idString };
@@ -299,7 +299,7 @@ const updateRecipeDetails = async (pool, recipe, recipeId) => {
 
     // Execute the query
     const request = pool.request()
-      .input('id_update', sql.VarChar(255), recipeId) // Ensure recipe.id is used correctly
+      .input('id_update', sql.VarChar(36), recipeId) // Ensure recipe.id is used correctly
       .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
       .input('imageurl', sql.NVarChar, recipe.imageurl || '') // Default to empty if recipe.imageurl is not provided
       .input('servings', sql.Int, recipe.servings)
@@ -308,7 +308,7 @@ const updateRecipeDetails = async (pool, recipe, recipeId) => {
 
     // Add input for spoonacularId only if it's defined
     if (recipe.spoonacularId !== undefined) {
-      request.input('spoonacularId', sql.VarChar(255), recipe.spoonacularId);
+      request.input('spoonacularId', sql.VarChar(10), recipe.spoonacularId);
     }
 
     await request.query(updateQuery);
@@ -355,7 +355,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
     `;
 
     const request = pool.request()
-      .input('id_update', sql.VarChar(255), recipe.id.toString()) // Make sure recipe.id is defined
+      .input('id_update', sql.VarChar(36), recipe.id.toString()) // Make sure recipe.id is defined
       .input('title', sql.VarChar, recipe.title) // Ensure recipe.title is a string
       .input('imageurl', sql.VarChar, recipe.imageurl) // Default to empty if recipe.image is not provided
       .input('servings', sql.Int, recipe.servings)
@@ -363,7 +363,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
       .input('pricePerServing', sql.Float, recipe.pricePerServing);
        // Add input for spoonacularId only if it's defined
       if (recipe.spoonacularId !== undefined) {
-        request.input('spoonacularId', sql.VarChar(255), recipe.spoonacularId);
+        request.input('spoonacularId', sql.VarChar(10), recipe.spoonacularId);
       }
       await request.query(updateQuery);
 
@@ -413,7 +413,7 @@ const insertOrUpdateIngredient = async (pool, ingredient) => {
         INSERT (ingredient_id, ingredient_name, ingredient_image) VALUES (source.ingredient_id, source.ingredient_name, source.ingredient_image);
     `;
     await pool.request()
-      .input('id_insertOrUpdate', sql.VarChar(255), ingredient.id.toString())
+      .input('id_insertOrUpdate', sql.VarChar(10), ingredient.id.toString())
       .input('name', sql.NVarChar, ingredient.name)
       .input('image', sql.NVarChar, ingredient.image || '') // Default to empty if image is not provided
       .query(ingredientQuery);
@@ -433,8 +433,8 @@ const linkRecipeIngredient = async (pool, recipeId, ingredient) => {
       WHERE recipe_id = @recipeId AND ingredient_id = @ingredientId
     `;
     const result = await pool.request()
-      .input('recipeId', sql.VarChar(255), recipeId)
-      .input('ingredientId', sql.VarChar(255), ingredient.id.toString())
+      .input('recipeId', sql.VarChar(36), recipeId)
+      .input('ingredientId', sql.VarChar(10), ingredient.id.toString())
       .query(checkQuery);
 
     if (result.recordset[0].count === 0) {
@@ -444,8 +444,8 @@ const linkRecipeIngredient = async (pool, recipeId, ingredient) => {
         VALUES (@recipeId, @ingredientId, @amount, @unit);
       `;
       await pool.request()
-        .input('recipeId', sql.VarChar(255), recipeId)
-        .input('ingredientId', sql.VarChar(255), ingredient.id.toString())
+        .input('recipeId', sql.VarChar(36), recipeId)
+        .input('ingredientId', sql.VarChar(10), ingredient.id.toString())
         .input('amount', sql.Float, ingredient.amount || '')
         .input('unit', sql.NVarChar, ingredient.unit || '')
         .query(insertQuery);
@@ -470,8 +470,8 @@ const linkUserToRecipe = async (transaction, userId, recipeId) => {
       WHERE user_id = @userId AND recipe_id = @recipeId
     `;
     const result = await transaction.request()
-      .input('userId', sql.VarChar(255), userId.toString())
-      .input('recipeId', sql.VarChar(255), recipeId.toString())
+      .input('userId', sql.VarChar(24), userId.toString())
+      .input('recipeId', sql.VarChar(36), recipeId.toString())
       .query(checkQuery);
 
     if (result.recordset[0].count === 0) {
@@ -481,8 +481,8 @@ const linkUserToRecipe = async (transaction, userId, recipeId) => {
         VALUES (@userId, @recipeId);
       `;
       await transaction.request()
-        .input('userId', sql.VarChar(255), userId.toString())
-        .input('recipeId', sql.VarChar(255), recipeId.toString())
+        .input('userId', sql.VarChar(24), userId.toString())
+        .input('recipeId', sql.VarChar(36), recipeId.toString())
         .query(insertQuery);
 
       console.log(`Linked user ${userId} to recipe ${recipeId}`);
@@ -520,7 +520,7 @@ const editRecipe = async (recipeId, updates) => {
     `;
 
     // Prepare the SQL request
-    const request = pool.request().input('recipeId', sql.VarChar(255), recipeId);
+    const request = pool.request().input('recipeId', sql.VarChar(36), recipeId);
 
     // Dynamically add parameters to the request based on the updates object
     Object.entries(updates).forEach(([key, value]) => {
@@ -582,7 +582,7 @@ const deleteRecipe = async (recipeId) => {
           WHERE recipe_id = @recipeId;
       `;
     await request
-      .input('recipeId', sql.VarChar(255), recipeId)
+      .input('recipeId', sql.VarChar(36), recipeId)
       .query(deleteRecipeIngredientsQuery);
 
     // Create and execute the second delete query for UserRecipes
@@ -592,7 +592,7 @@ const deleteRecipe = async (recipeId) => {
           WHERE recipe_id = @recipeId;
       `;
     await request
-      .input('recipeId', sql.VarChar(255), recipeId)
+      .input('recipeId', sql.VarChar(36), recipeId)
       .query(deleteUserRecipesQuery);
 
     // Create and execute the third delete query for Recipes
@@ -602,7 +602,7 @@ const deleteRecipe = async (recipeId) => {
           WHERE id = @recipeId;
       `;
     await request
-      .input('recipeId', sql.VarChar(255), recipeId)
+      .input('recipeId', sql.VarChar(36), recipeId)
       .query(deleteRecipeQuery);
 
     // Commit the transaction if all operations are successful
@@ -651,8 +651,8 @@ const deleteRecipeIngredients = async (recipeId, ingredientId) => {
         WHERE recipe_id = @recipeId AND ingredient_id = @ingredientId;
       `;
     const checkResult = await transaction.request()
-      .input('recipeId', sql.VarChar(255), recipeId)
-      .input('ingredientId', sql.VarChar(255), ingredientId)
+      .input('recipeId', sql.VarChar(36), recipeId)
+      .input('ingredientId', sql.VarChar(10), ingredientId)
       .query(checkIngredientQuery);
 
     if (checkResult.recordset[0][''] === 0) {
@@ -663,8 +663,8 @@ const deleteRecipeIngredients = async (recipeId, ingredientId) => {
       WHERE recipe_id = @recipeId AND ingredient_id = @ingredientId;
     `;
     await transaction.request()
-      .input('recipeId', sql.VarChar(255), recipeId)
-      .input('ingredientId', sql.VarChar(255), ingredientId)
+      .input('recipeId', sql.VarChar(36), recipeId)
+      .input('ingredientId', sql.VarChar(10), ingredientId)
       .query(deleteRecipeIngredientsQuery);
 
     await transaction.commit();
