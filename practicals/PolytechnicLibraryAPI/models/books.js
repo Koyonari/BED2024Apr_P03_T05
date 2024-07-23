@@ -2,7 +2,8 @@ const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
 class Book {
-  constructor(title, author, availability) {
+  constructor(id, title, author, availability) {
+    this.id = id;
     this.title = title;
     this.author = author;
     this.availability = availability;
@@ -12,21 +13,22 @@ class Book {
   static async getAllBooks() {
     let pool;
     try {
-        pool = await sql.connect(dbConfig);
-        const result = await pool.request().query("SELECT * FROM Books");
+      pool = await sql.connect(dbConfig);
+      const result = await pool.request().query("SELECT * FROM Books");
 
-        // Map rows to Book objects
-        const books = result.recordset.map(row => new Book(row.book_id, row.title, row.author, row.availability));
-        
-        return books;
+      // Map rows to Book objects
+      const books = result.recordset.map(
+        (row) => new Book(row.book_id, row.title, row.author, row.availability)
+      );
+
+      return books;
     } catch (err) {
-        console.error("Error fetching all books:", err.message);
-        throw err;
+      console.error("Error fetching all books:", err.message);
+      throw err;
     } finally {
-        if (pool) pool.close();
+      if (pool) pool.close();
     }
-}
-
+  }
 
   static async getBookById(book_id) {
     let pool;
@@ -128,7 +130,7 @@ class Book {
     }
   }
 
-static async updateBookAvailability(book_id, newAvailability) {
+  static async updateBookAvailability(book_id, newAvailability) {
     let pool;
     try {
       pool = await sql.connect(dbConfig);
@@ -141,7 +143,8 @@ static async updateBookAvailability(book_id, newAvailability) {
       `;
 
       // Execute the update query
-      await pool.request()
+      await pool
+        .request()
         .input("availability", newAvailability)
         .input("book_id", book_id)
         .query(sqlQuery);
