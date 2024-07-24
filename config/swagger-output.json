@@ -13,6 +13,10 @@
   "paths": {
     "/register/": {
       "post": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Register a new User",
         "description": "This endpoint is used to register a new user.",
         "parameters": [
           {
@@ -47,6 +51,10 @@
     },
     "/auth/": {
       "post": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Authenticate/Login User",
         "description": "This endpoint is used to login as a user",
         "parameters": [
           {
@@ -88,6 +96,10 @@
     },
     "/refresh/": {
       "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Refresh JWT Token",
         "description": "This endpoint is used to refresh the Json Web Access Token for the user, this is done by sending the refresh token in cookie",
         "parameters": [
           {
@@ -114,6 +126,10 @@
     },
     "/logout/": {
       "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Log Out User",
         "description": "This endpoint is used to logout the user, this is done by deleting the refresh token in cookie and in MongoDB",
         "parameters": [
           {
@@ -131,6 +147,10 @@
     },
     "/users/": {
       "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Retrieve all Users",
         "description": "This endpoint is used to obtain the information from all users, omitting password and refreshToken",
         "parameters": [
           {
@@ -163,6 +183,10 @@
         }
       },
       "post": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Create a new User for admin only",
         "description": "This endpoint is used for admins to create a new user.",
         "parameters": [
           {
@@ -205,6 +229,10 @@
     },
     "/users/{id}": {
       "get": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Retrieve a specific User",
         "description": " This endpoint is used to obtain the information from a specific user, omitting password and refreshToken",
         "parameters": [
           {
@@ -245,6 +273,10 @@
         }
       },
       "put": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Update a specific User information via PUT",
         "description": " This endpoint is used to update the information from a specific user, have to input entire User Object",
           "parameters": [
           {
@@ -288,6 +320,10 @@
         }
       },
       "delete": {
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Delete a specific User for admins only",
         "description": "This endpoint is used to delete a specific user. Only admins can delete users.",
         "parameters": [
           {
@@ -328,7 +364,11 @@
         }
       },
       "patch": {
-        "description": "This endpoint is used for users to update their own information, only having to input fields requiore to be updated",
+        "tags": [
+          "User Routes"
+        ],
+        "summary": "Update a specific User information via PATCH",
+        "description": "This endpoint is used for users to update their own information, only having to input fields require to be updated",
         "parameters": [
           {
             "name": "id",
@@ -390,428 +430,457 @@
         }
       }
     },
-    "/pantry/ingredients": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+
+    "/pantry/{user_id}": { 
+      "post": {
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Create or retrieve pantry",
+      "description": "Create a pantry for new users or retrieve an existing pantry",
+      "parameters": [
+        {
+        "name": "user_id",
+        "in": "path",
+        "required": true,
+        "type": "string"
+        },
+        {
+        "name": "Authorization",
+        "in": "header",
+        "type": "string",
+        "description": "Bearer token for authentication"
+        }
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+        "description": "Existing pantry retrieved"
+        },
+        "201": {
+        "description": "New pantry created"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "500": {
+        "description": "Internal Server Error"
         }
       }
-    },
-    "/pantry/{user_id}": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
       },
       "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Get pantry ID by user ID",
+      "description": "Retrieve the pantry ID for a given user ID",
+      "parameters": [
+        {
+        "name": "user_id",
+        "in": "path",
+        "required": true,
+        "type": "string"
+        },
+        {
+        "name": "Authorization",
+        "in": "header",
+        "type": "string",
+        "description": "Bearer token for authentication"
         }
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+        "description": "Successfully retrieved pantry ID"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "404": {
+        "description": "Pantry not found"
+        }
+      }
+      }
+    },
+    "/pantry/ingredients": {
+      "get": {
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Get pantry ingredients via JWT Token",
+      "description": "Retrieve ingredients of a pantry using the JWT Token",
+      "parameters": [
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+        "description": "Successfully fetched pantry ingredients"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "500": {
+        "description": "Internal Server Error"
+        }
+      }
       }
     },
     "/pantry/{pantry_id}/ingredients": {
       "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "pantry_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "ingredient_name": {
-                  "example": "any"
-                },
-                "quantity": {
-                  "example": "any"
-                }
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Add ingredient to pantry",
+      "description": "Add a new ingredient to a specific pantry",
+      "parameters": [
+        {
+        "name": "pantry_id",
+        "in": "path",
+        "required": true,
+        "type": "string"
+        },
+        {
+        "name": "Authorization",
+        "in": "header",
+        "type": "string",
+        "description": "Bearer token for authentication"
+        },
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "ingredient_name": {
+                "example": "Orange"
+              },
+              "quantity": {
+                "example": "5"
               }
             }
           }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
         }
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "201": {
+        "description": "Ingredient added successfully"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "500": {
+        "description": "Internal Server Error"
+        }
+      }
       },
       "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "pantry_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Get ingredients in pantry",
+      "description": "Retrieve all ingredients in a specific pantry",
+      "parameters": [
+        {
+        "name": "pantry_id",
+        "in": "path",
+        "required": true,
+        "type": "string"
+        },
+        {
+        "name": "Authorization",
+        "in": "header",
+        "type": "string",
+        "description": "Bearer token for authentication"
         }
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+        "description": "Successfully retrieved ingredients"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "404": {
+        "description": "No ingredients found"
+        },
+        "500": {
+        "description": "Internal Server Error"
+        }
+      }
       },
       "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "pantry_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Update ingredient in pantry",
+      "description": "Update an ingredient's information in a pantry",
+      "parameters": [
+        {
+        "name": "pantry_id",
+        "in": "path",
+        "required": true,
+        "type": "string"
+        },
+        {
+        "name": "Authorization",
+        "in": "header",
+        "type": "string",
+        "description": "Bearer token for authentication"
+        },
+        {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+          "ingredient_id": {
+            "type": "string",
+            "example": "9200"
           },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "ingredient_id": {
-                  "example": "any"
-                },
-                "quantity": {
-                  "example": "any"
-                }
-              }
-            }
+          "quantity": {
+            "type": "number",
+            "example": 5
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
+        }
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+        "description": "Ingredient updated successfully"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "500": {
+        "description": "Internal Server Error"
+        }
+      }
       }
     },
     "/pantry/{pantry_id}/deductIngredientQuantity": {
       "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "pantry_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Deduct Ingredient Quantity",
+      "description": "Used to deduct a Ingredient Quantity via their Ingredient ID",
+      "parameters": [
+        {
+        "name": "pantry_id",
+        "in": "path",
+        "required": true,
+        "type": "string"
+        },
+        {
+        "name": "Authorization",
+        "in": "header",
+        "type": "string"
+        },
+        {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+          "ingredient_id": {
+            "example": 9200
           },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "ingredient_id": {
-                  "example": "any"
-                },
-                "quantity": {
-                  "example": "any"
-                }
-              }
-            }
+          "quantity": {
+            "example": 2
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
+        }
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+        "description": "OK"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "500": {
+        "description": "Internal Server Error"
+        }
+      }
       }
     },
     "/pantry/{pantry_id}/addIngredientQuantity": {
       "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "pantry_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Add Ingredient Quantity",
+      "description": "Used to add a Ingredient Quantity via their Ingredient ID",
+      "parameters": [
+        {
+        "name": "pantry_id",
+        "in": "path",
+        "required": true,
+        "type": "string"
+        },
+        {
+        "name": "Authorization",
+        "in": "header",
+        "type": "string"
+        },
+        {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+          "ingredient_id": {
+            "example": 9200
           },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "ingredient_id": {
-                  "example": "any"
-                },
-                "quantity": {
-                  "example": "any"
-                }
-              }
-            }
+          "quantity": {
+            "example": 2
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
+        }
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+        "description": "OK"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "500": {
+        "description": "Internal Server Error"
+        }
+      }
       }
     },
     "/pantry/{pantry_id}/deleteIngredient": {
       "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "pantry_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+      "tags": [
+        "Pantry Routes"
+      ],
+      "summary": "Delete ingredient from pantry",
+      "description": "Remove an ingredient from a pantry",
+      "parameters": [
+        {
+        "name": "pantry_id",
+        "in": "path",
+        "required": true,
+        "type": "string"
+        },
+        {
+        "name": "Authorization",
+        "in": "header",
+        "type": "string",
+        "description": "Bearer token for authentication"
+        },
+        {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+          "ingredient_id": {
+            "example": "9200"
           }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
         }
+        }
+      ],
+      "security": [
+        {
+        "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+        "description": "Ingredient deleted successfully"
+        },
+        "401": {
+        "description": "Unauthorized"
+        },
+        "403": {
+        "description": "Forbidden"
+        },
+        "500": {
+        "description": "Internal Server Error"
+        }
+      }
       }
     },
+
     "/recipes/fetch": {
       "get": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Fetch recipes from SpoonacularAPI",
         "description": "This endpoint is to obtain recipes from SpoonacularAPI and automatically insert them into the database",
         "parameters": [
           {
@@ -845,6 +914,10 @@
     },
     "/recipes/fetchuserrecipes": {
       "get": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Fetch user recipes",
         "description": "This endpoint is to obtain recipes attached to the user from the Database, obtains userid from JWT",
         "parameters": [
           {
@@ -881,6 +954,10 @@
     },
     "/recipes/fetchrecipesadmin": {
       "get": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Fetch all recipes",
         "description": "This endpoint is to obtain all Recipes in the database, only admins can access this",
         "parameters": [
           {
@@ -914,6 +991,10 @@
     },
     "/recipes/fetchingredients/{id}": {
       "get": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Fetch ingredients from a specific recipe",
         "description": "This endpoint is to fetch ingredients from a specific recipe, input recipe id",
         "parameters": [
           {
@@ -956,6 +1037,10 @@
     },
     "/recipes/insertrecipe": {
       "post": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Insert a recipe",
         "description": "This endpoint is for users to insert a recipe into the database",
         "parameters": [
           {
@@ -1000,6 +1085,10 @@
     },
     "/recipes/insertrecipeingredients/{id}": {
       "post": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Insert ingredients for a recipe",
         "description": "This endpoint is for users to insert ingredients required for a specific recipe, identified by recipe id in parameter, userid taken from JWT",
         "parameters": [
           {
@@ -1050,6 +1139,10 @@
     },
     "/recipes/getfilteredrecipes": {
       "post": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Get filtered recipes",
         "description": "This endpoint is for users to post ingredients and get recipes that can be made with those ingredients, takes dietary information and userid from JWT",
         "parameters": [
           {
@@ -1097,6 +1190,10 @@
     },
     "/recipes/updaterecipedetails/{id}": {
       "put": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Update a recipe via PUT",
         "description": "This endpoint is for users to update a recipe prexisiting in the database, recipeid taken from parameter, userid taken from JWT",
         "parameters": [
           {
@@ -1147,6 +1244,10 @@
     },
     "/recipes/updaterecipeadmin/{id}": {
       "put": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Update a recipe for admins only",
         "description": "This endpoint is for admins to update any recipe prexisiting in the database, recipeid taken from parameter.",
         "parameters": [
           {
@@ -1197,6 +1298,10 @@
     },
     "/recipes/editrecipedetails/{id}": {
       "patch": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Update a recipe via PATCH",
         "description": "This endpoint is for users to update a recipe prexisiting in the database, only keying in fields necessary, recipeid taken from parameter, userid taken from JWT",
         "parameters": [
           {
@@ -1263,6 +1368,10 @@
     },
     "/recipes/editrecipeadmin/{id}": {
       "patch": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Update a recipe for admins only via PATCH",
         "description": "This endpoint is for admins to update any recipe, only inputting required parameters, recipeid taken from parameter",
         "parameters": [
           {
@@ -1326,6 +1435,10 @@
     },
     "/recipes/deleterecipe/{id}": {
       "delete": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Delete a recipe",
         "description": "This endpoint is for users to delete a recipe from the database, recipeid taken from parameter, userid taken from JWT",
         "parameters": [
           {
@@ -1368,6 +1481,10 @@
     },
     "/recipes/deleterecipeadmin/{id}": {
       "delete": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Delete a recipe for admins only",
         "description": "This endpoint is for admins to delete any recipe prexisiting in the database, recipeid taken from parameter.",
         "parameters": [
           {
@@ -1410,6 +1527,10 @@
     },
     "/recipes/deleterecipeingredients/{id}": {
       "delete": {
+        "tags": [
+          "Recipe Routes"
+        ],
+        "summary": "Delete ingredients for a recipe",
         "description": "This endpoint is for admins to delete recipe ingredients prexisiting in the database, recipeid taken from parameter, ingredients is in request body",
         "parameters": [
           {
@@ -1471,6 +1592,9 @@
     },
     "/requests/req": {
       "post": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1479,14 +1603,14 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1510,15 +1634,13 @@
     },
     "/requests/inglist": {
       "post": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
             "in": "header",
             "type": "string"
           },
@@ -1546,6 +1668,11 @@
             }
           }
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -1567,6 +1694,9 @@
     },
     "/requests/req/user/{id}": {
       "get": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1581,14 +1711,14 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1612,6 +1742,9 @@
     },
     "/requests/available": {
       "get": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1620,14 +1753,14 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1651,6 +1784,9 @@
     },
     "/requests/req/accepted/{id}": {
       "get": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1665,14 +1801,14 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1696,6 +1832,9 @@
     },
     "/requests/req/{id}": {
       "get": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1710,14 +1849,14 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1739,6 +1878,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1753,14 +1895,14 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1784,6 +1926,9 @@
     },
     "/requests/req/ing/{id}": {
       "get": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1798,14 +1943,14 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1829,6 +1974,9 @@
     },
     "/requests/accepted": {
       "get": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1837,14 +1985,14 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1868,6 +2016,9 @@
     },
     "/requests/completed": {
       "get": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1875,15 +2026,16 @@
             "in": "header",
             "type": "string"
           },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+
           {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1907,6 +2059,9 @@
     },
     "/requests/approved": {
       "get": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1914,15 +2069,16 @@
             "in": "header",
             "type": "string"
           },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+
           {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -1946,6 +2102,9 @@
     },
     "/requests/req/accepted/update/{id}": {
       "patch": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1959,11 +2118,7 @@
             "in": "header",
             "type": "string"
           },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+
           {
             "name": "Authorization",
             "in": "header",
@@ -1980,6 +2135,11 @@
                 }
               }
             }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -2006,6 +2166,9 @@
     },
     "/requests/req/completed/{id}": {
       "patch": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
@@ -2019,15 +2182,16 @@
             "in": "header",
             "type": "string"
           },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
+
           {
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -2051,22 +2215,15 @@
     },
     "/requests/req/approve/{id}": {
       "patch": {
+        "tags": [
+          "Request Routes"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           },
           {
@@ -2085,6 +2242,11 @@
                 }
               }
             }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
