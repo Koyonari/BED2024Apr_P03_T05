@@ -73,7 +73,7 @@ const createNewUser = async (req, res) => {
             excludedIngredients: roles.User === 2001 ? excludedIngredients || [] : []
         });
 
-        // Validate user input using middleware or function
+        // Validate user input using middleware function
         validateUser(req, res, async () => {
             try {
                 // Attempt to create the user in MongoDB

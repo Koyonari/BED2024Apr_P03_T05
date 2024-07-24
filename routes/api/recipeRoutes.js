@@ -5,6 +5,7 @@ const verifyJWT = require('../../middleware/verifyJWT');
 const validateRecipe = require('../../middleware/validateRecipe');
 const ROLES_LIST = require('../../config/roles_list');
 const verifyRoles = require('../../middleware/verifyRoles');
+const validateIngredients = require('../../middleware/validateIngredients');
 
 // GET Routes
 // GET /api/fetch - Fetch recipes from spoonacular API and automatically insert them into database
@@ -22,7 +23,7 @@ router.post('/insertrecipe', recipeController.insertRecipeByUser);
 // POST /api/insertrecipeadmin - Insert recipe ingredients to a specific recipe, by recipe ID
 router.post('/insertrecipeingredients/:id', verifyJWT, recipeController.insertRecipeIngredientsByRecipeId);
 // POST /api/getfilteredrecipes - Get filtered recipes by user preferences
-router.post('/getfilteredrecipes', recipeController.getFilteredRecipesByUser);
+router.post('/getfilteredrecipes', validateIngredients, recipeController.getFilteredRecipesByUser);
 
 // PUT Routes
 // PUT /api/updaterecipe/:id - Update a recipe with provided parameters [id in parameter is recipe id]
@@ -42,6 +43,6 @@ router.delete('/deleterecipe/:id', verifyJWT, recipeController.deleteRecipeByUse
 // DELETE /api/deleterecipeadmin/:id - Delete a recipe by recipe ID [id in parameter is recipe id], admin can delete any recipe
 router.delete('/deleterecipeadmin/:id', verifyJWT, verifyRoles(ROLES_LIST.Admin), recipeController.deleteRecipeByRecipeId);
 // DELETE /api/deleterecipeingredients/:id - Delete recipe ingredients for a specific recipe by recipe ID [id in parameter is recipe id]
-router.delete('/deleterecipeingredients/:id', verifyJWT, recipeController.deleteRecipeIngredientByRecipeId);
+router.delete('/deleterecipeingredients/:id', verifyJWT, validateIngredients, recipeController.deleteRecipeIngredientByRecipeId);
 
 module.exports = router;
