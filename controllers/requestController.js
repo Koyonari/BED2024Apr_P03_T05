@@ -214,15 +214,20 @@ async function deleteRequest(req, res) {
     const requestId = req.params.id;
 
     try {
-        const success = await Request.deleteRequest(requestId);
-        if (success) {
-            return res.status(200).send("Request deleted successfully");
+        const result = await Request.deleteRequest(requestId);
+
+        // Assuming deleteRequest returns an object with a `deletedCount` property
+        if (result.deletedCount === 0) {
+            return res.status(404).send('Request not found');
         }
+
+        // If the request is successfully deleted
+        return res.status(200).send('Request deleted successfully');
     } catch (error) {
         console.error(error);
-        res.status(500).send("Error deleting request");
+        res.status(500).send('Error deleting request');
     }
-};
+}
 
 module.exports = {
     getRequestByUserId,
