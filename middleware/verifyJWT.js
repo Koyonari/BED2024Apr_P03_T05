@@ -12,7 +12,7 @@ const verifyJWT = (req, res, next) => {
     // Verify token using JWT library
     jwt.verify(
         token,
-        process.env.ACCESS_TOKEN_SECRET, // Your JWT Secret Key from .env file
+        process.env.ACCESS_TOKEN_SECRET, // JWT Secret Key from .env file
         (err, decoded) => {
             if (err) {
                 // Log error for debugging
