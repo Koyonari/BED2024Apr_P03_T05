@@ -169,21 +169,17 @@ class Request {
             const count = checkResult.recordset[0].count;
     
             if (count === 0) {
-                // Entry doesn't exist, so insert it
-                const reqing_id = generateUUID24();
-    
                 const insertQuery = `
-                    INSERT INTO RequestIngredients (reqing_id, request_id, pantry_id, ingredient_id) 
-                    VALUES (@reqing_id, @request_id, @pantry_id, @ingredient_id);
+                    INSERT INTO RequestIngredients (request_id, pantry_id, ingredient_id) 
+                    VALUES (@request_id, @pantry_id, @ingredient_id);
                 `;
                 const insertReq = connection.request();
-                insertReq.input('reqing_id', reqing_id);
                 insertReq.input('request_id', request_id);
                 insertReq.input('pantry_id', pantry_id);
                 insertReq.input('ingredient_id', ingredient_id);
     
                 await insertReq.query(insertQuery);
-                return { reqing_id, request_id, pantry_id, ingredient_id, count: 1 };
+                return { request_id, pantry_id, ingredient_id, count: 1 };
             } else {
                 // Entry already exists
                 console.log( "Ingredient already exists for this request", count);
