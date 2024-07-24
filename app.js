@@ -49,13 +49,6 @@ app.use('/pantry', require('./routes/api/pantryRoutes'));
 app.use('/recipes', require('./routes/api/recipeRoutes'));
 app.use('/requests', require('./routes/api/requestRoutes'));
 
-// // Jason SQL User Routes (were used for internal testing before merging with group) - main functions are /pantry routes
-// const userController = require("./controllers/user_sqlController");
-// const pantryController = require("./controllers/pantryController");
-// app.post("/users", userController.createUser); 
-// app.get("/users", userController.getAllUsers); 
-// app.get("/users/:user_id", userController.getUserByUID); 
-
 // Error handling middleware
 app.use(errorHandler);
 
