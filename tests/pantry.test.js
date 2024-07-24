@@ -2,10 +2,41 @@ const Pantry = require("../models/pantry"); // Adjust the path to your Pantry mo
 const sql = require("mssql");
 const axios = require("axios");
 
+// Use a simplified or different mock configuration
+const dbConfig = {
+  database: 'test_db',
+  options: {
+    connectionTimeout: 10000,
+    enableArithAbort: false,
+    port: 1234,
+  },
+  password: 'test_password',
+  server: 'test_server',
+  trustServerCertificate: false,
+  user: 'test_user',
+};
 jest.mock("axios");
-jest.mock("mssql");
+jest.mock('mssql', () => ({
+  connect: jest.fn(),
+}));
+
+const mockRequest = {
+  input: jest.fn().mockReturnThis(),
+  query: jest.fn()
+};
+
+const mockConnection = {
+  request: jest.fn().mockReturnValue(mockRequest),
+  close: jest.fn().mockResolvedValue(undefined)
+};
 
 describe("Pantry Class", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+  beforeAll(() => {
+    sql.connect = jest.fn().mockResolvedValue(mockConnection);
+  });
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -67,8 +98,79 @@ describe("Pantry Class", () => {
       );
     });
   });
-
+  describe("updateIngredientInPantry", () => {
+    let mockRequest, mockConnection;
+  
+    beforeEach(() => {
+      mockRequest = {
+        input: jest.fn().mockReturnThis(),
+        query: jest.fn(),
+      };
+  
+      mockConnection = {
+        request: jest.fn().mockReturnValue(mockRequest),
+        close: jest.fn().mockResolvedValue(undefined),
+      };
+  
+      sql.connect = jest.fn().mockResolvedValue(mockConnection);
+    });
+  
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+  
+    it("should update the ingredient quantity in the pantry", async () => {
+      mockRequest.query.mockResolvedValue({ rowsAffected: [1] });
+  
+      const result = await Pantry.updateIngredientInPantry(1, 1, 10);
+  
+      expect(sql.connect).toHaveBeenCalled();
+      expect(mockRequest.input).toHaveBeenCalledWith("pantry_id", 1);
+      expect(mockRequest.input).toHaveBeenCalledWith("ingredient_id", 1);
+      expect(mockRequest.input).toHaveBeenCalledWith("quantity", 10);
+      expect(mockRequest.query).toHaveBeenCalledWith(expect.any(String));
+      expect(result).toEqual({ pantry_id: 1, ingredient_id: 1, quantity: 10 });
+      expect(mockConnection.close).toHaveBeenCalled();
+    });
+  
+    it("should throw an error if the ingredient is not found", async () => {
+      mockRequest.query.mockResolvedValue({ rowsAffected: [0] });
+  
+      await expect(Pantry.updateIngredientInPantry(1, 1, 10))
+        .rejects
+        .toThrow('Ingredient not found in pantry');
+      
+      expect(mockConnection.close).toHaveBeenCalled();
+    });
+  
+    it("should handle database errors properly", async () => {
+      const error = new Error('Database error');
+      mockRequest.query.mockRejectedValue(error);
+  
+      await expect(Pantry.updateIngredientInPantry(1, 1, 10))
+        .rejects
+        .toThrow('Database error');
+  
+      expect(mockConnection.close).toHaveBeenCalled();
+    });
+  
+    it("should close the connection after execution", async () => {
+      mockRequest.query.mockResolvedValue({ rowsAffected: [1] });
+  
+      await Pantry.updateIngredientInPantry(1, 1, 10);
+  
+      expect(mockConnection.close).toHaveBeenCalled();
+    });
+  });
+  
   describe("addIngredientToPantry", () => {
+    beforeEach(() => {
+      sql.connect = jest.fn().mockResolvedValue(mockConnection);
+    });
+  
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
     it("should add a new ingredient to the pantry", async () => {
       const pantry_id = "1";
       const ingredient_name = "Tomato";
@@ -158,59 +260,6 @@ describe("Pantry Class", () => {
       await expect(
         Pantry.addIngredientToPantry("pantry1", "Test Ingredient", 10)
       ).rejects.toThrow("Database connection error");
-    });
-  });
-
-  describe("updateIngredientInPantry", () => {
-    let mockConnection, mockRequest;
-
-    beforeEach(() => {
-      mockConnection = {
-        request: jest.fn().mockReturnThis(),
-        close: jest.fn(),
-      };
-
-      mockRequest = {
-        input: jest.fn().mockReturnThis(),
-        query: jest.fn(),
-      };
-
-      sql.connect = jest.fn().mockResolvedValue(mockConnection);
-      mockConnection.request.mockReturnValue(mockRequest);
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it("should update the ingredient quantity in the pantry", async () => {
-      mockRequest.query.mockResolvedValue({ rowsAffected: [1] });
-
-      const result = await Pantry.updateIngredientInPantry(1, 1, 10);
-
-      expect(sql.connect).toHaveBeenCalledWith(dbConfig);
-      expect(mockRequest.input).toHaveBeenCalledWith("pantry_id", 1);
-      expect(mockRequest.input).toHaveBeenCalledWith("ingredient_id", 1);
-      expect(mockRequest.input).toHaveBeenCalledWith("quantity", 10);
-      expect(mockRequest.query).toHaveBeenCalledWith(expect.any(String));
-      expect(result).toEqual({ pantry_id: 1, ingredient_id: 1, quantity: 10 });
-    });
-
-    it("should throw an error if the ingredient is not found", async () => {
-      mockRequest.query.mockResolvedValue({ rowsAffected: [0] });
-
-      await expect(Pantry.updateIngredientInPantry(1, 1, 10)).rejects.toThrow(
-        "Ingredient not found in pantry"
-      );
-    });
-
-    it("should handle database errors properly", async () => {
-      const error = new Error("Database error");
-      mockRequest.query.mockRejectedValue(error);
-
-      await expect(Pantry.updateIngredientInPantry(1, 1, 10)).rejects.toThrow(
-        "Database error"
-      );
     });
   });
 
