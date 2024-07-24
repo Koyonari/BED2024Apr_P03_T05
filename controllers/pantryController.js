@@ -39,18 +39,19 @@ async function createPantry(req, res) {
     const { user_id } = req.params;
 
     const existingPantryID = await Pantry.getPantryIDByUserID(user_id);
-    if (existingPantryID) {
+    if (!existingPantryID) {
+      const newPantryID = await Pantry.createPantry(user_id);
+      res.status(201).json({
+        message: "Pantry has been created for user",
+        pantry_id: newPantryID,
+      });
+    }
+    else{
       return res.status(200).json({
         message: "User already has a pantry",
         pantry_id: existingPantryID,
       });
     }
-
-    const newPantryID = await Pantry.createPantry(user_id);
-    res.status(201).json({
-      message: "Pantry has been created for user",
-      pantry_id: newPantryID,
-    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
