@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const mockingoose = require('mockingoose');
 const User = require('../models/user');
 const userRoutes = require('../routes/api/userRoutes'); // Adjust the path if necessary
-const mockDB = require('../middleware/mockDB');
 const { createSQLUser, updateSQLUsername, deleteSQLUser } = require('../models/usersql');
 const db = require('../middleware/db');
 const app = express();

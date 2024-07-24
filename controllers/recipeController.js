@@ -548,6 +548,7 @@ const deleteRecipeIngredientByRecipeId = async (req, res) => {
     res.status(500).json({ message: 'Error deleting ingredient from recipe', error: error.message });
   }
 };
+
 // Function to check user ownership of a recipe
 async function isUserRecipe(userId, recipeId) {
   const userRecipes = await getRecipesByUserId(userId);

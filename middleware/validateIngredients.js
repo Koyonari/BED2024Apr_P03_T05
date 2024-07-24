@@ -1,29 +1,27 @@
+const Joi = require('joi');
+
+// Schema for a single ingredient
+const ingredientSchema = Joi.object({
+  ingredient_id: Joi.string().required(),
+  ingredient_name: Joi.string().optional(),
+  ingredient_image: Joi.string().optional()
+});
+
+// Schema for an array of ingredients
+const ingredientsArraySchema = Joi.array().items(ingredientSchema);
+
 const validateIngredients = (req, res, next) => {
-  const ingredients = req.body;
+  const { body } = req;
 
-  // Check if ingredients is an array and not empty
-  if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
-    return res.status(400).json({ message: 'Ingredients must be provided and should be an array' });
+  // Check if body is an array
+  const { error } = Array.isArray(body)
+    ? ingredientsArraySchema.validate(body)
+    : ingredientSchema.validate(body);
+
+  if (error) {
+    return res.status(400).json({ message: error.details.map(detail => detail.message).join(', ') });
   }
 
-  for (const ingredient of ingredients) {
-    // Check for required fields
-    if (
-      !ingredient.ingredient_id ||
-      typeof ingredient.ingredient_id !== 'string' ||
-      !ingredient.ingredient_name ||
-      typeof ingredient.ingredient_name !== 'string'
-    ) {
-      return res.status(400).json({ message: 'Each ingredient must have valid ingredient_id and ingredient_name' });
-    }
-
-    // Optional field check
-    if (ingredient.ingredient_image && typeof ingredient.ingredient_image !== 'string') {
-      return res.status(400).json({ message: 'If provided, ingredient_image must be a string' });
-    }
-  }
-
-  // Proceed to the next middleware or route handler
   next();
 };
 
