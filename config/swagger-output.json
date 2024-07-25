@@ -398,7 +398,7 @@
               "type": "firstname",
               "properties": {
                 "username": {
-                  "example": "any"
+                  "example": "string"
                 }
               }
             }
@@ -1595,7 +1595,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Create a new Request",
+        "description": "This endpoint is used to create a new request",
         "parameters": [
           {
             "name": "origin",
@@ -1603,9 +1604,26 @@
             "type": "string"
           },
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "user_id": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "security": [
@@ -1637,32 +1655,24 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Create new Request Ingredient",
+        "description": "This endpoint is used by the system when the Volunteer adds an ingredient that is not in the User's Request Ingredient",
         "parameters": [
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "request_id": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "pantry_id": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "ingredient_id": {
-                  "example": "any"
+                  "type": "string"
                 }
               }
             }
@@ -1697,22 +1707,13 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Retrieves all specific user's requests",
+        "description": "This endpoint is used for Users to view their own requests",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -1745,7 +1746,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Retrieves all available requests - volunteer_id & admin_id IS NULL, isCompleted is 0",
+        "description": "This endpoint is for admins to view all available requests",
         "parameters": [
           {
             "name": "origin",
@@ -1787,7 +1789,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Retrieves all accepted routes accepted by the specificed volunteer id",
+        "description": "This endpoint is for volunteers to view all their own accepted requests",
         "parameters": [
           {
             "name": "id",
@@ -1835,7 +1838,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Retrieves the request with the specific request id",
+        "description": "This endpoint is for Users, Volunteers and Admins to view requests by request id",
         "parameters": [
           {
             "name": "id",
@@ -1881,7 +1885,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary":"Deletes request with the appropriate request id",
+        "description": "This endpoint is for Users and Admins to delete request",
         "parameters": [
           {
             "name": "id",
@@ -1929,22 +1934,13 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Get request ingredients by request id",
+        "description": "This endpoint is used to retrieve request ingredients and details by request id",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -1977,7 +1973,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary":"Retrieves request details with ingredients",
+        "description": "This endpoint is used for Users, Volunteers and Admins to view more request details including ingredient quantity and name",
         "parameters": [
           {
             "name": "origin",
@@ -2019,7 +2016,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary":"Retrieves all completed request where isCompleted is TRUE",
+        "description": "This endpoint is used by admins to view completed requests",
         "parameters": [
           {
             "name": "origin",
@@ -2062,7 +2060,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary":"Retrieves all approved requests where admin id is NOT NULL",
+        "description": "This endpoint is used by Admins to view approved request",
         "parameters": [
           {
             "name": "origin",
@@ -2105,7 +2104,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary":"Updates the request with the inputted volunteer id",
+        "description": "This endpoint is used by Volunteers to accept requests",
         "parameters": [
           {
             "name": "id",
@@ -2131,7 +2131,7 @@
               "type": "object",
               "properties": {
                 "volunteer_id": {
-                  "example": "any"
+                  "example": "string"
                 }
               }
             }
@@ -2169,23 +2169,13 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary":"Updates the request with the inputted request id to have isCompleted = true",
+        "description": "This endpoint allows Users to update their request status to Completed",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -2218,7 +2208,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary":"Updates the request with the inputted admin_id",
+        "description": "This endpoint is used by the Admins to approve the request",
         "parameters": [
           {
             "name": "id",
@@ -2238,7 +2229,7 @@
               "type": "object",
               "properties": {
                 "admin_id": {
-                  "example": "any"
+                  "example": "string"
                 }
               }
             }
@@ -2421,6 +2412,33 @@
           "example": 500
         }
       }
-    }
+    },
+    "Request": {
+    "type": "object",
+    "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "volunteer_id": {
+      "type": "string"
+    },
+    "isCompleted": {
+      "type": "boolean"
+    },
+    "admin_id": {
+      "type": "string"
+    }}
   }
-}
+}}
