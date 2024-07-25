@@ -1595,7 +1595,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Create a new Request",
+        "description": "This endpoint is used to create a new request",
         "parameters": [
           {
             "name": "origin",
@@ -1603,9 +1604,12 @@
             "type": "string"
           },
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/createRequest"
+            }
           }
         ],
         "security": [
@@ -1637,32 +1641,24 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Create new Request Ingredient",
+        "description": "This endpoint is used by the system when the Volunteer adds an ingredient that is not in the User's Request Ingredient",
         "parameters": [
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "request_id": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "pantry_id": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "ingredient_id": {
-                  "example": "any"
+                  "type": "integer"
                 }
               }
             }
@@ -1697,22 +1693,13 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Retrieves all specific user's requests",
+        "description": "This endpoint is used for Users to view their own requests",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -1929,22 +1916,13 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Get request ingredients by request id",
+        "description": "This endpoint is used to retrieve request ingredients and details by request id",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -2175,17 +2153,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -2421,6 +2388,55 @@
           "example": 500
         }
       }
-    }
-  }
-}
+    },
+    "Request": {
+    "type": "object",
+    "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "volunteer_id": {
+      "type": "string"
+    },
+    "isCompleted": {
+      "type": "boolean"
+    },
+    "admin_id": {
+      "type": "string"
+    }}
+  },
+  "createRequest": {
+    "type": "object",
+    "required": [
+      "title",
+      "category",
+      "description",
+      "user_id"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "category": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "user_id": {
+        "type": "string"
+      }
+    }}
+}}
