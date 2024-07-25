@@ -1608,7 +1608,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": ""
+              "$ref": "#/definitions/createRequest"
             }
           }
         ],
@@ -1641,32 +1641,24 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Create new Request Ingredient",
+        "description": "This endpoint is used by the system when the Volunteer adds an ingredient that is not in the User's Request Ingredient",
         "parameters": [
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "request_id": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "pantry_id": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "ingredient_id": {
-                  "example": "any"
+                  "type": "integer"
                 }
               }
             }
@@ -1705,7 +1697,7 @@
         "description": "This endpoint is used for Users to view their own requests",
         "parameters": [
           {
-            "name": "user_id",
+            "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1924,22 +1916,13 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Get request ingredients by request id",
+        "description": "This endpoint is used to retrieve request ingredients and details by request id",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -2170,17 +2153,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -2443,7 +2415,28 @@
     },
     "admin_id": {
       "type": "string"
-    }
-  }
-  }
+    }}
+  },
+  "createRequest": {
+    "type": "object",
+    "required": [
+      "title",
+      "category",
+      "description",
+      "user_id"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "category": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "user_id": {
+        "type": "string"
+      }
+    }}
 }}
