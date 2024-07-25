@@ -155,4 +155,5 @@ h2 {
     width: 30vh;
     display: flex;
     justify-content: center;
+    object-fit: cover;
 }

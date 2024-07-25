@@ -1595,7 +1595,8 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Create a new Request",
+        "description": "This endpoint is used to create a new request",
         "parameters": [
           {
             "name": "origin",
@@ -1603,9 +1604,12 @@
             "type": "string"
           },
           {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": ""
+            }
           }
         ],
         "security": [
@@ -1697,22 +1701,13 @@
         "tags": [
           "Request Routes"
         ],
-        "description": "",
+        "summary": "Retrieves all specific user's requests",
+        "description": "This endpoint is used for Users to view their own requests",
         "parameters": [
           {
-            "name": "id",
+            "name": "user_id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "origin",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -2421,6 +2416,34 @@
           "example": 500
         }
       }
+    },
+    "Request": {
+    "type": "object",
+    "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "volunteer_id": {
+      "type": "string"
+    },
+    "isCompleted": {
+      "type": "boolean"
+    },
+    "admin_id": {
+      "type": "string"
     }
   }
-}
+  }
+}}
