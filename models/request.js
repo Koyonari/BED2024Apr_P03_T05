@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const {dbConfig} = require('../config/dbConfig');
+const { dbConfig } = require('../config/dbConfig');
 const crypto = require("crypto");
 
 // Generate a 24 varchar string
@@ -7,19 +7,19 @@ function generateUUID24() {
     // Define the characters to be used in the string
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
-    
+
     let result = '';
     // Generate 24 characters randomly
     for (let i = 0; i < 24; i++) {
-      const randomIndex = crypto.randomInt(charactersLength);
-      result += characters[randomIndex];
+        const randomIndex = crypto.randomInt(charactersLength);
+        result += characters[randomIndex];
     }
-  
+
     return result;
 }
 
 class Request {
-    constructor(request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id){
+    constructor(request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id) {
         this.request_id = request_id;
         this.title = title;
         this.category = category;
@@ -55,7 +55,6 @@ class Request {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
-            await connection.connect();
             const uuid = generateUUID24();
             const sqlQuery = `
             INSERT INTO requests (request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id) 
@@ -67,14 +66,14 @@ class Request {
             req.input('category', request.category);
             req.input('description', request.description);
             req.input('user_id', request.user_id);
-        
+
             await req.query(sqlQuery);
             return this.getRequestById(uuid, connection);
         } catch (error) {
             console.error("Error creating requests:", error);
             throw error;
         } finally {
-                if (connection) {
+            if (connection) {
                 await connection.close();
             }
         }
@@ -87,7 +86,7 @@ class Request {
         const req = connection.request();
         const result = await req.query(sqlQuery);
         connection.close();
-    
+
         if (result.recordset.length > 0) {
             return result.recordset.map(record => new Request(
                 record.request_id,
@@ -102,27 +101,27 @@ class Request {
         } else {
             return [];
         }
-    }    
+    }
 
     // PATCH: Package 2.1.3 - Allow Volunteers to accept available request by updating volunteer_id
     static async updateAcceptedRequest(id, newVolunteerId) {
         const connection = await sql.connect(dbConfig);
-    
-        const sqlQuery = 
-        `UPDATE requests SET 
+
+        const sqlQuery =
+            `UPDATE requests SET 
         volunteer_id = @volunteer_id
         WHERE request_id = @id`;
-    
+
         const request = connection.request();
         request.input("id", id);
         request.input("volunteer_id", newVolunteerId || null);
-    
+
         await request.query(sqlQuery);
-    
+
         connection.close();
-    
+
         return this.getRequestById(id);
-    }      
+    }
 
     // GET: Package 2.1.5 & 6.1 - Allow Volunteers to view accepted requests
     static async getAcceptedRequestById(volunteerId) {
@@ -154,7 +153,7 @@ class Request {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
-    
+
             // Check if the entry already exists
             const checkQuery = `
                 SELECT COUNT(*) as count
@@ -164,10 +163,10 @@ class Request {
             const checkReq = connection.request();
             checkReq.input('request_id', request_id);
             checkReq.input('ingredient_id', sql.Int, ingredient_id);
-    
+
             const checkResult = await checkReq.query(checkQuery);
             const count = checkResult.recordset[0].count;
-    
+
             if (count === 0) {
                 const insertQuery = `
                     INSERT INTO RequestIngredients (request_id, pantry_id, ingredient_id) 
@@ -177,12 +176,12 @@ class Request {
                 insertReq.input('request_id', request_id);
                 insertReq.input('pantry_id', pantry_id);
                 insertReq.input('ingredient_id', ingredient_id);
-    
+
                 await insertReq.query(insertQuery);
                 return { request_id, pantry_id, ingredient_id, count: 1 };
             } else {
                 // Entry already exists
-                console.log( "Ingredient already exists for this request", count);
+                console.log("Ingredient already exists for this request", count);
             }
         } catch (error) {
             console.error("Error creating request ingredients:", error);
@@ -242,19 +241,19 @@ class Request {
     // PATCH: Package 2.2.2 - Allow Users to update the status to true for isCompleted
     static async updateCompletedRequest(id) {
         const connection = await sql.connect(dbConfig);
-        
-        const sqlQuery = 
-        `UPDATE requests SET 
+
+        const sqlQuery =
+            `UPDATE requests SET 
         isCompleted = 1
         WHERE request_id = @id`;
-        
+
         const request = connection.request();
         request.input("id", id);
-        
+
         await request.query(sqlQuery);
-        
+
         connection.close();
-        
+
         return this.getRequestById(id);
     }
 
@@ -263,19 +262,18 @@ class Request {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
-            await connection.connect();
             const sqlQuery = `SELECT * FROM requests WHERE request_id = @request_id`;
             const request = connection.request();
             request.input("request_id", id);
             const result = await request.query(sqlQuery);
             return result.recordset[0];
-            } catch (error) {
-                console.error("Error getting request by request ID", error);
-                throw error;
-            } finally {
-                if (connection) {
-                    await connection.close();
-                }
+        } catch (error) {
+            console.error("Error in getRequestById method:", error);
+            throw error; // Make sure to throw the error so it can be caught in tests
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
         }
     }
 
@@ -298,14 +296,14 @@ class Request {
     // PATCH: Package 9.1.2 - Admin approve requests
     static async updateApproveRequest(requestId, adminId) {
         const connection = await sql.connect(dbConfig);
-        
+
         try {
             const sqlQuery = `UPDATE requests SET admin_id = @adminId WHERE request_id = @requestId`;
-    
+
             const request = connection.request();
             request.input('requestId', requestId);
             request.input('adminId', adminId);
-    
+
             await request.query(sqlQuery);
         } catch (error) {
             console.error("Error updating request:", error);
@@ -313,7 +311,7 @@ class Request {
         } finally {
             connection.close();
         }
-    
+
         return this.getRequestById(requestId);
     }
 
@@ -388,21 +386,21 @@ class Request {
             return [];
         }
     }
-    
+
     // DELETE: Package 9.2.2 & 9.3.2 - Allow Admins to delete available request
     static async deleteRequest(id) {
         const connection = await sql.connect(dbConfig);
-    
+
         const sqlQuery = `
         DELETE FROM requests WHERE request_id = @id
         DELETE FROM RequestIngredients WHERE request_id = @id`;
-    
+
         const request = connection.request();
         request.input("id", id);
         const result = await request.query(sqlQuery);
-    
+
         connection.close();
-    
+
         return result.rowsAffected > 0;
     }
 }

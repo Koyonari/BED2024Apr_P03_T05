@@ -2,7 +2,7 @@ const requestController = require('../controllers/requestController');
 const db = require('../middleware/db');
 const sql = require('mssql');
 const Request = require('../models/request');
-const {getRequestByUserId,
+const { getRequestByUserId,
     createRequest,
     getAvailableRequest,
     updateAcceptedRequest,
@@ -456,12 +456,16 @@ describe('Request Controller', () => {
             expect(res.send).toHaveBeenCalledWith('Request deleted successfully');
         });
 
-        it('should handle request not found while deleting', async () => {
+        it('should handle request not found scenario', async () => {
+            // Arrange
             req.params.id = '1';
-            Request.deleteRequest = jest.fn().mockResolvedValue(false);
-
+            // Mock the deleteRequest method to return a result indicating no request was found
+            Request.deleteRequest = jest.fn().mockResolvedValue({ deletedCount: 0 });
+        
+            // Act
             await requestController.deleteRequest(req, res);
-
+        
+            // Assert
             expect(Request.deleteRequest).toHaveBeenCalledWith('1');
             expect(res.status).toHaveBeenCalledWith(404);
             expect(res.send).toHaveBeenCalledWith('Request not found');
@@ -478,4 +482,109 @@ describe('Request Controller', () => {
             expect(res.send).toHaveBeenCalledWith('Error deleting request');
         });
     });
+    describe('createIngredientList', () => {
+        let req;
+        let res;
+
+        beforeEach(() => {
+            req = {
+                body: {}
+            };
+
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn().mockReturnThis(),
+                send: jest.fn().mockReturnThis(),
+            };
+        });
+
+        afterEach(() => {
+            jest.resetAllMocks();
+        });
+
+        it('should create a new ingredient list and return it', async () => {
+            req.body = { request_id: '1', pantry_id: '2', ingredient_id: '3' };
+            const createdIngreList = { id: '1', request_id: '1', pantry_id: '2', ingredient_id: '3' };
+            Request.createIngredientList.mockResolvedValue(createdIngreList);
+
+            await requestController.createIngredientList(req, res);
+
+            expect(Request.createIngredientList).toHaveBeenCalledWith('1', '2', '3');
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith(createdIngreList);
+        });
+
+        it('should handle conflict while creating an ingredient list', async () => {
+            req.body = { request_id: '1', pantry_id: '2', ingredient_id: '3' };
+            const conflictResponse = { message: 'Ingredient list already exists' };
+            Request.createIngredientList.mockResolvedValue(conflictResponse);
+
+            await requestController.createIngredientList(req, res);
+
+            expect(Request.createIngredientList).toHaveBeenCalledWith('1', '2', '3');
+            expect(res.status).toHaveBeenCalledWith(409);
+            expect(res.json).toHaveBeenCalledWith(conflictResponse);
+        });
+
+        it('should handle errors while creating an ingredient list', async () => {
+            req.body = { request_id: '1', pantry_id: '2', ingredient_id: '3' };
+            Request.createIngredientList.mockRejectedValue(new Error('Error creating ingredient list'));
+
+            await requestController.createIngredientList(req, res);
+
+            expect(Request.createIngredientList).toHaveBeenCalledWith('1', '2', '3');
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ error: 'Internal Server Error' });
+        });
+    });
+    describe('getRequestIngredientById', () => {
+        let req;
+        let res;
+    
+        beforeEach(() => {
+            req = { params: {} };
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn().mockReturnThis(),
+            };
+        });
+    
+        afterEach(() => {
+            jest.resetAllMocks();
+        });
+    
+        it('should return request ingredients by ID', async () => {
+            req.params.id = '1';
+            const mockIngredients = [{ id: '1', ingredient: 'Sugar' }];
+            Request.getRequestIngredientById = jest.fn().mockResolvedValue(mockIngredients);
+    
+            await requestController.getRequestIngredientById(req, res);
+    
+            expect(Request.getRequestIngredientById).toHaveBeenCalledWith('1');
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith(mockIngredients);
+        });
+    
+        it('should handle no ingredients found for given ID', async () => {
+            req.params.id = '1';
+            Request.getRequestIngredientById = jest.fn().mockResolvedValue([]);
+    
+            await requestController.getRequestIngredientById(req, res);
+    
+            expect(Request.getRequestIngredientById).toHaveBeenCalledWith('1');
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Request not found' });
+        });
+    
+        it('should handle errors while fetching ingredients', async () => {
+            req.params.id = '1';
+            Request.getRequestIngredientById = jest.fn().mockRejectedValue(new Error('Error'));
+    
+            await requestController.getRequestIngredientById(req, res);
+    
+            expect(Request.getRequestIngredientById).toHaveBeenCalledWith('1');
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Internal server error', error: 'Error' });
+        });
+});
 });
