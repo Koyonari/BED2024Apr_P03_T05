@@ -153,7 +153,6 @@ class Request {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
-
             // Check if the entry already exists
             const checkQuery = `
                 SELECT COUNT(*) as count
@@ -262,6 +261,7 @@ class Request {
         let connection;
         try {
             connection = await sql.connect(dbConfig);
+            await connection.connect();
             const sqlQuery = `SELECT * FROM requests WHERE request_id = @request_id`;
             const request = connection.request();
             request.input("request_id", id);
