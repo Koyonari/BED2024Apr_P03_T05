@@ -402,25 +402,11 @@ p a:hover {
   height: 50px;
 }
 
-.about-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  height: 50vh;
+.about_title {
   text-align: center;
-}
-
-.about-container h1 {
-  font-size: 80px;
-  color: #ff964b;
-}
-
-.about-container p {
-  margin-left: 250px;
-  margin-right: 250px;
-  font-size: 20px;
-  color: white;
+  margin-top: 7.5vh;
+  margin-bottom: 1.5vh;
+  font-size: 5rem;
 }
 
 .center-text {

@@ -52,6 +52,7 @@ h2 {
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     background-color: white;
+    margin-bottom:3vh;
 }
 
 .border .card-header,
@@ -134,6 +135,10 @@ h2 {
 
 .mb-4 {
     margin-top: 3vh;
+}
+
+.mb-10 .about {
+    margin-bottom: 3vh;
 }
 
 .contact {
