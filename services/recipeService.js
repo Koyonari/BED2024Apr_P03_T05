@@ -54,7 +54,7 @@ const fetchFilteredRecipes = async (ingredients, excludedIngredients = [], intol
     const recipes = response.data.results.map(recipe => ({
       id: recipe.id,
       title: recipe.title,
-      imageurl: recipe.image,
+      image: recipe.image,
       servings: recipe.servings,
       readyInMinutes: recipe.readyInMinutes,
       pricePerServing: recipe.pricePerServing
