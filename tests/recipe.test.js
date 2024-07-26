@@ -25,7 +25,7 @@ jest.mock('mssql');
 const mockRecipe = {
   id: '1',
   title: 'Spaghetti Bolognese',
-  imageurl: 'http://example.com/image.jpg',
+  image: 'http://example.com/image.jpg',
   servings: 4,
   readyInMinutes: 30,
   pricePerServing: 5.0,
@@ -48,7 +48,7 @@ const mockConnection = {
 sql.Int = jest.fn().mockImplementation(() => 'mockConstructor');
 sql.Float = jest.fn().mockImplementation(() => 'mockConstructor');
 sql.VarChar = jest.fn().mockImplementation(() => 'mockConstructor');
-sql.NVarChar = jest.fn().mockImplementation(() => 'mockConstructor');
+sql.VarChar = jest.fn().mockImplementation(() => 'mockConstructor');
 // Mock data for getRecipeIngredientsById
 const mockIngredients = [
   {
@@ -241,8 +241,8 @@ describe('Recipe Module Tests', () => {
 
       // Check if the input values and result match expected values
       expect(mockRequest.input).toHaveBeenCalledWith('id_insert', sql.VarChar(255), fixedUuid);
-      expect(mockRequest.input).toHaveBeenCalledWith('title', sql.NVarChar, mockRecipe.title);
-      expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.NVarChar, mockRecipe.image || '');
+      expect(mockRequest.input).toHaveBeenCalledWith('title', sql.VarChar, mockRecipe.title);
+      expect(mockRequest.input).toHaveBeenCalledWith('image', sql.VarChar, mockRecipe.image || '');
       expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
       expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
       expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
@@ -295,7 +295,7 @@ describe('Recipe Module Tests', () => {
         const mockRecipe = {
             id: '12345',
             title: 'Updated Spaghetti Bolognese',
-            imageurl: 'http://example.com/new-image.jpg',
+            image: 'http://example.com/new-image.jpg',
             servings: 4,
             readyInMinutes: 30,
             pricePerServing: 6,
@@ -311,8 +311,8 @@ describe('Recipe Module Tests', () => {
 
         // Verify that input parameters are set correctly
         expect(mockRequest.input).toHaveBeenCalledWith('id_update', sql.VarChar(255), recipeId);
-        expect(mockRequest.input).toHaveBeenCalledWith('title', sql.NVarChar, mockRecipe.title);
-        expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.NVarChar, mockRecipe.imageurl || '');
+        expect(mockRequest.input).toHaveBeenCalledWith('title', sql.VarChar, mockRecipe.title);
+        expect(mockRequest.input).toHaveBeenCalledWith('image', sql.VarChar, mockRecipe.image || '');
         expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
         expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
         expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
@@ -333,7 +333,7 @@ describe('Recipe Module Tests', () => {
         const mockRecipe = {
             id: '12345',
             title: 'Updated Spaghetti Bolognese',
-            imageurl: 'http://example.com/new-image.jpg',
+            image: 'http://example.com/new-image.jpg',
             servings: 4,
             readyInMinutes: 30,
             pricePerServing: 6,
@@ -370,7 +370,7 @@ describe('updateRecipeDetailsbyUser', () => {
         const mockRecipe = {
             id: '12345',
             title: 'Updated Spaghetti Bolognese',
-            imageurl: 'http://example.com/new-image.jpg',
+            image: 'http://example.com/new-image.jpg',
             servings: 4,
             readyInMinutes: 30,
             pricePerServing: 6,
@@ -386,7 +386,7 @@ describe('updateRecipeDetailsbyUser', () => {
         // Verify that input parameters are set correctly
         expect(mockRequest.input).toHaveBeenCalledWith('id_update', sql.VarChar(255), mockRecipe.id.toString());
         expect(mockRequest.input).toHaveBeenCalledWith('title', sql.VarChar, mockRecipe.title);
-        expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.VarChar, mockRecipe.imageurl);
+        expect(mockRequest.input).toHaveBeenCalledWith('image', sql.VarChar, mockRecipe.image);
         expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
         expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
         expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
@@ -400,7 +400,7 @@ describe('updateRecipeDetailsbyUser', () => {
         const mockRecipe = {
             id: '12345',
             title: 'Updated Spaghetti Bolognese',
-            imageurl: 'http://example.com/new-image.jpg',
+            image: 'http://example.com/new-image.jpg',
             servings: 4,
             readyInMinutes: 30,
             pricePerServing: 6
@@ -415,7 +415,7 @@ describe('updateRecipeDetailsbyUser', () => {
         // Verify that input parameters are set correctly
         expect(mockRequest.input).toHaveBeenCalledWith('id_update', sql.VarChar(255), mockRecipe.id.toString());
         expect(mockRequest.input).toHaveBeenCalledWith('title', sql.VarChar, mockRecipe.title);
-        expect(mockRequest.input).toHaveBeenCalledWith('imageurl', sql.VarChar, mockRecipe.imageurl);
+        expect(mockRequest.input).toHaveBeenCalledWith('image', sql.VarChar, mockRecipe.image);
         expect(mockRequest.input).toHaveBeenCalledWith('servings', sql.Int, mockRecipe.servings);
         expect(mockRequest.input).toHaveBeenCalledWith('readyInMinutes', sql.Int, mockRecipe.readyInMinutes);
         expect(mockRequest.input).toHaveBeenCalledWith('pricePerServing', sql.Float, mockRecipe.pricePerServing);
@@ -438,7 +438,7 @@ describe('updateRecipeDetailsbyUser', () => {
         const mockRecipe = {
             id: '12345',
             title: 'Updated Spaghetti Bolognese',
-            imageurl: 'http://example.com/new-image.jpg',
+            image: 'http://example.com/new-image.jpg',
             servings: 4,
             readyInMinutes: 30,
             pricePerServing: 6,
@@ -457,7 +457,7 @@ describe('updateRecipeDetailsbyUser', () => {
         const mockRecipe = {
             id: '12345',
             title: 'Updated Spaghetti Bolognese',
-            imageurl: 'http://example.com/new-image.jpg',
+            image: 'http://example.com/new-image.jpg',
             servings: 4,
             readyInMinutes: 30,
             pricePerServing: 6,
@@ -503,8 +503,8 @@ describe('updateRecipeDetailsbyUser', () => {
 
       // Verify that input parameters are set correctly
       expect(mockRequest.input).toHaveBeenCalledWith('id_insertOrUpdate', sql.VarChar(255), mockIngredient.id.toString());
-      expect(mockRequest.input).toHaveBeenCalledWith('name', sql.NVarChar, mockIngredient.name);
-      expect(mockRequest.input).toHaveBeenCalledWith('image', sql.NVarChar, mockIngredient.image || '');
+      expect(mockRequest.input).toHaveBeenCalledWith('name', sql.VarChar, mockIngredient.name);
+      expect(mockRequest.input).toHaveBeenCalledWith('image', sql.VarChar, mockIngredient.image || '');
 
       // Verify that the query method was called with the correct SQL MERGE query
       expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('MERGE INTO Ingredients'));
@@ -555,7 +555,7 @@ describe('updateRecipeDetailsbyUser', () => {
       expect(mockRequest.input).toHaveBeenCalledWith('recipeId', sql.VarChar(255), recipeId);
       expect(mockRequest.input).toHaveBeenCalledWith('ingredientId', sql.VarChar(255), mockIngredient.id.toString());
       expect(mockRequest.input).toHaveBeenCalledWith('amount', sql.Float, mockIngredient.amount);
-      expect(mockRequest.input).toHaveBeenCalledWith('unit', sql.NVarChar, mockIngredient.unit);
+      expect(mockRequest.input).toHaveBeenCalledWith('unit', sql.VarChar, mockIngredient.unit);
 
       expect(mockRequest.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO RecipeIngredients'));
     });
@@ -642,7 +642,7 @@ describe('updateRecipeDetailsbyUser', () => {
     sql.Int = jest.fn().mockImplementation(() => 'mockConstructor');
     sql.Float = jest.fn().mockImplementation(() => 'mockConstructor');
     sql.VarChar = jest.fn().mockImplementation(() => 'mockConstructor');
-    sql.NVarChar = jest.fn().mockImplementation(() => 'mockConstructor');
+    sql.VarChar = jest.fn().mockImplementation(() => 'mockConstructor');
     beforeEach(() => {
       mockRequest = {
         input: jest.fn().mockReturnThis(),
@@ -663,7 +663,7 @@ describe('updateRecipeDetailsbyUser', () => {
       const recipeId = '12345';
       const updates = {
         title: 'Updated Spaghetti Bolognese',
-        imageurl: 'http://example.com/new-image.jpg',
+        image: 'http://example.com/new-image.jpg',
         servings: 4,
         readyInMinutes: 30,
         pricePerServing: 6.0

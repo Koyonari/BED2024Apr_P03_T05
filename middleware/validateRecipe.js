@@ -3,7 +3,7 @@ const Joi = require('joi');
 // Define Joi schema for recipe validation
 const validateRecipeSchema = Joi.object({
   title: Joi.string().optional(),
-  imageurl: Joi.string().uri().optional(),
+  image: Joi.string().uri().optional(),
   servings: Joi.number().integer().optional(),
   readyInMinutes: Joi.number().integer().optional(),
   pricePerServing: Joi.number().optional(),
