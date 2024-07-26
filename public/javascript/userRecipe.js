@@ -2,7 +2,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize variables and constants
   const accessToken = localStorage.getItem("AccessToken");
-  const imageUrlBase = "https://img.spoonacular.com/ingredients_500x500/";
+  const imageBase = "https://img.spoonacular.com/ingredients_500x500/";
   const searchInput = document.getElementById("searchInput");
   const searchButton = document.getElementById("searchButton");
   let allRecipes = []; // To store all fetched recipes
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("editRecipeForm").onsubmit = function (event) {
           event.preventDefault();
-          const updatedRecipe = getUpdatedRecipeData(recipe.imageurl);
+          const updatedRecipe = getUpdatedRecipeData(recipe.image);
           const changes = getRecipeChanges(recipe, updatedRecipe);
           const numEditableFields = 4; // Number of editable fields
 
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ingredientItem.className = "ingredient-item";
 
       ingredientItem.innerHTML = `
-        <img src="${imageUrlBase}${ingredient.ingredient_image}" alt="${ingredient.ingredient_name}" class="ingredient-image" />
+        <img src="${imageBase}${ingredient.ingredient_image}" alt="${ingredient.ingredient_name}" class="ingredient-image" />
         <div class="ingredient-details">
           <div class="ingredient-name">Ingredient Name: ${ingredient.ingredient_name}</div>
           <div class="ingredient-amount">Amount: ${ingredient.amount} ${ingredient.unit}</div>
@@ -240,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function () {
         recipe.id
       }'></i>
       <div class="recipe-image">
-        <img src="${recipe.imageurl}" alt="${recipe.title}" />
+        <img src="${recipe.image}" alt="${recipe.title}" />
       </div>
       <div id="recipe-holder">
         <div class="recipe-details">
@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to get updated recipe data from the form
-  function getUpdatedRecipeData(imageurl) {
+  function getUpdatedRecipeData(image) {
     return {
       title: document.getElementById("recipeTitle").value,
       servings: parseInt(document.getElementById("recipeServings").value, 10),
@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
       pricePerServing:
         parseFloat(document.getElementById("recipePricePerServing").value) *
         100,
-      imageurl: imageurl,
+      image: image,
     };
   }
 
@@ -318,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateRecipe(recipeId, updatedRecipe) {
     const requestData = {
       title: updatedRecipe.title,
-      imageurl: updatedRecipe.imageurl,
+      image: updatedRecipe.image,
       servings: updatedRecipe.servings,
       readyInMinutes: updatedRecipe.readyInMinutes,
       pricePerServing: updatedRecipe.pricePerServing,

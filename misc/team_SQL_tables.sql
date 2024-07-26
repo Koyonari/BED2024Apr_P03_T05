@@ -13,19 +13,8 @@ DROP TABLE IF EXISTS Users;
 CREATE TABLE Users (
     user_id CHAR(24) PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
-      CONSTRAINT chk_user_id_format_users CHECK (user_id LIKE '[a-fA-F0-9]%' AND LEN(user_id) = 24)
+    CONSTRAINT chk_user_id_format_users CHECK (user_id LIKE '[a-fA-F0-9]%' AND LEN(user_id) = 24)
 );
-
--- Sample Data for Users Table
-INSERT INTO Users (user_id, username) VALUES 
-('669ab53e52ed8860e2afe76b', 'TestVolunteer'),
-('669ab54752ed8860e2afe76e', 'TestUserWithSQL'),
-('669ab56a52ed8860e2afe771', 'TestUserAdmin'),
-('669abb1ffe3958443cdc03e1', 'TestUser'),
-('668104e73662e3dda4c190e0', 'TestVolunteer'),
-('669abb50fe3958443cdc03e4', 'VolunteerYS'),
-('668104e73662e3dda4c190e2', 'TestAdmin'),
-('667feba5b8086ea59d41f0b3', 'TestAdmin');
 
 -- Create Pantry Table
 CREATE TABLE Pantry (
@@ -36,24 +25,13 @@ CREATE TABLE Pantry (
     CONSTRAINT chk_user_id_format_pantry CHECK (user_id LIKE '[a-fA-F0-9]%' AND LEN(user_id) = 24)
 );
 
--- Sample Data for Pantry with actual users
-INSERT INTO Pantry (pantry_id, user_id) VALUES 
-('Xy21z', '669ab53e52ed8860e2afe76b'),
-('oTx5s', '669ab54752ed8860e2afe76e'),
-('eF7Mq', '669abb1ffe3958443cdc03e1');
-
 -- Create Ingredients Table
 CREATE TABLE Ingredients (
     ingredient_id VARCHAR(10) PRIMARY KEY,
     ingredient_image VARCHAR(255) NOT NULL,
     ingredient_name VARCHAR(255) NOT NULL,
-   CONSTRAINT chk_ingredient_id_format_ingredients CHECK (ingredient_id LIKE '[0-9]%' AND LEN(ingredient_id) <= 10)
+    CONSTRAINT chk_ingredient_id_format_ingredients CHECK (ingredient_id LIKE '[0-9]%' AND LEN(ingredient_id) <= 10)
 );
-
--- Sample Data for Ingredients Table
-INSERT INTO Ingredients (ingredient_id, ingredient_image, ingredient_name) VALUES 
-('10115261', 'fish-fillet.jpg', 'fish'),
-('5062', 'chicken-breasts.png', 'chicken breast');
 
 -- Create PantryIngredient Table
 CREATE TABLE PantryIngredient (
@@ -66,12 +44,6 @@ CREATE TABLE PantryIngredient (
     CONSTRAINT chk_pantry_id_format_pantryingredient CHECK (pantry_id LIKE '[A-Za-z]%' AND LEN(pantry_id) = 5),
     CONSTRAINT chk_ingredient_id_format_pantryingredient CHECK (ingredient_id LIKE '[0-9]%' AND LEN(ingredient_id) <= 10)
 );
-
--- Sample Data for PantryIngredient Table
-INSERT INTO PantryIngredient (pantry_id, ingredient_id, quantity) VALUES 
-('oTx5s', '5062', 4),
-('Xy21z', '10115261', 10),
-('eF7Mq', '10115261', 2);
 
 -- Create Recipes Table
 CREATE TABLE Recipes (
@@ -113,7 +85,7 @@ CREATE TABLE requests (
     request_id CHAR(24) PRIMARY KEY,  
     title VARCHAR(255) NOT NULL,              
     category VARCHAR(100) NOT NULL,           
-    description NVARCHAR(MAX) NOT NULL,        
+    description VARCHAR(MAX) NOT NULL,        
     user_id CHAR(24) NOT NULL,                      
     volunteer_id CHAR(24) NULL,                     
     isCompleted BIT NOT NULL DEFAULT 0,        
@@ -125,10 +97,6 @@ CREATE TABLE requests (
     CONSTRAINT chk_user_id_format_requests CHECK (user_id LIKE '[a-fA-F0-9]%' AND LEN(user_id) = 24),
     CONSTRAINT chk_volunteer_id_format_requests CHECK (volunteer_id LIKE '[a-fA-F0-9]%' AND LEN(volunteer_id) = 24)
 );
-
--- Sample Data for Requests Table
-INSERT INTO requests (request_id, title, category, description, user_id, volunteer_id, isCompleted, admin_id) VALUES
-('RMwDpaQ6fAXQPuID87sJqOKV', 'Would love some protein', 'Low Priority', 'Would love to have some protein powder for my workouts', '669abb1ffe3958443cdc03e1', '669abb50fe3958443cdc03e4', 0, NULL);
 
 -- Create RequestIngredients Table
 CREATE TABLE RequestIngredients (
@@ -144,10 +112,6 @@ CREATE TABLE RequestIngredients (
     CONSTRAINT chk_pantry_id_format_requestingredients CHECK (pantry_id LIKE '[A-Za-z0-9]%' AND LEN(pantry_id) = 5),
     CONSTRAINT chk_ingredient_id_numeric_requestingredients CHECK (ingredient_id LIKE '[0-9]%' AND LEN(ingredient_id) <= 10)
 );
-
--- Sample Data for RequestIngredients Table
-INSERT INTO RequestIngredients (request_id, pantry_id, ingredient_id) VALUES 
-('RMwDpaQ6fAXQPuID87sJqOKV', 'Xy21z', '10115261');
 
 -- Select all data from the tables
 SELECT * FROM Users;
