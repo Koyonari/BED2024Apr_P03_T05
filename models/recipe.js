@@ -5,10 +5,10 @@ const { v4: uuid4 } = require('uuid');
 
 // Class for Recipe
 class Recipe {
-  constructor(id, title, imageurl, servings, readyInMinutes, pricePerServing, spoonacularId, userId) {
+  constructor(id, title, image, servings, readyInMinutes, pricePerServing, spoonacularId, userId) {
     this.id = id;
     this.title = title;
-    this.imageurl = imageurl;
+    this.image = image;
     this.servings = servings;
     this.readyInMinutes = readyInMinutes;
     this.pricePerServing = pricePerServing;
@@ -26,7 +26,7 @@ const getRecipesByUserId = async (userId) => {
 
     // SQL query to get recipes by user ID
     const query = `
-      SELECT r.id, r.title, r.imageurl, r.servings, r.readyInMinutes, r.pricePerServing, r.spoonacularId
+      SELECT r.id, r.title, r.image, r.servings, r.readyInMinutes, r.pricePerServing, r.spoonacularId
       FROM UserRecipes ur
       INNER JOIN Recipes r ON ur.recipe_id = r.id
       WHERE ur.user_id = @userId;
@@ -56,7 +56,7 @@ const getRecipeById = async (recipeId) => {
 
     // SQL query to get a recipe by its ID
     const query = `
-      SELECT id, title, imageurl, servings, readyInMinutes, pricePerServing, spoonacularId
+      SELECT id, title, image, servings, readyInMinutes, pricePerServing, spoonacularId
       FROM Recipes
       WHERE id = @recipeId;
     `;
@@ -91,7 +91,7 @@ const getAllStoredRecipes = async () => {
 
     // SQL query to get all recipes
     const query = `
-      SELECT id, title, imageurl, servings, readyInMinutes, pricePerServing, spoonacularId
+      SELECT id, title, image, servings, readyInMinutes, pricePerServing, spoonacularId
       FROM Recipes
       FROM Recipes;
     `;
@@ -245,13 +245,13 @@ const insertRecipeDetails = async (pool, recipe, userId, uuidGenerator = uuid4) 
 
     // If recipe doesn't exist, insert it
     const insertQuery = `
-      INSERT INTO Recipes (id, title, imageurl, servings, readyInMinutes, pricePerServing, spoonacularId)
-      VALUES (@id_insert, @title, @imageurl, @servings, @readyInMinutes, @pricePerServing, @spoonacularId);
+      INSERT INTO Recipes (id, title, image, servings, readyInMinutes, pricePerServing, spoonacularId)
+      VALUES (@id_insert, @title, @image, @servings, @readyInMinutes, @pricePerServing, @spoonacularId);
     `;
     await pool.request()
       .input('id_insert', sql.VarChar(36), idString)
-      .input('title', sql.NVarChar, recipe.title)
-      .input('imageurl', sql.NVarChar, recipe.image || '')
+      .input('title', sql.VarChar, recipe.title)
+      .input('image', sql.VarChar, recipe.image || '')
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing)
@@ -280,7 +280,7 @@ const updateRecipeDetails = async (pool, recipe, recipeId) => {
       UPDATE Recipes
       SET 
         title = @title, 
-        imageurl = @imageurl, 
+        image = @image, 
         servings = @servings, 
         readyInMinutes = @readyInMinutes, 
         pricePerServing = @pricePerServing
@@ -300,8 +300,8 @@ const updateRecipeDetails = async (pool, recipe, recipeId) => {
     // Execute the query
     const request = pool.request()
       .input('id_update', sql.VarChar(36), recipeId) // Ensure recipe.id is used correctly
-      .input('title', sql.NVarChar, recipe.title) // Ensure recipe.title is a string
-      .input('imageurl', sql.NVarChar, recipe.imageurl || '') // Default to empty if recipe.imageurl is not provided
+      .input('title', sql.VarChar, recipe.title) // Ensure recipe.title is a string
+      .input('image', sql.VarChar, recipe.image || '') 
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing);
@@ -337,7 +337,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
       UPDATE Recipes
       SET 
         title = @title, 
-        imageurl = @imageurl, 
+        image = @image, 
         servings = @servings, 
         readyInMinutes = @readyInMinutes, 
         pricePerServing = @pricePerServing
@@ -357,7 +357,7 @@ const updateRecipeDetailsbyUser = async (recipe) => {
     const request = pool.request()
       .input('id_update', sql.VarChar(36), recipe.id.toString()) // Make sure recipe.id is defined
       .input('title', sql.VarChar, recipe.title) // Ensure recipe.title is a string
-      .input('imageurl', sql.VarChar, recipe.imageurl) // Default to empty if recipe.image is not provided
+      .input('image', sql.VarChar, recipe.image) // Default to empty if recipe.image is not provided
       .input('servings', sql.Int, recipe.servings)
       .input('readyInMinutes', sql.Int, recipe.readyInMinutes)
       .input('pricePerServing', sql.Float, recipe.pricePerServing);
@@ -414,8 +414,8 @@ const insertOrUpdateIngredient = async (pool, ingredient) => {
     `;
     await pool.request()
       .input('id_insertOrUpdate', sql.VarChar(10), ingredient.id.toString())
-      .input('name', sql.NVarChar, ingredient.name)
-      .input('image', sql.NVarChar, ingredient.image || '') // Default to empty if image is not provided
+      .input('name', sql.VarChar, ingredient.name)
+      .input('image', sql.VarChar, ingredient.image || '') // Default to empty if image is not provided
       .query(ingredientQuery);
   } catch (error) {
     console.error('Error inserting/updating ingredient:', error.message);

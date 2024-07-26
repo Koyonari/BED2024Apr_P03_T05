@@ -71,15 +71,29 @@ async function handleLogin() {
     const userRole = decodedAccessToken.UserInfo.roles[0];
     localStorage.setItem("UserId", userId);
 
-    
-    if (userRole === 2001 || userRole === 2002) {
+    console.log("Login successful.");
+
+    // Call function to create pantry if needed
+    await createPantryIfNeeded(userRole, userId, result.accessToken);
+
+    // Redirect to homepage
+    redirectToHomepage(userRole);
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+// Function to create pantry if user role is User or Volunteer
+async function createPantryIfNeeded(userRole, userId, accessToken) {
+  if (userRole === 2001 || userRole === 2002) {
+    try {
       const pantryResponse = await fetch(
         `http://localhost:3500/pantry/${userId}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${result.accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       );
@@ -91,12 +105,10 @@ async function handleLogin() {
       // Stores Pantry ID in local storage
       const pantryResult = await pantryResponse.json();
       localStorage.setItem("PantryID", pantryResult.pantry_id);
+      console.log("Pantry created successfully.");
+    } catch (error) {
+      console.error("Error creating pantry:", error);
     }
-
-    console.log("Login successful. Redirecting to homepage...");
-    redirectToHomepage(userRole);
-  } catch (error) {
-    alert(error.message);
   }
 }
 

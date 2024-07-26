@@ -312,7 +312,7 @@ document.addEventListener(
         recipeDiv.classList.add("recipe");
 
         const recipeImage = document.createElement("img");
-        recipeImage.src = recipe.imageurl;
+        recipeImage.src = recipe.image;
         recipeImage.alt = recipe.title;
 
         const recipeDetailsDiv = document.createElement("div");
