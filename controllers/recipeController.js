@@ -326,7 +326,6 @@ const updateRecipeByUser = async (req, res) => {
     if (!recipe) {
       return res.status(404).json({ message: 'Recipe not found or does not belong to the user' });
     }
-
     // Log the found recipe
     console.log('Found recipe:', recipe);
 

@@ -447,7 +447,7 @@ const linkRecipeIngredient = async (pool, recipeId, ingredient) => {
         .input('recipeId', sql.VarChar(36), recipeId)
         .input('ingredientId', sql.VarChar(10), ingredient.id.toString())
         .input('amount', sql.Float, ingredient.amount || '')
-        .input('unit', sql.NVarChar, ingredient.unit || '')
+        .input('unit', sql.VarChar, ingredient.unit || '')
         .query(insertQuery);
 
       console.log(`Linked recipe ${recipeId} to ingredient ${ingredient.id}`);
@@ -527,7 +527,7 @@ const editRecipe = async (recipeId, updates) => {
       // Determine the SQL data type based on the value
       let type;
       if (typeof value === 'string') {
-        type = sql.NVarChar;
+        type = sql.VarChar;
       } else if (typeof value === 'number') {
         type = sql.Float;
       } else if (Number.isInteger(value)) {
