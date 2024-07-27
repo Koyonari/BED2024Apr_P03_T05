@@ -201,7 +201,7 @@ document.addEventListener(
       console.log("Selected ingredients:", selectedIngredients);
     }
 
-    // Function to Add a New Ingredient
+    // Function to add a new ingredient
     async function addIngredient() {
       const ingredient_name = document.getElementById(
         "popup_IngredientName"
@@ -234,18 +234,24 @@ document.addEventListener(
             body: JSON.stringify({ ingredient_name, quantity }),
           }
         );
-        if (!response.ok) throw await response.json();
+
+        if (!response.ok) {
+          // Get the error message from the response
+          const errorData = await response.json();
+          throw new Error(errorData.error);
+        }
+
         const data = await response.json();
         console.log("Ingredient added:", data);
-        fetchIngredients(); // Get Ingredients and Make UI Changes
+        fetchIngredients(); // Refresh the ingredient list
         document.getElementById("popup_IngredientName").value = "";
         document.getElementById("popup_IngredientQuantity").value = "";
         alert("Ingredient Added Successfully");
       } catch (error) {
-        handleError("Ingredient Not Found:", error);
+        // Display the error message
+        alert(`Error adding ingredient: ${error.message}`);
       }
     }
-
     // Function to toggle Popup
     function togglepopup(popupid) {
       document.getElementById(popupid).classList.toggle("active");
@@ -342,7 +348,6 @@ document.addEventListener(
       });
     }
 
-
     // Function to save a recipe
     async function saveRecipe(button) {
       const recipe = JSON.parse(button.dataset.recipe);
@@ -399,9 +404,7 @@ document.addEventListener(
       if (roles.includes(2002)) {
         document.getElementById("recipes_btn").style.display = "none";
         document.getElementById("choose_recipes_btn").style.display = "none";
-
       }
-
     }
   })()
 );
