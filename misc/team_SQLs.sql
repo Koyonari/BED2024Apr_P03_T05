@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS Users;
 CREATE TABLE Users (
     user_id CHAR(24) PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
-      CONSTRAINT chk_user_id_format_users CHECK (user_id LIKE '[a-fA-F0-9]%' AND LEN(user_id) = 24)
+    CONSTRAINT chk_user_id_format_users CHECK (user_id LIKE '[a-fA-F0-9]%' AND LEN(user_id) = 24)
 );
 
 -- Sample Data for Users Table

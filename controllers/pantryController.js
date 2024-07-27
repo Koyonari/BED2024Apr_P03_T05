@@ -78,9 +78,12 @@ async function addIngredientToPantry(req, res) {
   try {
     const { pantry_id } = req.params;
     const { ingredient_name, quantity } = req.body;
+    
+    // Attempt to add the ingredient to the pantry
     const result = await Pantry.addIngredientToPantry(pantry_id, ingredient_name, quantity);
     res.status(201).json({ message: "Ingredient added to pantry", result });
   } catch (error) {
+    // Return the error message
     res.status(500).json({ error: error.message });
   }
 }

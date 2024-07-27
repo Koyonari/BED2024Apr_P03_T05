@@ -119,6 +119,7 @@ SELECT * FROM Pantry;
 SELECT * FROM Ingredients;
 SELECT * FROM PantryIngredient;
 SELECT * FROM Recipes;
+SELECT * FROM UserRecipes;
 SELECT * FROM RecipeIngredients;
 SELECT * FROM requests;
-SELECT * FROM UserRecipes;
+SELECT * FROM RequestIngredients;
