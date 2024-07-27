@@ -27,7 +27,7 @@ Below we have listed the CRUD Operations performed by each member:
 
 - **Method:** POST
 - **Request URL:** `http://localhost:3500/register`
-- **Description:** Creates an account, either as a Volunteer or User, seperate specific request for new users
+- **Description:** Creates an account, either as a Volunteer or User, seperate specific request(s) for new users
 
 #### Example Request Body for Volunteer:
 
@@ -644,7 +644,7 @@ iii) LinkUserToRecipe
     {
         "id": "639851",
         "title": "changed",
-        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "image": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
         "servings": 2,
         "readyInMinutes": 6,
         "pricePerServing": 500
@@ -761,7 +761,7 @@ N/A, JWT Token is utilised to obtain user id
     {
         "id": "999999" ,
         "title": "TestRecipePost",
-        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "image": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
         "servings": 2,
         "readyInMinutes": 6,
         "pricePerServing": 500
@@ -782,7 +782,7 @@ N/A, JWT Token is utilised to obtain user id
     {
         "id": "639851",
         "title": "changed",
-        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "image": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
         "servings": 4,
         "readyInMinutes": 6,
         "pricePerServing": 626.14
@@ -803,7 +803,7 @@ N/A, JWT Token is utilised to obtain user id
     {
         "id": "639851",
         "title": "changed",
-        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "image": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
         "servings": 4,
         "readyInMinutes": 6,
         "pricePerServing": 626.14
