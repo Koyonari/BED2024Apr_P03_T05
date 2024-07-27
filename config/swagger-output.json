@@ -2392,7 +2392,7 @@
           "type": "string",
           "example": "TestRecipePost"
         },
-        "imageurl": {
+        "image": {
           "type": "string",
           "example": "https://img.spoonacular.com/recipes/639851-556x370.jpg"
         },
