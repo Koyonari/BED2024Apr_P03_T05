@@ -860,6 +860,17 @@ N/A, recipe id is from req.params.id
 - **Method:** DELETE
 - **Request URL:** `http://localhost:3500/recipes/deleterecipebyid/{id}`
 - **Description:** Function to delete a recipe, based on ID, this is done by admin, hence no checks for recipe ownership
+- **Authorisation:** JWT Tokens
+
+#### Example Request Body
+```
+N/A, recipe id is from req.params.id
+```
+### 22. Get RecipeIngredients by Recipe ID
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/fetchingredients/{id}`
+- **Description:** Function to retrieve the recipe ingredients associated with a particular recipe.
 - **Authorisation:** JWT Token
 
 #### Example Request Body
@@ -867,6 +878,62 @@ N/A, recipe id is from req.params.id
 N/A, recipe id is from req.params.id
 ```
 
+#### Example Successful Response Body
+```
+[
+    {
+        "ingredient_id": "15076",
+        "ingredient_name": "salmon",
+        "ingredient_image": "salmon.png"
+    }
+]
+```
+
+### 23. Insert RecipeIngredient by Recipe ID
+
+- **Method:** POST
+- **Request URL:** `http://localhost:3500/recipes/insertrecipeingredients/{id}`
+- **Description:** Function to insert a recipe ingredient, associated with a particular recipe.
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```
+[
+    {
+        "name": "apples",
+        "amount": 2,
+        "unit": "slices"
+    }
+]
+```
+
+#### Example Successful Response Body
+```
+{
+    "message": "Recipe ingredients updated and stored in the database."
+}
+```
+
+### 24. Delete Recipe Ingredients by Recipe ID
+
+- **Method:** DELETE
+- **Request URL:** `http://localhost:3500/recipes/insertrecipeingredients/{id}`
+- **Description:** Function to insert a recipe ingredient, associated with a particular recipe.
+- **Authorisation:** JWT Token
+- 
+#### Example Request Body
+```
+{
+    "ingredient_id": "10115261",
+    "ingredient_name": "fish fillets"
+}
+```
+
+#### Example Successful Response Body
+```
+{
+   message: "Ingredient deleted successfully from recipe."
+}
 ------------------------------------------------
 ### Ng Kai Huat Jason
 ### 1. Retrieve User Pantry
