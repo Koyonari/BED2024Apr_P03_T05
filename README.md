@@ -851,7 +851,7 @@ N/A, JWT Token is utilised to obtain user id
 - **Authorisation:** JWT Token
 
 #### Example Request Body
-```
+```json
 N/A, recipe id is from req.params.id
 ```
 
@@ -863,7 +863,7 @@ N/A, recipe id is from req.params.id
 - **Authorisation:** JWT Tokens
 
 #### Example Request Body
-```
+```json
 N/A, recipe id is from req.params.id
 ```
 ### 22. Get RecipeIngredients by Recipe ID
@@ -874,12 +874,12 @@ N/A, recipe id is from req.params.id
 - **Authorisation:** JWT Token
 
 #### Example Request Body
-```
+```json
 N/A, recipe id is from req.params.id
 ```
 
 #### Example Successful Response Body
-```
+```json
 [
     {
         "ingredient_id": "15076",
@@ -897,7 +897,7 @@ N/A, recipe id is from req.params.id
 - **Authorisation:** JWT Token
 
 #### Example Request Body
-```
+```json
 [
     {
         "name": "apples",
@@ -908,7 +908,7 @@ N/A, recipe id is from req.params.id
 ```
 
 #### Example Successful Response Body
-```
+```json
 {
     "message": "Recipe ingredients updated and stored in the database."
 }
@@ -922,7 +922,7 @@ N/A, recipe id is from req.params.id
 - **Authorisation:** JWT Token
 - 
 #### Example Request Body
-```
+```json
 {
     "ingredient_id": "10115261",
     "ingredient_name": "fish fillets"
@@ -930,10 +930,11 @@ N/A, recipe id is from req.params.id
 ```
 
 #### Example Successful Response Body
-```
+```json
 {
    message: "Ingredient deleted successfully from recipe."
 }
+```
 ------------------------------------------------
 ### Ng Kai Huat Jason
 ### 1. Retrieve User Pantry
