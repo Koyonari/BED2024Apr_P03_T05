@@ -1133,10 +1133,10 @@ N/A, recipe id is from req.params.id
 ### An Yong Shyan 
 ### 1. User View Their Requests
 - **Method:** GET
-- **Request URL:** `http://localhost:5000/req/user/{user_id}`
+- **Request URL:** `http://localhost:5000/requests/req/user/{user_id}`
 - **Description:** Retrieve request information pertaining to a user, identified by ID.
 ---
-**Example Successful Response Body for getRequestByUserId(1) when user_id = 1:**
+**Example Successful Response Body for getRequestByUserId(1) when user_id = "66a0db55b77f26b2818e579d":**
 - 200 OK
 #### User inputs valid user_id ####
 ```json
@@ -1146,18 +1146,18 @@ N/A, recipe id is from req.params.id
         "title": "Urgent food request",
         "category": "Urgent",
         "description": "Require immediate food, preferably meat",
-        "user_id": 1,
-        "volunteer_id": 2,
-        "isCompleted": true,
-        "admin_id": 3
+        "user_id": "66a0db55b77f26b2818e579d",
+        "volunteer_id": null,
+        "isCompleted": false,
+        "admin_id": null
     },
     {
         "request_id": 4,
         "title": "Requesting for water",
         "category": "Low Priority",
         "description": "Require water, need not be urgent",
-        "user_id": 1,
-        "volunteer_id": 2,
+        "user_id": "66a0db55b77f26b2818e579d",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
         "isCompleted": true,
         "admin_id": null
     }
@@ -1178,7 +1178,7 @@ Error retrieving requests
 ---
 ### 2. User Create Request
 - **Method:** POST
-- **Request URL:** `http://localhost:5000/req`
+- **Request URL:** `http://localhost:5000/requests/req`
 - **Description:** Create new request, request_id is auto-increment.
 ---
 **Example Successful Response Body for createRequest():**
@@ -1189,8 +1189,8 @@ Error retrieving requests
     "title": "Requesting for water",
     "category": "Low Priority",
     "description": "Require water, need not be urgent",
-    "user_id": 1,
-    "volunteer_id": 2,
+    "user_id": "66a1f1ffa8cc032ee6530911",
+    "volunteer_id": "669abb50fe3958443cdc03e4",
     "isCompleted": true,
     "admin_id": null
 }
@@ -1220,7 +1220,7 @@ Error creating request
 ---
 ### 3. Volunteers & Admins view available requests
 - **Method:** GET
-- **Request URL:** `http://localhost:5000/available`
+- **Request URL:** `http://localhost:5000/requests/available`
 - **Description:** View available requests - volunteer_id = null, admin_id = null, isCompleted = false.
 ---
 **Example Successful Response Body for getAvailableRequests():**
@@ -1229,11 +1229,11 @@ Error creating request
 ```json
 [
     {
-        "request_id": 3,
+        "request_id": "1ayO1xbpZIKX2Db6SjJ8l29d",
         "title": "Baked Goods",
         "category": "High Priority",
         "description": "I need some baked goods for meals",
-        "user_id": 3,
+        "user_id": "66a1f1ffa8cc032ee6530911",
         "volunteer_id": null,
         "isCompleted": false,
         "admin_id": null
@@ -1256,28 +1256,28 @@ Error retrieving available requests
 ---
 ### 4. Volunteers accepts requests
 - **Method:** PATCH
-- **Request URL:** `http://localhost:5000/req/accepted/update/{request_id}`
+- **Request URL:** `http://localhost:5000/requests/req/accepted/update/{request_id}`
 - **Description:** Volunteer updates the volunteer_id in appropriate request_id with their own id.
 ---
 **Example Successful Response Body for updateAcceptedRequest():**
 - 200 OK
-#### Volunteer inputs valid volunteer_id into request_id = 2  ####
+#### Volunteer inputs valid volunteer_id into request_id = "OEcsadbS3YzUuIuUIQ1KPbyO"  ####
 
 Input:
 ```json
 {
-    "volunteer_id": 1
+    "volunteer_id": "669abb50fe3958443cdc03e4"
 }
 ```
 Output:
 ```json
 {
-    "request_id": 2,
+    "request_id": "OEcsadbS3YzUuIuUIQ1KPbyO",
     "title": "Liquids Please",
     "category": "Low Priority",
     "description": "Require liquids like water, plus protein powder",
-    "user_id": 2,
-    "volunteer_id": 1,
+    "user_id": "66a0db55b77f26b2818e579d",
+    "volunteer_id": "669abb50fe3958443cdc03e4",
     "isCompleted": false,
     "admin_id": null
 }
@@ -1295,33 +1295,33 @@ Request not found
 ```
 Error updating accepted request
 ```
-### 5. Volunteer view accepted requests
+### 5. Volunteer view their accepted requests
 - **Method:** GET
-- **Request URL:** `http://localhost:5000/req/accepted/{volunteer_id}`
+- **Request URL:** `http://localhost:5000/requests/req/accepted/{volunteer_id}`
 - **Description:** Volunteer updates the volunteer_id in appropriate request_id with their own id.
 ---
-**Example Successful Response Body for getAcceptedRequestById(2) when volunteer_id = 2:**
+**Example Successful Response Body for getAcceptedRequestById() when volunteer_id = "669abb50fe3958443cdc03e4":**
 - 200 OK
-#### Volunteer with volunteer id = 2 views accepted request ####
+#### Volunteer with volunteer id = "669abb50fe3958443cdc03e4" views accepted request ####
 ```json
 [
     {
-        "request_id": 1,
+        "request_id": "o3YuerCoyAijyi3hV6XJysuM",
         "title": "Urgent food request",
         "category": "Urgent",
         "description": "Require immediate food, preferably meat",
-        "user_id": 1,
-        "volunteer_id": 2,
+        "user_id": "669ab54752ed8860e2afe76e",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
         "isCompleted": true,
-        "admin_id": 3
+        "admin_id": "669ab56a52ed8860e2afe771"
     },
     {
-        "request_id": 4,
+        "request_id": "RMwDpaQ6fAXQPuID87sJqOKV",
         "title": "Requesting for water",
         "category": "Low Priority",
         "description": "Require water, need not be urgent",
-        "user_id": 1,
-        "volunteer_id": 2,
+        "user_id": "66a1f1ffa8cc032ee6530911",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
         "isCompleted": true,
         "admin_id": null
     }
@@ -1340,24 +1340,86 @@ No accepted requests found for this volunteer
 ```
 Error retrieving accepted requests
 ```
-### 6. User updates request to be completed
+### 6. Creates Ingredient List
+- **Method:** POST
+- **Request URL:** `http://localhost:5000/requests/inglist`
+- **Description:** System creates ingredient list if there are no ingredient list for users when volunteers donate ingredients.
+---
+**Example Successful Response Body for createIngredientList() when request_id = "RMwDpaQ6fAXQPuID87sJqOKV":**
+- 201 Created
+#### Ingredient List is created successfully ####
+```json
+{
+    "request_id": "1ayO1xbpZIKX2Db6SjJ8l29d",
+    "pantry_id": "oTx5s",
+    "ingredient_id": "5062"
+}
+```
+---
+**Example Error Response Body for createIngredientList():**
+- 404 Not Found
+#### No Requests Found ####
+```
+Request not found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Internal Server Error
+```
+### 7. Get Request Ingredients By ID
+- **Method:** GET
+- **Request URL:** `http://localhost:5000/requests/req/ing/{id}`
+- **Description:** System retrieves request ingredients along with other details using joining of tables such as the User's name and id, Volunteer's name and id, request title, request category, request description, ingredients name and quantity.
+---
+**Example Successful Response Body for createIngredientList() when request_id = "RMwDpaQ6fAXQPuID87sJqOKV":**
+- 200 OK
+#### Ingredient List is retrieved successfully ####
+```json
+{
+    "user_name": "TestUserYS2",
+    "user_id": "66a1f1ffa8cc032ee6530911",
+    "volunteer_name": "VolunteerYS3",
+    "volunteer_id": "66a331583ef3325bfbb2a1e5",
+    "request_title": "I need food",
+    "request_category": "Urgent",
+    "request_description": "Please give me food, my house has ran out of its supply",
+    "ingredient_name": "chicken_fat",
+    "ingredient_quantity": 3
+}
+```
+---
+**Example Error Response Body for createIngredientList():**
+- 404 Not Found
+#### No Requests Found ####
+```
+Request not found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Internal Server Error
+```
+### 8. User updates request to be completed
 - **Method:** PATCH
-- **Request URL:** `http://localhost:5000/req/completed/{request_id}`
+- **Request URL:** `http://localhost:5000/requests/req/completed/{request_id}`
 - **Description:** User updates the appropriate request by request id to be isCompleted = true.
 ---
-**Example Successful Response Body for updateCompletedRequest(1) when request_id = 1:**
+**Example Successful Response Body for updateCompletedRequest(1) when request_id = "RMwDpaQ6fAXQPuID87sJqOKV":**
 - 200 OK
 #### User updates valid request to be completed ####
 ```json
 {
-    "request_id": 1,
+    "request_id": "RMwDpaQ6fAXQPuID87sJqOKV",
     "title": "Urgent food request",
     "category": "Urgent",
     "description": "Require immediate food, preferably meat",
-    "user_id": 1,
-    "volunteer_id": 2,
+    "user_id": "669abb1ffe3958443cdc03e1",
+    "volunteer_id": "669abb50fe3958443cdc03e4",
     "isCompleted": true,
-    "admin_id": 3
+    "admin_id": "669ab56a52ed8860e2afe771"
 }
 ```
 ---
@@ -1373,24 +1435,24 @@ Request not found
 ```
 Error updating request to completed
 ```
-### 7. Allows details of specific requests to be viewed
+### 9. Allows details of specific requests to be viewed
 - **Method:** GET
-- **Request URL:** `http://localhost:5000/req/{request_id}`
+- **Request URL:** `http://localhost:5000/requests/req/{request_id}`
 - **Description:** User views request by request id.
 ---
-**Example Successful Response Body for getRequestById(1) when request_id = 1:**
+**Example Successful Response Body for getRequestById(1) when request_id = "RMwDpaQ6fAXQPuID87sJqOKV":**
 - 200 OK
 #### Allows specific requests to be viewed ####
 ```json
 {
-    "request_id": 1,
+    "request_id": "RMwDpaQ6fAXQPuID87sJqOKV",
     "title": "Urgent food request",
     "category": "Urgent",
     "description": "Require immediate food, preferably meat",
-    "user_id": 1,
-    "volunteer_id": 2,
+    "user_id": "66a0db55b77f26b2818e579d",
+    "volunteer_id": "669abb50fe3958443cdc03e4",
     "isCompleted": true,
-    "admin_id": 3
+    "admin_id": "669ab56a52ed8860e2afe771"
 }
 ```
 ---
@@ -1406,67 +1468,33 @@ Request not found
 ```
 Error retrieving request
 ```
-### 8. Volunteers view User Profile
-- **Method:** GET
-- **Request URL:** `http://localhost:5000/user/{user_id}`
-- **Description:** Volunteers view specific user profile by user_id.
----
-**Example Successful Response Body for getUserDetailsById(1) when user_id = 1:**
-- 200 OK
-#### Allows a specific user to be viewed ####
-```json
-{
-    "user_id": 1,
-    "firstname": "John",
-    "lastname": "Doe",
-    "dob": "1985-01-15T00:00:00.000Z",
-    "address": "123 Main St, Anytown, USA",
-    "email": "john.doe@example.com",
-    "contact": "555-1234",
-    "password": "password123",
-    "dietaryrestrictions": "Vegan",
-    "intolerances": "Gluten",
-    "excludedingredients": "Peanuts"
-}
-```
----
-**Example Error Response Body for getRequestById():**
-- 404 Not Found
-#### No User Found ####
-```
-User not found
-```
----
-- 500 Internal Server Error
-#### Server Error ####
-```
-Error retrieving user details
-```
-### 9. Admin approves requests
+
+
+### 10. Admin approves requests
 - **Method:** PATCH
-- **Request URL:** `http://localhost:5000/req/approve/{admin_id}`
+- **Request URL:** `http://localhost:5000/requests/req/approve/{admin_id}`
 - **Description:** Admin approves requests.
 ---
-**Example Successful Response Body for updateApproveRequest(1) when admin_id = 1:**
+**Example Successful Response Body for updateApproveRequest() when admin_id = "669abb50fe3958443cdc03e4":**
 - 200 OK
 #### Allows admin to approve request by updating the admin_id ####
 Input:
 ```json
 {
-    "admin_id": 1
+    "admin_id": "669abb50fe3958443cdc03e4"
 }
 ```
 Output:
 ```json
 {
-    "request_id": 1,
+    "request_id": "NVrr1Dfbyp5agfUNzHzmeFqB",
     "title": "Urgent food request",
     "category": "Urgent",
     "description": "Require immediate food, preferably meat",
-    "user_id": 1,
-    "volunteer_id": 2,
+    "user_id": "66a0db55b77f26b2818e579d",
+    "volunteer_id": "669abb50fe3958443cdc03e4",
     "isCompleted": true,
-    "admin_id": 1
+    "admin_id": "669abb50fe3958443cdc03e4"
 }
 ```
 ---
@@ -1482,9 +1510,9 @@ Request not found
 ```
 Error approving request
 ```
-### 10. View Accepted Requests
+### 11. View Accepted Requests
 - **Method:** GET
-- **Request URL:** `http://localhost:5000/accepted`
+- **Request URL:** `http://localhost:5000/requests/accepted`
 - **Description:** View accepted requests when volunteer id is not null.
 ---
 **Example Successful Response Body for getAcceptedRequest():**
@@ -1493,32 +1521,32 @@ Error approving request
 ```json
 [
     {
-        "request_id": 1,
+        "request_id": "1ayO1xbpZIKX2Db6SjJ8l29d",
         "title": "Urgent food request",
         "category": "Urgent",
         "description": "Require immediate food, preferably meat",
-        "user_id": 1,
-        "volunteer_id": 2,
+        "user_id": "66a1f1ffa8cc032ee6530911",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
         "isCompleted": true,
-        "admin_id": 1
+        "admin_id": "669ab56a52ed8860e2afe771"
     },
     {
-        "request_id": 2,
+        "request_id": "2PUJ6AoCXDSDojEGNZuOdyZA",
         "title": "Liquids Please",
         "category": "Low Priority",
         "description": "Require liquids like water, plus protein powder",
-        "user_id": 2,
-        "volunteer_id": 1,
+        "user_id": "66a1f1ffa8cc032ee6530911",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
         "isCompleted": false,
         "admin_id": null
     },
     {
-        "request_id": 4,
+        "request_id": "2X2SE3BCuA85lArcsGryFhxz",
         "title": "Requesting for water",
         "category": "Low Priority",
         "description": "Require water, need not be urgent",
-        "user_id": 1,
-        "volunteer_id": 2,
+        "user_id": "669abb1ffe3958443cdc03e1",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
         "isCompleted": true,
         "admin_id": null
     }
@@ -1537,14 +1565,114 @@ No accepted requests found
 ```
 Error retrieving accepted requests
 ```
-### 11. Delete request
+### 12. View Completed Requests
+- **Method:** GET
+- **Request URL:** `http://localhost:5000/requests/completed`
+- **Description:** View accepted requests when isCompleted = true and admin_id is null.
+---
+**Example Successful Response Body for getCompletedRequest():**
+- 200 OK
+#### Allows admin to view request that has isCompleted = true and admin_id = null ####
+```json
+[
+    {
+        "request_id": "1ayO1xbpZIKX2Db6SjJ8l29d",
+        "title": "Urgent food request",
+        "category": "Urgent",
+        "description": "Require immediate food, preferably meat",
+        "user_id": "66a1f1ffa8cc032ee6530911",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
+        "isCompleted": true,
+        "admin_id": null
+    },
+    {
+        "request_id": "2PUJ6AoCXDSDojEGNZuOdyZA",
+        "title": "Liquids Please",
+        "category": "Low Priority",
+        "description": "Require liquids like water, plus protein powder",
+        "user_id": "66a1f1ffa8cc032ee6530911",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
+        "isCompleted": false,
+        "admin_id": null
+    },
+    {
+        "request_id": "2X2SE3BCuA85lArcsGryFhxz",
+        "title": "Requesting for water",
+        "category": "Low Priority",
+        "description": "Require water, need not be urgent",
+        "user_id": "669abb1ffe3958443cdc03e1",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
+        "isCompleted": true,
+        "admin_id": null
+    }
+]
+```
+---
+**Example Error Response Body for getCompletedRequest():**
+- 404 Not Found
+#### No Request Found ####
+```
+No completed requests found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error retrieving accepted requests
+```
+### 13. View Approved Requests
+- **Method:** GET
+- **Request URL:** `http://localhost:5000/requests/approved`
+- **Description:** View approved requests when admin id is not null.
+---
+**Example Successful Response Body for getApprovedRequest():**
+- 200 OK
+#### Allows admin to view request that has admin id as not null ####
+```json
+[
+    {
+        "request_id": "1ayO1xbpZIKX2Db6SjJ8l29d",
+        "title": "Urgent food request",
+        "category": "Urgent",
+        "description": "Require immediate food, preferably meat",
+        "user_id": "66a1f1ffa8cc032ee6530911",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
+        "isCompleted": true,
+        "admin_id": "669ab56a52ed8860e2afe771"
+    },
+    {
+        "request_id": "2PUJ6AoCXDSDojEGNZuOdyZA",
+        "title": "Liquids Please",
+        "category": "Low Priority",
+        "description": "Require liquids like water, plus protein powder",
+        "user_id": "66a1f1ffa8cc032ee6530911",
+        "volunteer_id": "669abb50fe3958443cdc03e4",
+        "isCompleted": false,
+        "admin_id": "669ab56a52ed8860e2afe771"
+    }
+]
+```
+---
+**Example Error Response Body for getApprovedRequest():**
+- 404 Not Found
+#### No Request Found ####
+```
+No approved requests found
+```
+---
+- 500 Internal Server Error
+#### Server Error ####
+```
+Error retrieving approved requests
+```
+### 14. Delete request
 - **Method:** DELETE
-- **Request URL:** `http://localhost:5000/req/{request_id}`
+- **Request URL:** `http://localhost:5000/requests/req/{request_id}`
 - **Description:** Delete appropriate request.
 ---
-**Example Successful Response Body for deleteRequest(1):**
+**Example Successful Response Body for deleteRequest():**
 - 200 OK
-#### Allows admin to delete request according to the request id ####
+#### Allows admin to delete request according to the request id and ingredient list ####
 ```
 Request deleted successfully
 ```
