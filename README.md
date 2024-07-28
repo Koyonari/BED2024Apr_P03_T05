@@ -1077,7 +1077,7 @@ N/A, recipe id is from req.params.id
   ```
 ### 8. Deduct Ingredient Quantity
 - **Method:** PUT
-- **Request:** `http://localhost:3000/pantry/{pantry_id}/removeIngredientQuantity`
+- **Request:** `http://localhost:3000/pantry/{pantry_id}/deductIngredientQuantity`
 - **Request Body**
   ```json
   {
