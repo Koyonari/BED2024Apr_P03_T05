@@ -27,7 +27,7 @@ Below we have listed the CRUD Operations performed by each member:
 
 - **Method:** POST
 - **Request URL:** `http://localhost:3500/register`
-- **Description:** Creates an account, either as a Volunteer or User, seperate specific request for new users
+- **Description:** Creates an account, either as a Volunteer or User, seperate specific request(s) for new users
 
 #### Example Request Body for Volunteer:
 
@@ -644,7 +644,7 @@ iii) LinkUserToRecipe
     {
         "id": "639851",
         "title": "changed",
-        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "image": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
         "servings": 2,
         "readyInMinutes": 6,
         "pricePerServing": 500
@@ -761,7 +761,7 @@ N/A, JWT Token is utilised to obtain user id
     {
         "id": "999999" ,
         "title": "TestRecipePost",
-        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "image": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
         "servings": 2,
         "readyInMinutes": 6,
         "pricePerServing": 500
@@ -782,7 +782,7 @@ N/A, JWT Token is utilised to obtain user id
     {
         "id": "639851",
         "title": "changed",
-        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "image": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
         "servings": 4,
         "readyInMinutes": 6,
         "pricePerServing": 626.14
@@ -803,7 +803,7 @@ N/A, JWT Token is utilised to obtain user id
     {
         "id": "639851",
         "title": "changed",
-        "imageurl": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
+        "image": "https://img.spoonacular.com/recipes/639851-556x370.jpg",
         "servings": 4,
         "readyInMinutes": 6,
         "pricePerServing": 626.14
@@ -851,7 +851,7 @@ N/A, JWT Token is utilised to obtain user id
 - **Authorisation:** JWT Token
 
 #### Example Request Body
-```
+```json
 N/A, recipe id is from req.params.id
 ```
 
@@ -860,13 +860,81 @@ N/A, recipe id is from req.params.id
 - **Method:** DELETE
 - **Request URL:** `http://localhost:3500/recipes/deleterecipebyid/{id}`
 - **Description:** Function to delete a recipe, based on ID, this is done by admin, hence no checks for recipe ownership
+- **Authorisation:** JWT Tokens
+
+#### Example Request Body
+```json
+N/A, recipe id is from req.params.id
+```
+### 22. Get RecipeIngredients by Recipe ID
+
+- **Method:** GET
+- **Request URL:** `http://localhost:3500/recipes/fetchingredients/{id}`
+- **Description:** Function to retrieve the recipe ingredients associated with a particular recipe.
 - **Authorisation:** JWT Token
 
 #### Example Request Body
-```
+```json
 N/A, recipe id is from req.params.id
 ```
 
+#### Example Successful Response Body
+```json
+[
+    {
+        "ingredient_id": "15076",
+        "ingredient_name": "salmon",
+        "ingredient_image": "salmon.png"
+    }
+]
+```
+
+### 23. Insert RecipeIngredient by Recipe ID
+
+- **Method:** POST
+- **Request URL:** `http://localhost:3500/recipes/insertrecipeingredients/{id}`
+- **Description:** Function to insert a recipe ingredient, associated with a particular recipe.
+- **Authorisation:** JWT Token
+
+#### Example Request Body
+```json
+[
+    {
+        "name": "apples",
+        "amount": 2,
+        "unit": "slices"
+    }
+]
+```
+
+#### Example Successful Response Body
+```json
+{
+    "message": "Recipe ingredients updated and stored in the database."
+}
+```
+
+### 24. Delete Recipe Ingredients by Recipe ID
+
+- **Method:** DELETE
+- **Request URL:** `http://localhost:3500/recipes/insertrecipeingredients/{id}`
+- **Description:** Function to insert a recipe ingredient, associated with a particular recipe.
+- **Authorisation:** JWT Token
+- 
+#### Example Request Body
+```json
+{
+    "ingredient_id": "10115261",
+    "ingredient_name": "fish fillets"
+}
+```
+
+#### Example Successful Response Body
+```json
+{
+   message: "Ingredient deleted successfully from recipe."
+}
+```
 ------------------------------------------------
 ### Ng Kai Huat Jason
 ### 1. Retrieve User Pantry
