@@ -1047,7 +1047,63 @@ N/A, recipe id is from req.params.id
     "error": "Ingredient not found in pantry"
   }
   ```
-### 6. Delete Pantry Ingredients
+### 7. Add Ingredient Quantity
+- **Method:** PUT
+- **Request:** `http://localhost:3000/pantry/{pantry_id}/addIngredientQuantity`
+- **Request Body**
+  ```json
+  {
+      "ingredient_id":"7961",
+      "quantity":"2"
+  }
+  ```
+- **Description:** Add quantity to a existing pantry ingredient
+- **Example Successful Response:**
+  ```json
+  {
+     "message": "Ingredient quantity updated in pantry",
+     "result": {
+         "pantry_id": "UEsi8",
+         "ingredient_id": "15076",
+         "quantity": 4
+     }
+  }
+  ```
+- **Example No Pantry Ingredients with same ID Response:**
+  ```json
+  {
+    "error": "Ingredient not found in pantry"
+  }
+  ```
+### 8. Deduct Ingredient Quantity
+- **Method:** PUT
+- **Request:** `http://localhost:3000/pantry/{pantry_id}/deductIngredientQuantity`
+- **Request Body**
+  ```json
+  {
+      "ingredient_id":"7961",
+      "quantity":"2"
+  }
+  ```
+- **Description:** Deducts Quantity of a existing pantry ingredient
+- **Example Successful Response:**
+  ```json
+  {
+  	"message": "Ingredient quantity updated in pantry",
+    	"result": {
+        	"pantry_id": "UEsi8",
+        	"ingredient_id": "15076",
+        	"quantity": 4
+    	}
+  }
+  ```
+- **Example No Pantry Ingredients with same ID Response:**
+  ```json
+  {
+    "error": "Ingredient not found in pantry"
+  }
+  ```
+### 9. Delete Pantry Ingredients
 - **Method:** DELETE
 - **Request:** `http://localhost:3000/pantry/{pantry_id}/ingredients`
 - **Request Body**
